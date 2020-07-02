@@ -38,17 +38,27 @@ class FeedbackForm extends Component<Props, State> {
     }
   }
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
     const { cseLogin, password, studentCSE } = this.state;
-    let errorFree = Services.authenticate(cseLogin, password);
+    const errorFree = Services.authenticate(cseLogin, password);
+    let statusCode = -1;
     if (errorFree) {
-      errorFree = errorFree && Services.sendEmail(`${studentCSE}@cse.unl.edu`);
+      await Services.sendEmail(`${studentCSE}@cse.unl.edu`, cseLogin).then((response) => {
+        statusCode = response;
+      });
     }
 
     const { responseDivRef } = this.props;
     if (responseDivRef?.current) {
-      let alert = `<div class="alert alert-${errorFree ? 'success' : 'danger'}" role="alert">`;
-      alert += errorFree ? 'Message Sent!' : 'Invalid Login';
+      const alertType = errorFree && statusCode === 200 ? 'success' : 'danger';
+      let alert = `<div class="alert alert-${alertType}" role="alert">`;
+      if (errorFree) {
+        alert += statusCode === 200
+          ? 'Message Sent!'
+          : `Failed to Send Message. Please Try Again. (Error Code ${statusCode})`;
+      } else {
+        alert += 'Invalid Login';
+      }
       alert += '</div>';
 
       responseDivRef.current.innerHTML = alert;
@@ -59,10 +69,10 @@ class FeedbackForm extends Component<Props, State> {
     return (
       <form>
         <div className="form-group row">
-          <label htmlFor="cse_login" className="col-sm-3 col-form-label">
+          <label htmlFor="cse_login" className="col-sm-4 col-form-label">
             CSE Username
           </label>
-          <div className="col-sm-9">
+          <div className="col-sm-8">
             <input
               type="text"
               name="cse_login"
@@ -74,10 +84,10 @@ class FeedbackForm extends Component<Props, State> {
         </div>
 
         <div className="form-group row">
-          <label htmlFor="cse_password" className="col-sm-3 col-form-label">
+          <label htmlFor="cse_password" className="col-sm-4 col-form-label">
             Password
           </label>
-          <div className="col-sm-9">
+          <div className="col-sm-8">
             <input
               type="password"
               className="form-control"
@@ -90,10 +100,10 @@ class FeedbackForm extends Component<Props, State> {
         </div>
 
         <div className="form-group row">
-          <label htmlFor="student_cse_login" className="col-sm-3 col-form-label">
+          <label htmlFor="student_cse_login" className="col-sm-4 col-form-label">
             Student CSE
           </label>
-          <div className="col-sm-9">
+          <div className="col-sm-8">
             <input
               type="text"
               className="form-control"
@@ -113,7 +123,7 @@ class FeedbackForm extends Component<Props, State> {
               value="Submit"
               onClick={this.handleSubmit}
             >
-              Grade Me
+              Submit
             </button>
           </div>
         </div>

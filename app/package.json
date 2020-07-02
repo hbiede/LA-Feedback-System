@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "license": "Apache-2.0",
-  "description": "This is a website to gather feedback from students after interactions with LAs",
+  "description": "A website to gather feedback from students after interactions with LAs",
+  "homepage": ".",
   "dependencies": {
     "nodemailer": "^6.4.10",
     "react": "^16.13.1",
