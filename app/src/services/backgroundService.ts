@@ -1,19 +1,20 @@
 class Services {
-    static authenticate = (username: string, password: string): boolean => true;
+  static authenticate = (username: string, password: string): boolean => true;
 
-    static sendEmail = async (email: string, laCSE: string): Promise<number> => {
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, laCSE }),
-      };
-      let statusCode = -1;
-      await fetch(`${process.env.PUBLIC_URL}/sendEmail.php`, requestOptions).then((response) => {
-        statusCode = response.status;
+  static sendEmail = async (studentCSE: string, laCSE: string): Promise<string|null> => {
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentCSE, laCSE }),
+    };
+    let status = null;
+    await fetch(`${process.env.PUBLIC_URL}/sendEmail.php`, requestOptions)
+      .then((response) => response.json())
+      .then((body) => {
+        status = body.message;
       });
-      console.log(statusCode);
-      return statusCode;
-    }
+    return status;
+  }
 }
 
 export default Services;

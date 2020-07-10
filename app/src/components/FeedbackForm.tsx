@@ -1,15 +1,18 @@
-import React, { ChangeEvent, Component, MutableRefObject } from 'react';
+import React, {
+  ChangeEvent, Component, MutableRefObject,
+} from 'react';
 
 import Services from '../services/backgroundService';
 
 type Props = {
-  responseDivRef?: MutableRefObject<HTMLDivElement|null>;
+  responseDivRef?: MutableRefObject<HTMLDivElement | null>;
 };
 
 type State = {
   cseLogin: string;
   password: string;
   studentCSE: string;
+  disabled: boolean;
 };
 
 class FeedbackForm extends Component<Props, State> {
@@ -19,6 +22,7 @@ class FeedbackForm extends Component<Props, State> {
       cseLogin: '',
       password: '',
       studentCSE: '',
+      disabled: false,
     };
   }
 
@@ -36,26 +40,27 @@ class FeedbackForm extends Component<Props, State> {
       default:
         break;
     }
-  }
+  };
 
   handleSubmit = async () => {
     const { cseLogin, password, studentCSE } = this.state;
+    this.setState({ disabled: true });
     const errorFree = Services.authenticate(cseLogin, password);
-    let statusCode = -1;
+    let status = null;
     if (errorFree) {
-      await Services.sendEmail(`${studentCSE}@cse.unl.edu`, cseLogin).then((response) => {
-        statusCode = response;
+      await Services.sendEmail(studentCSE, cseLogin).then((response) => {
+        status = response;
       });
     }
 
     const { responseDivRef } = this.props;
     if (responseDivRef?.current) {
-      const alertType = errorFree && statusCode === 200 ? 'success' : 'danger';
+      const alertType = errorFree && status === 0 ? 'success' : 'danger';
       let alert = `<div class="alert alert-${alertType}" role="alert">`;
       if (errorFree) {
-        alert += statusCode === 200
+        alert += status === 0
           ? 'Message Sent!'
-          : `Failed to Send Message. Please Try Again. (Error Code ${statusCode})`;
+          : `Failed to Send Message. Please Try Again. (Error Code ${status})`;
       } else {
         alert += 'Invalid Login';
       }
@@ -63,9 +68,11 @@ class FeedbackForm extends Component<Props, State> {
 
       responseDivRef.current.innerHTML = alert;
     }
-  }
+    setTimeout(() => this.setState({ disabled: false }), 1000);
+  };
 
   render() {
+    const { disabled } = this.state;
     return (
       <form>
         <div className="form-group row">
@@ -122,6 +129,7 @@ class FeedbackForm extends Component<Props, State> {
               className="btn btn-primary active"
               value="Submit"
               onClick={this.handleSubmit}
+              disabled={disabled}
             >
               Submit
             </button>

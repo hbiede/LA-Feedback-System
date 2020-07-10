@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>LA Feedback Required</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="css/form_style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        /* global $ */
+        function validateSubmit() {
+            let rating = $("#rating").val();
+            let comment = $("#comment").val();
+
+            if (rating <= 0) {
+                alert('Invalid Rating');
+                return false;
+            }
+
+            const results = new RegExp('[?&]id(?:=([^&#]*)|&|#|$)').exec(window.location.href);
+            if (results[1]) {
+                $.ajax({
+                    url: `${process.env.PUBLIC_URL}/submitFeedback.php`,
+                    method: "POST",
+                    data: {
+                        id: results[1],
+                        rating: rating,
+                        comment: comment,
+                    }
+                });
+                window.location.href = `${process.env.PUBLIC_URL}/thankyou.html`
+            } else {
+                alert('Missing Interaction ID');
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+<span class="preheader">Help us to improve the Learning Assistant Program</span>
+<table role="presentation" class="primaryBG">
+    <tr>
+        <td class="container">
+            <div class="content">
+
+                <!-- START CENTERED WHITE CONTAINER -->
+                <div class="content" role="presentation">
+
+                    <!-- START CENTERED WHITE CONTAINER -->
+                    <table role="presentation" class="main">
+
+                        <!-- START MAIN CONTENT AREA -->
+                        <tbody>
+                        <tr>
+                            <td class="wrapper">
+                                <table role="presentation">
+                                    <tbody>
+                                    <tr>
+                                        <td>
+                                            <p>Hi,</p>
+                                            <p>You recently had an interaction with a learning assistant. Please help us
+                                                to know how they did. Your response will be anonymous and will help us
+                                                to improve the LA program for everyone.</p>
+                                            <div style="padding-right: 10px;">
+                                                <div class="form-group row">
+                                                    <label for="rating" class="col-sm-4 col-form-label">Rating</label>
+                                                    <select id="rating" class="custom-select col-sm-8" required>
+                                                        <option value="0">(choose)</option>
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                        <option value="6">6</option>
+                                                        <option value="7">7</option>
+                                                        <option value="8">8</option>
+                                                        <option value="9">9</option>
+                                                        <option value="10">10</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label for="comment" class="col-sm-4 col-form-label">Comment
+                                                        (Optional)</label>
+                                                    <textarea id="comment" class="col-sm-8" rows="5"
+                                                              style="resize: none;padding: 5px"
+                                                              maxlength="500"></textarea>
+                                                    <span id="char_count"
+                                                          style="float: right !important;background-color: #777777;margin-top: -30px;margin-right: 5px;margin-inline-start: auto;display: inline;padding: .2em .6em .3em;font-size: 75%;font-weight: 700;color:#ffffff;text-align: center;white-space: nowrap;border-radius: .25em;z-index: 1;height: fit-content;"></span>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <button onclick="validateSubmit()" class="btn btn-danger col-sm-11"
+                                                            style="background-color: var(--PrimaryBackground);margin: 20px auto 0">
+                                                        Submit
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+
+
+                        </tbody>
+                    </table>
+                    <!-- END MAIN CONTENT AREA -->
+                </div>
+                <!-- END CENTERED WHITE CONTAINER -->
+
+                <!-- START FOOTER -->
+                <div class="footer">
+                    <table role="presentation">
+                        <tr>
+                            <td class="content-block">
+                                <a class="apple-link" href="http://cse.unl.edu" target="_blank">Learning Assistant
+                                    Program, University of Nebraska-Lincoln - CSE Department</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+<script>
+    let text_max = 500;
+    $('#char_count').html('0 / ' + text_max);
+
+    $('#comment').keyup(() => {
+        $('#char_count').html($('#comment').val().length + ' / ' + text_max);
+    });
+</script>
+</body>
+</html>
