@@ -1,0 +1,3 @@
+The LA LA_USERNAME received a rating of STUDENT_RATING. The comment associated with the low rating was:
+
+RATING_COMMENT

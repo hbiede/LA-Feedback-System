@@ -3,8 +3,13 @@ import React, { useRef } from 'react';
 import './App.css';
 import FeedbackForm from './components/FeedbackForm';
 
-function App() {
+type Props ={
+  username: string;
+};
+
+function App(props: Props) {
   const responseDivRef = useRef<HTMLDivElement | null>(null);
+  const { username } = props;
   return (
     <div className="App">
       <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -76,7 +81,7 @@ function App() {
             <div id="responseDiv" ref={responseDivRef} />
 
             <div className="col-md-6">
-              <FeedbackForm responseDivRef={responseDivRef} />
+              <FeedbackForm responseDivRef={responseDivRef} username={username} />
             </div>
           </div>
         </div>

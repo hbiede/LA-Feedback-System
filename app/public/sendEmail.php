@@ -46,7 +46,6 @@ function get_username_id($username) {
             $ps->fetch();
             $ps->close();
             $conn->close();
-            error_log(gettype($id));
             return $id;
         } else {
             return add_cse($username);
@@ -55,15 +54,15 @@ function get_username_id($username) {
     return null;
 }
 
-function add_interaction($la_cse, $student_cse) {
+function add_interaction($la_cse, $student_cse, $course) {
     $la_id = get_username_id($la_cse);
     $student_id = get_username_id($student_cse);
     $conn = get_connection();
     if ($conn !== null && is_int($la_id) && is_int($student_id)) {
         $conn->begin_transaction();
-        $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?),(SELECT username_key FROM cse_usernames WHERE username=?));");
+        $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key, course) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?),(SELECT username_key FROM cse_usernames WHERE username=?), ?);");
         if ($ps) {
-            $ps->bind_param("ss", $la_cse, $student_cse);
+            $ps->bind_param("sss", $la_cse, $student_cse, $course);
             $ps->execute();
             $conn->commit();
             $returnVal = $ps->insert_id;
@@ -104,18 +103,18 @@ function update_interaction_for_feedback($interaction_id) {
 $obj = json_decode(file_get_contents('php://input'));
 
 
-if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'})) {
+if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isset($obj->{'course'})) {
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
     $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
 
     $subject = shell_exec('grep "<title>" form.html | sed "s/\s*<\/*title>//gi"');
 
-    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentCSE'});
-    $body = shell_exec('cat emailBody.html | sed "s/INTERACTION_ID/' . $interaction_id . '/gi"');
+    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentCSE'}, $obj->{'course'});
+    $body = shell_exec('cat ./data/emailBody.html | sed "s/INTERACTION_ID/' . $interaction_id . '/gi"');
 
     if ($interaction_id !== null && $interaction_id > 0 && mt_rand() / mt_getrandmax() < FEEDBACK_RATE) {
-        if (mail('hbiede@gmail.com', $subject, $body, $headers)) {
+        if (mail($obj->{'studentCSE'} . '@cse.unl.edu', $subject, $body, $headers)) {
             update_interaction_for_feedback($interaction_id);
 
             header('Status: 200 OK');

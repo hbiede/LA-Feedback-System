@@ -1,7 +1,7 @@
 <?php
 
 function get_connection() {
-    $sql_info = json_decode(file_get_contents("sql.json"));
+    $sql_info = json_decode(file_get_contents("data/sql.json"));
     $conn = new mysqli("cse.unl.edu", $sql_info->{'username'}, $sql_info->{'password'});
     mysqli_select_db($conn, $sql_info->{'database'});
     if ($conn->connect_error) {

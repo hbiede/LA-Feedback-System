@@ -4,38 +4,36 @@ import React, {
 
 import Services from '../services/backgroundService';
 
+const COURSES = ['101', '155E', '155N', '156'];
+
 type Props = {
+  username: string;
   responseDivRef?: MutableRefObject<HTMLDivElement | null>;
 };
 
 type State = {
-  cseLogin: string;
-  password: string;
-  studentCSE: string;
+  course: string;
   disabled: boolean;
+  studentCSE: string;
 };
 
 class FeedbackForm extends Component<Props, State> {
   constructor(props: Readonly<any>) {
     super(props);
     this.state = {
-      cseLogin: '',
-      password: '',
-      studentCSE: '',
+      course: '',
       disabled: false,
+      studentCSE: '',
     };
   }
 
-  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  handleChange = (event: ChangeEvent<HTMLInputElement|HTMLSelectElement>) => {
     switch (event.target.name) {
-      case 'cse_login':
-        this.setState({ cseLogin: event.target.value });
-        break;
-      case 'cse_password':
-        this.setState({ password: event.target.value });
-        break;
       case 'student_cse_login':
         this.setState({ studentCSE: event.target.value });
+        break;
+      case 'course':
+        this.setState({ course: event.target.value });
         break;
       default:
         break;
@@ -43,12 +41,16 @@ class FeedbackForm extends Component<Props, State> {
   };
 
   handleSubmit = async () => {
-    const { cseLogin, password, studentCSE } = this.state;
+    const {
+      studentCSE,
+      course,
+    } = this.state;
+    const { username } = this.props;
     this.setState({ disabled: true });
-    const errorFree = Services.authenticate(cseLogin, password);
+    const errorFree = Services.isLA(username);
     let status = null;
     if (errorFree) {
-      await Services.sendEmail(studentCSE, cseLogin).then((response) => {
+      await Services.sendEmail(studentCSE, username, course).then((response) => {
         status = response;
       });
     }
@@ -73,36 +75,39 @@ class FeedbackForm extends Component<Props, State> {
 
   render() {
     const { disabled } = this.state;
+    const { username } = this.props;
     return (
       <form>
         <div className="form-group row">
-          <label htmlFor="cse_login" className="col-sm-4 col-form-label">
-            CSE Username
+          <label htmlFor="la_username" className="col-sm-4 col-form-label">
+            Student CSE
           </label>
           <div className="col-sm-8">
             <input
               type="text"
-              name="cse_login"
               className="form-control"
-              placeholder="CSE Login"
-              onChange={this.handleChange}
+              name="la_username"
+              id="la_username"
+              value={username}
+              disabled
             />
           </div>
         </div>
 
         <div className="form-group row">
-          <label htmlFor="cse_password" className="col-sm-4 col-form-label">
-            Password
+          <label htmlFor="course" className="col-sm-4 col-form-label">
+            Course
           </label>
           <div className="col-sm-8">
-            <input
-              type="password"
+            <select
               className="form-control"
-              name="cse_password"
-              id="cse_password"
-              placeholder="CSE Password"
+              name="course"
+              id="course"
+              placeholder="Course"
               onChange={this.handleChange}
-            />
+            >
+              {COURSES.map((course) => <option value={course}>{course}</option>)}
+            </select>
           </div>
         </div>
 
@@ -121,6 +126,7 @@ class FeedbackForm extends Component<Props, State> {
             />
           </div>
         </div>
+
         <div className="form-group row">
           <div className="col-sm-9">
             <button
