@@ -27,50 +27,65 @@ class FeedbackForm extends Component<Props, State> {
     };
   }
 
-  handleChange = (event: ChangeEvent<HTMLInputElement|HTMLSelectElement>) => {
+  handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { responseDivRef } = this.props;
+    if (responseDivRef?.current) {
+      responseDivRef.current.innerHTML = '';
+    }
     switch (event.target.name) {
       case 'student_cse_login':
         this.setState({ studentCSE: event.target.value });
         break;
       case 'course':
-        this.setState({ course: event.target.value });
+        if (event.target.value !== 'choose') {
+          this.setState({ course: event.target.value });
+        }
         break;
       default:
+        console.warn(`${event.target.name} is an invalid ID`);
         break;
     }
   };
 
-  handleSubmit = async () => {
+  handleSubmit = () => {
     const {
       studentCSE,
       course,
     } = this.state;
-    const { username } = this.props;
-    this.setState({ disabled: true });
-    const errorFree = Services.isLA(username);
-    let status = null;
-    if (errorFree) {
-      await Services.sendEmail(studentCSE, username, course).then((response) => {
-        status = response;
-      });
-    }
-
     const { responseDivRef } = this.props;
-    if (responseDivRef?.current) {
-      const alertType = errorFree && status === 0 ? 'success' : 'danger';
-      let alert = `<div class="alert alert-${alertType}" role="alert">`;
-      if (errorFree) {
-        alert += status === 0
-          ? 'Message Sent!'
-          : `Failed to Send Message. Please Try Again. (Error Code ${status})`;
-      } else {
-        alert += 'Invalid Login';
-      }
+    if (studentCSE && studentCSE.trim().length > 0 && course && course.trim().length > 0) {
+      const { username } = this.props;
+      this.setState({ disabled: true });
+      console.log(this.state);
+      Services.sendEmail(studentCSE, username, course).then((response) => {
+        if (responseDivRef?.current) {
+          const alertType = response === '0' || response === 0 ? 'success' : 'danger';
+          let alert = `<div class="alert alert-${alertType}" role="alert">`;
+          alert += response === '0' || response === 0
+            ? 'Interaction recorded'
+            : `Failed to Send Message. Please Try Again. (Error Code ${response})`;
+          alert += '</div>';
+
+          responseDivRef.current.innerHTML = alert;
+        }
+        this.setState({ disabled: false });
+      }).catch((error) => {
+        if (responseDivRef?.current) {
+          let alert = '<div class="alert alert-danger" role="alert">';
+          alert += `Failed to Send Message. Please Try Again. (Error: ${error})`;
+          alert += '</div>';
+
+          responseDivRef.current.innerHTML = alert;
+        }
+        this.setState({ disabled: false });
+      });
+    } else if (responseDivRef?.current) {
+      let alert = '<div class="alert alert-danger" role="alert">';
+      alert += 'Invalid input';
       alert += '</div>';
 
       responseDivRef.current.innerHTML = alert;
     }
-    setTimeout(() => this.setState({ disabled: false }), 1000);
   };
 
   render() {
@@ -80,7 +95,7 @@ class FeedbackForm extends Component<Props, State> {
       <form>
         <div className="form-group row">
           <label htmlFor="la_username" className="col-sm-4 col-form-label">
-            Student CSE
+            LA CSE Username
           </label>
           <div className="col-sm-8">
             <input
@@ -106,6 +121,7 @@ class FeedbackForm extends Component<Props, State> {
               placeholder="Course"
               onChange={this.handleChange}
             >
+              <option value="choose">(choose)</option>
               {COURSES.map((course) => <option value={course}>{course}</option>)}
             </select>
           </div>
