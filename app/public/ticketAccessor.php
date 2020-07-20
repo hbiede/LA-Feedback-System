@@ -2,16 +2,16 @@
 
 ini_set('error_log', './log/ticket.log');
 
-// Set up some variables for CAS
 $casService = 'https://cse-apps.unl.edu/cas';
+$thisService = 'https://cse.unl.edu/~learningassistants/LA-Feedback';
 
 /*
 * Returns the CAS response if the ticket is valid, and false if not.
 */
 function responseForTicket($ticket) {
-    global $casService;
+    global $casService, $thisService;
     $ticket = trim($ticket);
-    $casGet = "$casService/serviceValidate?ticket=$ticket&service=https://cse.unl.edu/~learningassistants/LA-Feedback";
+    $casGet = "$casService/serviceValidate?ticket=$ticket&service=$thisService";
     // See the PHP docs for warnings about using this method:
     // http://us3.php.net/manual/en/function.file-get-contents.php
     $response = file_get_contents($casGet);
