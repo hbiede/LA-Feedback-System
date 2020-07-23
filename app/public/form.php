@@ -310,7 +310,7 @@ if (!can_give_feedback(get_id())) {
                                                     <label for="rating" class="col-sm-4 col-form-label">Rating</label>
                                                     <select id="rating" class="custom-select col-sm-8" required>
                                                         <option value="0">(choose)</option>
-                                                        <option value="1">1</option>
+                                                        <option value="1">1 (low)</option>
                                                         <option value="2">2</option>
                                                         <option value="3">3</option>
                                                         <option value="4">4</option>
@@ -319,7 +319,7 @@ if (!can_give_feedback(get_id())) {
                                                         <option value="7">7</option>
                                                         <option value="8">8</option>
                                                         <option value="9">9</option>
-                                                        <option value="10">10</option>
+                                                        <option value="10">10 (high)</option>
                                                     </select>
                                                 </div>
 
