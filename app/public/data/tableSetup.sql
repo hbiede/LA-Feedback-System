@@ -6,6 +6,7 @@ create table learningassistants.cse_usernames
 (
     username_key int auto_increment unique primary key,
     username     varchar(20) not null,
+    name         varchar(70),
     constraint cse_usernames_username_key_uindex
         unique (username_key),
     constraint cse_usernames_username_uindex
@@ -14,7 +15,7 @@ create table learningassistants.cse_usernames
 
 create table learningassistants.interactions
 (
-    interaction_key       int auto_increment unique primary key ,
+    interaction_key       int auto_increment unique primary key,
     student_username_key  int                  not null,
     la_username_key       int                  not null,
     course                varchar(10),

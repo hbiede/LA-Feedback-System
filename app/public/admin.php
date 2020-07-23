@@ -7,7 +7,7 @@ ini_set('error_log', './log/admin.log');
 
 function get_interactions() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username, COUNT(i.interaction_key) AS count, AVG(rating) AS avg ' .
+    $ps = $conn->prepare('SELECT username, name, COUNT(i.interaction_key) AS count, AVG(rating) AS avg ' .
         'FROM cse_usernames LEFT JOIN interactions i on cse_usernames.username_key = i.la_username_key LEFT JOIN ' .
         'feedback f on i.interaction_key = f.interaction_key GROUP BY username ORDER BY username;');
     $ps->execute();

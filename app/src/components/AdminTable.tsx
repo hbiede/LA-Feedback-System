@@ -14,9 +14,14 @@ type Props = {
   username: string;
 };
 
+type LA = {
+  username: string;
+  name?: string;
+};
+
 export default function AdminTable(props: Props) {
   const [interactions, setInteractions] = useState<InteractionRecord[]>([]);
-  const [selectedLA, setSelectedLA] = useState<string|null>(null);
+  const [selectedLA, setSelectedLA] = useState<LA|null>(null);
   const [ratings, setRatings] = useState<RatingRecord[]>([]);
 
   const { username, style } = props;
@@ -27,9 +32,9 @@ export default function AdminTable(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const showLA = useCallback((la: string) => {
+  const showLA = useCallback((la: LA) => {
     setSelectedLA(la);
-    Services.getRatings(username, la).then((newRatings) => setRatings(newRatings));
+    Services.getRatings(username, la.username).then((newRatings) => setRatings(newRatings));
   }, [setSelectedLA, username, setRatings]);
 
   const clearSelection = useCallback(() => {
@@ -51,8 +56,8 @@ export default function AdminTable(props: Props) {
           <tbody>
             {interactions.map((row) => (
               row.username && row.username.trim().length > 0 && !Number.isNaN(row.count) && (
-              <tr onClick={() => showLA(row.username)}>
-                <td>{row.username}</td>
+              <tr onClick={() => showLA(row)}>
+                <td>{row.name ? row.name : row.username}</td>
                 <td>{row.count}</td>
                 <td>{Number.isNaN(row.avg) ? 0 : row.avg}</td>
               </tr>
@@ -71,7 +76,7 @@ export default function AdminTable(props: Props) {
     <div style={style} className="col-md-10">
       <h6>
         <button className="btn btn-dark" type="button" onClick={clearSelection}>(&lt;Back)</button>
-        {` ${selectedLA}`}
+        {` ${selectedLA.name ? selectedLA.name : selectedLA.username}`}
       </h6>
       <table className="table table-hover" style={{ width: '100%' }}>
         <thead className="thead-dark">

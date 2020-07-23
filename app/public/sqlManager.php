@@ -16,9 +16,9 @@ function get_connection() {
     return $conn;
 }
 
-function get_username_from_interaction($interaction_id) {
+function get_name_from_interaction($interaction_id) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);');
+    $ps = $conn->prepare('SELECT username,name FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);');
     if (!$ps) {
         error_log('Failed to build prepped statement');
         $conn->close();
@@ -29,10 +29,12 @@ function get_username_from_interaction($interaction_id) {
     if ($ps->error) {
         error_log($ps->error);
     }
-    $la_username = $ps->get_result()->fetch_assoc()['username'];
+    $results = $ps->get_result()->fetch_assoc();
+    $la_username = $results['username'];
+    $la_name = $results['name'];
     $ps->close();
     $conn->close();
-    return $la_username;
+    return ($la_name === null || strlen(trim($la_name)) === 0) ? $la_username : $la_name;
 }
 
 function can_give_feedback($interaction_id) {
@@ -129,7 +131,7 @@ function update_interaction_for_feedback($interaction_id) {
 function received_email_today($student_cse) {
     $conn = get_connection();
     if ($conn !== null && $student_cse !== null) {
-        $ps = $conn->prepare("SELECT time_of_interaction AS time FROM interactions WHERE student_username_key = (SELECT username_key FROM cse_usernames WHERE username=?) ORDER BY time_of_interaction DESC LIMIT 1;");
+        $ps = $conn->prepare("SELECT time_of_interaction AS time FROM interactions WHERE seeking_feedback = 1 AND student_username_key = (SELECT username_key FROM cse_usernames WHERE username=?) ORDER BY time_of_interaction DESC LIMIT 1;");
         if ($ps) {
             $ps->bind_param("s", $student_cse);
             $ps->execute();

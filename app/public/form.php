@@ -302,7 +302,7 @@ if (!can_give_feedback(get_id())) {
                                         <td>
                                             <p>Hi,</p>
                                             <p>You recently had an interaction with the learning
-                                                assistant <?php echo get_username_from_interaction(get_id()) ?>. Please help
+                                                assistant <?php echo get_name_from_interaction(get_id()) ?>. Please help
                                                 us to know how they did. Your response will be anonymous and will help
                                                 us to improve the LA program for everyone.</p>
                                             <div style="padding-right: 10px;">
