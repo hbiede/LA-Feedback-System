@@ -37,6 +37,39 @@ function get_name_from_interaction($interaction_id) {
     return ($la_name === null || strlen(trim($la_name)) === 0) ? $la_username : $la_name;
 }
 
+function get_la_username_from_interaction($interaction_id) {
+    return get_username_from_interaction(
+        'SELECT username FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);',
+        $interaction_id
+    );
+}
+
+function get_student_username_from_interaction($interaction_id) {
+    return get_username_from_interaction(
+        'SELECT username FROM cse_usernames WHERE username_key=(SELECT student_username_key FROM interactions WHERE interaction_key = ?);',
+        $interaction_id
+    );
+}
+
+function get_username_from_interaction($query, $interaction_id) {
+    $conn = get_connection();
+    $ps = $conn->prepare($query);
+    if (!$ps) {
+        error_log('Failed to build prepped statement');
+        $conn->close();
+        return 'ERROR1';
+    }
+    $ps->bind_param('i', $interaction_id);
+    $ps->execute();
+    if ($ps->error) {
+        error_log($ps->error);
+    }
+    $la_username = $ps->get_result()->fetch_assoc()['username'];
+    $ps->close();
+    $conn->close();
+    return $la_username;
+}
+
 function can_give_feedback($interaction_id) {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT has_received_feedback,seeking_feedback FROM interactions WHERE interaction_key=?;');

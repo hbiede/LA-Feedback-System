@@ -43,10 +43,21 @@ function get_latest($la_username) {
     return $returnVal;
 }
 
+function rating_sort($a, $b) {
+    if ($a['rating'] < $b['rating']) {
+        return -1;
+    } else if ($a['rating'] === $b['rating']) {
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 function send_feedback_to_la($la_username) {
     $feedback_count = get_feedback_count($la_username);
     if ($feedback_count > 0 && $feedback_count % FEEDBACK_RATE === 0) {
         $feedback = get_latest($la_username);
+        usort($feedback, "rating_sort");
 
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
@@ -65,7 +76,6 @@ function send_feedback_to_la($la_username) {
         $body = str_replace('RATINGS_LISTING', $ratings, shell_exec('cat ./data/feedbackSummary.html'));
         $body = str_replace('LATEST_FEEDBACK_COUNT', FEEDBACK_RATE, $body);
         mail("$la_username@cse.unl.edu", $subject, $body, $headers);
-        error_log('sending');
     }
 }
 
@@ -77,16 +87,26 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
         if (!$ps) {
             error_log('Failed to build prepped statement');
             $conn->close();
+            header('Status: 503 OK');
+            echo json_encode([
+                'status' => 503,
+                'message' => 3
+            ]);
             return null;
         }
         $ps->bind_param("i", $_POST['id']);
         $ps->execute();
         $ps->close();
 
-        $ps = $conn->prepare("INSERT INTO feedback (interaction_key, rating, comment) VALUE (?, ?, ?);");
+        $ps = $conn->prepare("INSERT INTO feedback (interaction_key, rating, comment, desires_feedback) VALUE (?, ?, ?, ?);");
         if (!$ps) {
             error_log('Failed to build prepped statement');
             $conn->close();
+            header('Status: 503 OK');
+            echo json_encode([
+                'status' => 503,
+                'message' => 2
+            ]);
             return null;
         }
         $desires_feedback = isset($_POST['contact']) && ($_POST['contact'] === true || $_POST['contact'] === 'true');
@@ -96,10 +116,9 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
         $ps->execute();
         $ps->close();
         $conn->commit();
-        $la_username = get_username_id($_POST['id']);
+        $la_username = get_la_username_from_interaction($_POST['id']);
         send_feedback_to_la($la_username);
 
-        if ($_POST['rating'] < 5) {
         if ($_POST['rating'] < 5 || $desires_feedback) {
             $conn->close();
 
@@ -126,7 +145,19 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
                 mail($email, $subject, $body, $headers);
             }
         }
+        header('Status: 200 OK');
+    } else {
+        header('Status: 503 OK');
+        echo json_encode([
+            'status' => 503,
+            'message' => 1
+        ]);
     }
 } else {
     error_log('Invalid POST contents: ' . var_export($_POST));
+    header('Status: 503 OK');
+    echo json_encode([
+        'status' => 503,
+        'message' => 2
+    ]);
 }
