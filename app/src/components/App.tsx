@@ -19,7 +19,7 @@ function App() {
       if (newUser.includes('INVALID_TICKET_KEY')) {
         Services.login();
       } else {
-        setUsername(newUser);
+        setUsername(newUser.trim());
         Services.isAdmin(newUser).then((adminState) => setIsAdmin(adminState));
       }
     }

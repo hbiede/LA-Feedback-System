@@ -38,7 +38,7 @@ class FeedbackForm extends Component<Props, State> {
         break;
       case 'course':
         if (event.target.value !== 'choose') {
-          this.setState({ course: event.target.value });
+          this.setState({ course: event.target.value.toLowerCase().trim() });
         }
         break;
       default:
