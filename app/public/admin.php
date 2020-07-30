@@ -5,6 +5,19 @@ session_start();
 
 ini_set('error_log', './log/admin.log');
 
+function get_time_to_complete() {
+    $result = -1;
+    $conn = get_connection();
+    $ps = $conn->prepare('SELECT AVG(time_to_complete) AS "avg" FROM feedback;');
+    if ($ps) {
+        $ps->execute();
+        $result = $ps->get_result()->fetch_assoc()['avg'];
+        $ps->close();
+    }
+    $conn->close();
+    return $result;
+}
+
 function get_interactions() {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT username, name, COUNT(i.interaction_key) AS count, AVG(rating) AS avg ' .
@@ -16,6 +29,8 @@ function get_interactions() {
     while ($row = $result->fetch_assoc()) {
         array_push($returnVal, $row);
     }
+    $ps->close();
+    $conn->close();
     return $returnVal;
 }
 
@@ -31,6 +46,8 @@ function get_ratings($la_username) {
     while ($row = $result->fetch_assoc()) {
         array_push($returnVal, $row);
     }
+    $ps->close();
+    $conn->close();
     return $returnVal;
 }
 
@@ -50,7 +67,11 @@ $isAdmin = $user !== null && in_array($user, $admins);
 if ($isAdmin && $la !== null) {
     echo json_encode(get_ratings($la));
 } else if ($isAdmin) {
-    echo json_encode(get_interactions());
+    $response = [
+        'ratings' => get_interactions(),
+        "time" => get_time_to_complete()
+    ];
+    echo json_encode($response);
 } else {
     echo '[]';
 }

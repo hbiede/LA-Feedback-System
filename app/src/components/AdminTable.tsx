@@ -5,7 +5,7 @@ import React, {
   useState,
 } from 'react';
 
-import { InteractionRecord, RatingRecord } from '../types';
+import { InteractionRecord, InteractionSummary, RatingRecord } from '../types';
 
 import Services from '../services/backgroundService';
 
@@ -20,7 +20,7 @@ type LA = {
 };
 
 export default function AdminTable(props: Props) {
-  const [interactions, setInteractions] = useState<InteractionRecord[]>([]);
+  const [interactions, setInteractions] = useState<InteractionSummary>({ ratings: [], time: -1 });
   const [selectedLA, setSelectedLA] = useState<LA|null>(null);
   const [ratings, setRatings] = useState<RatingRecord[]>([]);
 
@@ -43,6 +43,14 @@ export default function AdminTable(props: Props) {
   }, [setSelectedLA, setRatings]);
 
   if (selectedLA === null) {
+    const { time } = interactions;
+    const minutes = Math.floor(time / 1000 / 60);
+    const seconds = (time / 1000) % 60;
+    const timeText = `Average time to give feed back for ${
+      interactions.ratings.reduce((acc: number, la: InteractionRecord) => acc + la.count, 0)
+    } interactions: ${minutes} minutes${
+      seconds >= 1 ? ` and ${seconds.toPrecision(3)} seconds` : ''
+    }`;
     return (
       <div style={style} className="col-md-10">
         <table className="table table-hover" style={{ width: '100%' }}>
@@ -54,7 +62,7 @@ export default function AdminTable(props: Props) {
             </tr>
           </thead>
           <tbody>
-            {interactions.map((row) => (
+            {interactions.ratings.map((row: InteractionRecord) => (
               row.username && row.username.trim().length > 0 && !Number.isNaN(row.count) && (
               <tr onClick={() => showLA(row)}>
                 <td>{row.name ? row.name : row.username}</td>
@@ -65,6 +73,11 @@ export default function AdminTable(props: Props) {
             ))}
           </tbody>
         </table>
+        {interactions.time >= 0 && (
+        <p>
+          {timeText}
+        </p>
+        )}
       </div>
     );
   }

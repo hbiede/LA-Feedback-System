@@ -6,6 +6,11 @@ export type InteractionRecord = {
   avg: number;
 };
 
+export type InteractionSummary = {
+  ratings: InteractionRecord[];
+  time: number;
+}
+
 export type RatingRecord = {
   rating: number;
   comment?: string;

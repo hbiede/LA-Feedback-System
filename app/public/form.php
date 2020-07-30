@@ -2,9 +2,6 @@
 include_once 'sqlManager.php';
 ini_set('error_log', './log/form.log');
 
-// TODO: "Want to be contacted?" and email
-// TODO: Time interacting with this page
-
 function get_id() {
     if (isset($_GET) && isset($_GET['id']) && !is_nan($_GET['id'])) {
         return $_GET['id'];
@@ -30,6 +27,7 @@ if (!can_give_feedback(get_id())) {
     <script type="text/javascript">
         /* global $ */
         const COMMENT_REQUIREMENT_BAR = 5;
+        const START_TIME = new Date();
 
         const onSuccess = () => {
             window.location.href = 'https://cse.unl.edu/~learningassistants/LA-Feedback/thankyou.html';
@@ -55,6 +53,7 @@ if (!can_give_feedback(get_id())) {
                 return false;
             } else {
                 const id = "<?php echo get_id(); ?>";
+                const time = new Date() - START_TIME;
                 if (id && id >= 0) {
                     $.ajax({
                         url: `https://cse.unl.edu/~learningassistants/LA-Feedback/submitFeedback.php`,
@@ -64,6 +63,7 @@ if (!can_give_feedback(get_id())) {
                             rating,
                             comment,
                             contact,
+                            time,
                         },
                         success: onSuccess,
                         error: onError,

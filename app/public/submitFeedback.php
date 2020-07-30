@@ -79,7 +79,7 @@ function send_feedback_to_la($la_username) {
     }
 }
 
-if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
+if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POST['rating']) && !is_nan($_POST['rating'])) {
     $conn = get_connection();
     if ($conn !== null) {
         $conn->begin_transaction();
@@ -98,7 +98,8 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
         $ps->execute();
         $ps->close();
 
-        $ps = $conn->prepare("INSERT INTO feedback (interaction_key, rating, comment, desires_feedback) VALUE (?, ?, ?, ?);");
+        $ps = $conn->prepare("INSERT INTO feedback (interaction_key, rating, comment, desires_feedback, "
+            . "time_to_complete) VALUE (?, ?, ?, ?, ?);");
         if (!$ps) {
             error_log('Failed to build prepped statement');
             $conn->close();
@@ -109,10 +110,18 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
             ]);
             return null;
         }
-        $desires_feedback = isset($_POST['contact']) && ($_POST['contact'] === true || $_POST['contact'] === 'true');
+        $desires_feedback = $_POST['contact'] === true || $_POST['contact'] === 'true';
         $feedback_int = $desires_feedback ? 1 : 0;
-        $comment = (isset($_POST['comment']) && $_POST['comment'] !== null && strlen(trim($_POST['comment'])) > 0) ? $_POST['comment'] : null;
-        $ps->bind_param("issi", $_POST['id'], $_POST['rating'], $comment, $feedback_int);
+        $feedback_time = (isset($_POST['time']) && !is_nan($_POST['time'])) ? $_POST['time'] : -1;
+        $comment = (isset($_POST['comment']) && $_POST['comment'] !== null && strlen(trim($_POST['comment'])) > 0)
+            ? $_POST['comment']
+            : null;
+        $ps->bind_param("issii",
+            $_POST['id'],
+            $_POST['rating'],
+            $comment,
+            $feedback_int,
+            $feedback_time);
         $ps->execute();
         $ps->close();
         $conn->commit();

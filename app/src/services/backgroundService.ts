@@ -1,10 +1,12 @@
-import { InteractionRecord, RatingRecord } from '../types';
+import { InteractionSummary, RatingRecord } from '../types';
 
 class Services {
   static username = '';
 
+  static interactions: InteractionSummary = { ratings: [], time: -1 };
+
   static sendEmail = async (studentCSE: string, laCSE: string, course: string):
-      Promise<string|number|null> => {
+      Promise<string | number | null> => {
     if (laCSE !== null && laCSE !== 'INVALID') {
       const requestOptions = {
         method: 'POST',
@@ -65,20 +67,21 @@ class Services {
     return username;
   }
 
-  static getInteractions = async (username: string): Promise<InteractionRecord[]> => {
-    let interactions: InteractionRecord[] = [];
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user: username }),
-    };
-    await fetch('https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
-      requestOptions)
-      .then((response) => response.json())
-      .then((json) => {
-        interactions = json;
-      }).catch((error) => console.error(error));
-    return interactions;
+  static getInteractions = async (username: string): Promise<InteractionSummary> => {
+    if (Services.interactions !== null && Services.interactions !== undefined) {
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user: username }),
+      };
+      await fetch('https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
+        requestOptions)
+        .then((response) => response.json())
+        .then((json) => {
+          Services.interactions = json;
+        }).catch((error) => console.error(error));
+    }
+    return Services.interactions;
   }
 
   static getRatings = async (username: string, la: string): Promise<RatingRecord[]> => {
@@ -99,7 +102,7 @@ class Services {
   }
 
   static isAdmin = async (username: string):
-      Promise<boolean> => (await Services.getInteractions(username)).length > 0;
+      Promise<boolean> => (await Services.getInteractions(username)).ratings.length > 0;
 }
 
 export default Services;
