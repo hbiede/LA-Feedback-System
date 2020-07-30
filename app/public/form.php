@@ -42,6 +42,7 @@ if (!can_give_feedback(get_id())) {
         function validateSubmit() {
             const rating = $("#rating").val();
             const comment = $("#comment").val().trim();
+            const contact = $('#contact')[0].checked;
 
             if (rating <= 0) {
                 alert('Invalid Rating');
@@ -62,6 +63,7 @@ if (!can_give_feedback(get_id())) {
                             id,
                             rating,
                             comment,
+                            contact,
                         },
                         success: onSuccess,
                         error: onError,
@@ -327,6 +329,10 @@ if (!can_give_feedback(get_id())) {
         <div>
             <textarea id="comment" rows="5" maxlength="500"></textarea>
             <span id="char_count" class="char-count"></span>
+        </div>
+        <div class="custom-control custom-checkbox">
+            <input class="custom-control-input" id="contact" type="checkbox">
+            <label class="custom-control-label" for="contact">Would you like to be contacted?</label>
         </div>
         <div class="btn-block">
             <button type="submit" onclick="validateSubmit();">Send Feedback</button>

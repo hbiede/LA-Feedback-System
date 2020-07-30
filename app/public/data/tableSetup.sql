@@ -34,10 +34,11 @@ create table learningassistants.interactions
 
 create table learningassistants.feedback
 (
-    feedback_key    int auto_increment unique primary key,
-    interaction_key int                  not null,
-    rating          tinyint(5) default 0 null,
-    comment         varchar(500)         null,
+    feedback_key     int auto_increment unique primary key,
+    interaction_key  int                  not null,
+    rating           tinyint(5) default 0 null,
+    comment          varchar(500)         null,
+    desires_feedback tinyint(1)           null,
     constraint interaction_key
         unique (interaction_key),
     constraint feedback_interaction_fk

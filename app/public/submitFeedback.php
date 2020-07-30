@@ -89,8 +89,10 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
             $conn->close();
             return null;
         }
+        $desires_feedback = isset($_POST['contact']) && ($_POST['contact'] === true || $_POST['contact'] === 'true');
+        $feedback_int = $desires_feedback ? 1 : 0;
         $comment = (isset($_POST['comment']) && $_POST['comment'] !== null && strlen(trim($_POST['comment'])) > 0) ? $_POST['comment'] : null;
-        $ps->bind_param("iss", $_POST['id'], $_POST['rating'], $comment);
+        $ps->bind_param("issi", $_POST['id'], $_POST['rating'], $comment, $feedback_int);
         $ps->execute();
         $ps->close();
         $conn->commit();
@@ -98,6 +100,7 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
         send_feedback_to_la($la_username);
 
         if ($_POST['rating'] < 5) {
+        if ($_POST['rating'] < 5 || $desires_feedback) {
             $conn->close();
 
             if ($la_username === '') {
@@ -109,8 +112,18 @@ if (isset($_POST) && isset($_POST['id']) && isset($_POST['rating'])) {
 
                 $subject = 'Low Feedback';
 
-                $body = shell_exec('cat ./data/lowFeedback.txt | sed "s/LA_USERNAME/' . $la_username . '/gi" | sed "s/STUDENT_RATING/' . $_POST['rating'] . '/gi" | sed "s/RATING_COMMENT/' . $_POST['comment'] . '/gi"');
-                mail('learningassistants@cse.unl.edu', $subject, $body, $headers);
+                $body = shell_exec('cat ./data/lowFeedback.txt | sed "s/LA_USERNAME/' . $la_username
+                    . '/gi" | sed "s/STUDENT_RATING/' . $_POST['rating'] . '/gi" | sed "s/RATING_COMMENT/'
+                    . $_POST['comment'] . '/gi"');
+
+                if ($desires_feedback) {
+                    $student_username = get_student_username_from_interaction($_POST['id']);
+                    $body .= "<br><br>---<br><br>The student requested feedback. Their email is $student_username@cse.unl.edu";
+                }
+
+                $email = $la_username === 'hbiede' ? 'hbiede@cse.unl.edu' : 'learningassistants@cse.unl.edu';
+
+                mail($email, $subject, $body, $headers);
             }
         }
     }
