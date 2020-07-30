@@ -1,280 +1,142 @@
 <!doctype html>
 <html lang="en-US">
 <head>
-    <meta name="viewport" content="width=device-width"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>LA Feedback Required</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
         :root {
-            --PrimaryBackground: #cd0d0c;
-            --SpecialTextColor: #dee3e8;
-        }
-
-        @media (prefers-color-scheme: light) {
-            :root {
-                --TextColor: #000000;
-                --TextBackground: #ffffff;
-            }
+            --background: #eeeeee;
+            --text: #222222;
+            --requirement-star: #e00000;
+            --form-background: #ffffff;
+            --shadows-and-borders: #cccccc;
+            --option-bg: #ffffff;
+            --button: #e00000;
+            --button-text: #ffffff;
+            --button-hover: #c00000;
+            --button-hover-text: #ffffff;
+            --char-count: #e00000;
+            --char-count-text: #ffffff;
+            --link: #aaaaaa;
+            --link-hover: #999999;
+            --footer-background: #666666;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --TextColor: #ffffff;
-                --TextBackground: #212529;
+                --background: #000000;
+                --text: #eeeeee;
+                --requirement-star: #f30000;
+                --form-background: #222222;
+                --shadows-and-borders: #111111;
+                --option-bg: #ffffff;
+                --button: #e00000;
+                --button-text: #eeeeee;
+                --button-hover: #c00000;
+                --button-hover-text: #eeeeee;
+                --char-count: #e00000;
+                --char-count-text: #ffffff;
+                --link: #cccccc;
+                --link-hover: #999999;
+                --footer-background: #111111;
             }
         }
 
-        img {
-            border: none;
-            -ms-interpolation-mode: bicubic;
-            max-width: 100%;
+        html, body {
+            min-height: 100%;
+            background: var(--background);
         }
 
-        body {
-            background-color: var(--PrimaryBackground);
-            font-family: sans-serif;
-            -webkit-font-smoothing: antialiased;
-            font-size: 14px;
-            line-height: 1.4;
-            margin: 0;
+        body, div, form, input, select {
             padding: 0;
-            -ms-text-size-adjust: 100%;
-            -webkit-text-size-adjust: 100%;
+            margin: 0;
+            outline: none;
+            font-family: Roboto, Arial, sans-serif;
+            color: var(--text);
+            line-height: 22px;
+            font-size: 20px;
         }
 
-        table {
-            border-collapse: separate;
-            mso-table-lspace: 0;
-            mso-table-rspace: 0;
-            width: 100%;
-        }
-
-        table td {
-            font-family: sans-serif;
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        /* -------------------------------------
-            BODY & CONTAINER
-        ------------------------------------- */
-
-        .primaryBG {
-            background-color: var(--PrimaryBackground);
-            width: 100%;
-        }
-
-        /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
-        .container {
-            display: block;
-            padding: 10px;
-        }
-
-        /* This should also be a block element, so that it will fill 100% of the .container */
-        .content {
-            box-sizing: border-box;
-            display: block;
-            margin: 0 auto;
-            max-width: 580px;
-            padding: 10px;
-        }
-
-        /* -------------------------------------
-            HEADER, FOOTER, MAIN
-        ------------------------------------- */
-        .main {
-            background: var(--TextBackground);
-            border-radius: 3px;
-            width: 100%;
-            color: var(--TextColor);
-        }
-
-        .wrapper {
-            box-sizing: border-box;
-            padding: 20px;
-        }
-
-        .content-block {
-            padding-bottom: 10px;
-            padding-top: 10px;
-        }
-
-        .footer {
-            clear: both;
-            margin-top: 10px;
-            text-align: center;
-            width: 100%;
-        }
-
-        .footer td,
-        .footer p,
-        .footer span,
-        .footer a {
-            color: var(--SpecialTextColor);
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .preheader {
-            color: transparent;
-            display: none;
-            height: 0;
-            max-height: 0;
-            max-width: 0;
-            opacity: 0;
-            overflow: hidden;
-            mso-hide: all;
-            visibility: hidden;
-            width: 0;
-        }
-
-        hr {
-            border: 0;
-            border-bottom: 1px solid var(--PrimaryBackground);
-            margin: 20px 0;
-        }
-
-        .custom-select {
-            display: inline-block;
-            width: 100%;
-            height: calc(1.5em + .75rem + 2px);
-            padding: .375rem 1.75rem .375rem .75rem;
-            font-size: 1rem;
+        h1, h4, label {
+            margin: 15px 0 4px;
             font-weight: 400;
-            line-height: 1.5;
-            color: #495057;
-            vertical-align: middle;
-            background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
         }
 
-        /* -------------------------------------
-            RESPONSIVE AND MOBILE FRIENDLY STYLES
-        ------------------------------------- */
-        @media only screen and (max-width: 620px) {
-            table[class=body] h1 {
-                font-size: 28px !important;
-                margin-bottom: 10px !important;
-            }
-
-            table[class=body] p,
-            table[class=body] ul,
-            table[class=body] ol,
-            table[class=body] td,
-            table[class=body] span,
-            table[class=body] a {
-                font-size: 16px !important;
-            }
-
-            table[class=body] .wrapper {
-                padding: 10px !important;
-            }
-
-            table[class=body] .content {
-                padding: 0 !important;
-            }
-
-            table[class=body] .container {
-                padding: 0 !important;
-                width: 100% !important;
-            }
-
-            table[class=body] .main {
-                border-left-width: 0 !important;
-                border-radius: 0 !important;
-                border-right-width: 0 !important;
-            }
-
-            table[class=body] .btn table {
-                width: 100% !important;
-            }
-
-            table[class=body] .btn a {
-                width: 100% !important;
-            }
+        h4, label {
+            margin: 20px 0 4px;
+            font-weight: 400;
         }
 
-        /* -------------------------------------
-            PRESERVE THESE STYLES IN THE HEAD
-        ------------------------------------- */
-        @media all {
-
-            .apple-link a {
-                color: inherit !important;
-                font-family: inherit !important;
-                font-size: inherit !important;
-                font-weight: inherit !important;
-                line-height: inherit !important;
-                text-decoration: none !important;
-            }
-
-            #MessageViewBody a {
-                color: inherit;
-                text-decoration: none;
-                font-size: inherit;
-                font-family: inherit;
-                font-weight: inherit;
-                line-height: inherit;
-            }
+        .testbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: inherit;
+            padding: 10px;
         }
 
+        .form, form {
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 2px 5px var(--shadows-and-borders);
+            background: var(--form-background);
+            margin-bottom: 30px;
+        }
+
+        .footer-link {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: var(--footer-background);
+            text-align: center;
+            font-size: 14px;
+            padding: 7px;
+        }
+
+        .footer-link a {
+            color: var(--link);
+        }
+
+        .footer-link a:hover {
+            color: var(--link-hover);
+            text-decoration: none;
+        }
+
+        label span {
+            color: var(--requirement-star)
+        }
+
+        @media (min-width: 568px) {
+            .title-block select {
+                width: 30%;
+                margin-bottom: 0;
+            }
+
+            .title-block input {
+                width: 31%;
+                margin-bottom: 0;
+            }
+
+            th, td {
+                word-break: keep-all;
+            }
+        }
     </style>
 </head>
 <body>
-<table role="presentation" class="primaryBG">
-    <tr>
-        <td class="container">
-            <div class="content">
-
-                <!-- START CENTERED WHITE CONTAINER -->
-                <div class="content" role="presentation">
-
-                    <!-- START CENTERED WHITE CONTAINER -->
-                    <table role="presentation" class="main">
-
-                        <!-- START MAIN CONTENT AREA -->
-                        <tbody>
-                        <tr>
-                            <td class="wrapper">
-                                <table role="presentation">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <h4 style="text-align:center">Thank you!</h4>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-
-
-                        </tbody>
-                    </table>
-                    <!-- END MAIN CONTENT AREA -->
-                </div>
-                <!-- END CENTERED WHITE CONTAINER -->
-
-                <!-- START FOOTER -->
-                <div class="footer">
-                    <table role="presentation">
-                        <tr>
-                            <td class="content-block">
-                                <a class="apple-link" href="http://cse.unl.edu" target="_blank">Learning Assistant
-                                    Program, University of Nebraska-Lincoln - CSE Department</a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="testbox">
+    <div class="form">
+        <h1 style="text-align:center;">Thank you!</h1>
+        <p style="text-align:center;">We appreciate your feedback</p>
+        <div class="footer-link">
+            <a href="http://cse.unl.edu" target="_blank">Learning Assistant
+                Program, University of Nebraska-Lincoln — CSE Department</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

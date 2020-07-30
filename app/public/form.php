@@ -2,6 +2,9 @@
 include_once 'sqlManager.php';
 ini_set('error_log', './log/form.log');
 
+// TODO: "Want to be contacted?" and email
+// TODO: Time interacting with this page
+
 function get_id() {
     if (isset($_GET) && isset($_GET['id']) && !is_nan($_GET['id'])) {
         return $_GET['id'];
@@ -13,10 +16,9 @@ function get_id() {
 if (!can_give_feedback(get_id())) {
     header('Location: https://cse.unl.edu/~learningassistants/LA-Feedback/thankyou.html');
 }
-
 ?>
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en-US">
 <head>
     <meta name="viewport" content="width=device-width"/>
@@ -27,347 +29,314 @@ if (!can_give_feedback(get_id())) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script type="text/javascript">
         /* global $ */
+        const COMMENT_REQUIREMENT_BAR = 5;
+
+        const onSuccess = () => {
+            window.location.href = 'https://cse.unl.edu/~learningassistants/LA-Feedback/thankyou.html';
+        };
+
+        const onError = () => {
+            alert('Failed to submit');
+        };
+
         function validateSubmit() {
-            let rating = $("#rating").val();
-            let comment = $("#comment").val().trim();
+            const rating = $("#rating").val();
+            const comment = $("#comment").val().trim();
 
             if (rating <= 0) {
                 alert('Invalid Rating');
                 return false;
-            }
-
-            if (rating < 5 && (comment === null || comment === undefined || comment.length === 0)) {
-                alert('Please include a comment on below average ratings');
+            } else if (rating < COMMENT_REQUIREMENT_BAR && (comment === null || comment === undefined || comment.length < 4)) {
+                alert(comment === null || comment === undefined || comment.length === 0
+                    ? 'Please include a comment on below average ratings'
+                    : 'Please include a comment that explains the situation'
+                );
                 return false;
-            }
-
-            const id = "<?php echo get_id(); ?>";
-            if (id && id >= 0) {
-                $.ajax({
-                    url: `https://cse.unl.edu/~learningassistants/LA-Feedback/submitFeedback.php`,
-                    method: "POST",
-                    data: {
-                        id,
-                        rating,
-                        comment,
-                    }
-                });
-                window.location.href = `https://cse.unl.edu/~learningassistants/LA-Feedback/thankyou.html`
             } else {
-                alert('Missing Interaction ID');
-                return false;
+                const id = "<?php echo get_id(); ?>";
+                if (id && id >= 0) {
+                    $.ajax({
+                        url: `https://cse.unl.edu/~learningassistants/LA-Feedback/submitFeedback.php`,
+                        method: "POST",
+                        data: {
+                            id,
+                            rating,
+                            comment,
+                        },
+                        success: onSuccess,
+                        error: onError,
+                    });
+                    return false;
+                } else {
+                    alert('Missing Interaction ID');
+                    return false;
+                }
             }
+        }
+
+        function adjustRequirement() {
+            const commentRequired = $("#rating").val() < COMMENT_REQUIREMENT_BAR;
+
+            const comment = $('#comment')[0];
+            comment.required = commentRequired;
+            comment.minLength = commentRequired ? 5 : -1;
+
+            $('#commentRequirement')[0].innerText = commentRequired ? '*' : '';
         }
     </script>
     <style>
         :root {
-            --PrimaryBackground: #cd0d0c;
-            --SpecialTextColor: #dee3e8;
-        }
-
-        @media (prefers-color-scheme: light) {
-            :root {
-                --TextColor: #000000;
-                --TextBackground: #ffffff;
-            }
+            --background: #eeeeee;
+            --text: #222222;
+            --requirement-star: #e00000;
+            --form-background: #ffffff;
+            --shadows-and-borders: #cccccc;
+            --option-bg: #ffffff;
+            --button: #e00000;
+            --button-text: #ffffff;
+            --button-hover: #c00000;
+            --button-hover-text: #ffffff;
+            --char-count: #e00000;
+            --char-count-text: #ffffff;
+            --link: #aaaaaa;
+            --link-hover: #999999;
+            --footer-background: #666666;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --TextColor: #ffffff;
-                --TextBackground: #212529;
+                --background: #000000;
+                --text: #eeeeee;
+                --requirement-star: #f30000;
+                --form-background: #222222;
+                --shadows-and-borders: #111111;
+                --option-bg: #ffffff;
+                --button: #e00000;
+                --button-text: #eeeeee;
+                --button-hover: #c00000;
+                --button-hover-text: #eeeeee;
+                --char-count: #e00000;
+                --char-count-text: #ffffff;
+                --link: #cccccc;
+                --link-hover: #999999;
+                --footer-background: #111111;
             }
         }
 
-        img {
-            border: none;
-            -ms-interpolation-mode: bicubic;
-            max-width: 100%;
+        html, body {
+            min-height: 100%;
+            background: var(--background);
         }
 
-        body {
-            background-color: var(--PrimaryBackground);
-            font-family: sans-serif;
-            -webkit-font-smoothing: antialiased;
-            font-size: 14px;
-            line-height: 1.4;
-            margin: 0;
+        body, div, form, input, select {
             padding: 0;
-            -ms-text-size-adjust: 100%;
-            -webkit-text-size-adjust: 100%;
+            margin: 0;
+            outline: none;
+            font-family: Roboto, Arial, sans-serif;
+            color: var(--text);
+            line-height: 22px;
+            font-size: 20px;
         }
 
-        table {
-            border-collapse: separate;
-            mso-table-lspace: 0;
-            mso-table-rspace: 0;
-            width: 100%;
-        }
-
-        table td {
-            font-family: sans-serif;
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        /* -------------------------------------
-            BODY & CONTAINER
-        ------------------------------------- */
-
-        .primaryBG {
-            background-color: var(--PrimaryBackground);
-            width: 100%;
-        }
-
-        /* Set a max-width, and make it display as block so it will automatically stretch to that width, but will also shrink down on a phone or something */
-        .container {
-            display: block;
-            padding: 10px;
-        }
-
-        /* This should also be a block element, so that it will fill 100% of the .container */
-        .content {
-            box-sizing: border-box;
-            display: block;
-            margin: 0 auto;
-            max-width: 580px;
-            padding: 10px;
-        }
-
-        /* -------------------------------------
-            HEADER, FOOTER, MAIN
-        ------------------------------------- */
-        .main {
-            background: var(--TextBackground);
-            border-radius: 3px;
-            width: 100%;
-            color: var(--TextColor);
-        }
-
-        .wrapper {
-            box-sizing: border-box;
-            padding: 20px;
-        }
-
-        .content-block {
-            padding-bottom: 10px;
-            padding-top: 10px;
-        }
-
-        .footer {
-            clear: both;
-            margin-top: 10px;
-            text-align: center;
-            width: 100%;
-        }
-
-        .footer td,
-        .footer p,
-        .footer span,
-        .footer a {
-            color: var(--SpecialTextColor);
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .preheader {
-            color: transparent;
-            display: none;
-            height: 0;
-            max-height: 0;
-            max-width: 0;
-            opacity: 0;
-            overflow: hidden;
-            mso-hide: all;
-            visibility: hidden;
-            width: 0;
-        }
-
-        hr {
-            border: 0;
-            border-bottom: 1px solid var(--PrimaryBackground);
-            margin: 20px 0;
-        }
-
-        .custom-select {
-            display: inline-block;
-            width: 100%;
-            height: calc(1.5em + .75rem + 2px);
-            padding: .375rem 1.75rem .375rem .75rem;
-            font-size: 1rem;
+        h1, h4, label {
+            margin: 15px 0 4px;
             font-weight: 400;
-            line-height: 1.5;
-            color: #495057;
+        }
+
+        h4, label {
+            margin: 20px 0 4px;
+            font-weight: 400;
+        }
+
+        .testbox {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: inherit;
+            padding: 10px;
+        }
+
+        .form, form {
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 2px 5px var(--shadows-and-borders);
+            background: var(--form-background);
+            margin-bottom: 30px;
+        }
+
+        input {
+            width: calc(100% - 10px);
+            padding: 5px;
+            border: 1px solid var(--shadows-and-borders);
+            border-radius: 3px;
             vertical-align: middle;
-            background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
-            border: 1px solid #ced4da;
-            border-radius: .25rem;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
         }
 
-        /* -------------------------------------
-            RESPONSIVE AND MOBILE FRIENDLY STYLES
-        ------------------------------------- */
-        @media only screen and (max-width: 620px) {
-            table[class=body] h1 {
-                font-size: 28px !important;
-                margin-bottom: 10px !important;
-            }
-
-            table[class=body] p,
-            table[class=body] ul,
-            table[class=body] ol,
-            table[class=body] td,
-            table[class=body] span,
-            table[class=body] a {
-                font-size: 16px !important;
-            }
-
-            table[class=body] .wrapper {
-                padding: 10px !important;
-            }
-
-            table[class=body] .content {
-                padding: 0 !important;
-            }
-
-            table[class=body] .container {
-                padding: 0 !important;
-                width: 100% !important;
-            }
-
-            table[class=body] .main {
-                border-left-width: 0 !important;
-                border-radius: 0 !important;
-                border-right-width: 0 !important;
-            }
-
-            table[class=body] .btn table {
-                width: 100% !important;
-            }
-
-            table[class=body] .btn a {
-                width: 100% !important;
-            }
+        .title-block select, .title-block input {
+            margin-bottom: 10px;
         }
 
-        /* -------------------------------------
-            PRESERVE THESE STYLES IN THE HEAD
-        ------------------------------------- */
-        @media all {
-
-            .apple-link a {
-                color: inherit !important;
-                font-family: inherit !important;
-                font-size: inherit !important;
-                font-weight: inherit !important;
-                line-height: inherit !important;
-                text-decoration: none !important;
-            }
-
-            #MessageViewBody a {
-                color: inherit;
-                text-decoration: none;
-                font-size: inherit;
-                font-family: inherit;
-                font-weight: inherit;
-                line-height: inherit;
-            }
+        select {
+            padding: 7px 0;
+            border-radius: 3px;
+            border: 1px solid var(--shadows-and-borders);
+            background: transparent;
         }
 
+        select, table {
+            width: 100%;
+        }
+
+        option {
+            background: var(--option-bg);
+        }
+
+        .question-answer label {
+            display: block;
+            padding: 0 20px 10px 0;
+        }
+
+        .question-answer input {
+            width: auto;
+            margin-top: -2px;
+        }
+
+        th, td {
+            width: 18%;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--shadows-and-borders);
+            text-align: center;
+            vertical-align: unset;
+            line-height: 18px;
+            font-weight: 400;
+            word-break: break-all;
+        }
+
+        textarea {
+            width: calc(100% - 6px);
+            resize: none;
+        }
+
+        .btn-block {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            width: 150px;
+            padding: 10px;
+            border: none;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            background-color: var(--button);
+            font-size: 16px;
+            color: var(--button-text);
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: var(--button-hover);
+            color: var(--button-hover-text)
+        }
+
+        .char-count {
+            float: right !important;
+            background-color: var(--char-count);
+            margin-right: 5px;
+            margin-inline-start: auto;
+            padding: .2em .6em .3em;
+            font-size: 75%;
+            color: var(--char-count-text);
+            text-align: center;
+            white-space: nowrap;
+            border-radius: .25em;
+            height: fit-content;
+        }
+
+        .custom-control-input:checked ~ .custom-control-label::before {
+            border-color: var(--button);
+            background-color: var(--button);
+        }
+
+        .footer-link {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: var(--footer-background);
+            text-align: center;
+            font-size: 14px;
+            padding: 7px;
+        }
+
+        .footer-link a {
+            color: var(--link);
+        }
+
+        .footer-link a:hover {
+            color: var(--link-hover);
+            text-decoration: none;
+        }
+
+        label span {
+            color: var(--requirement-star)
+        }
+
+        @media (min-width: 568px) {
+            .title-block select {
+                width: 30%;
+                margin-bottom: 0;
+            }
+
+            .title-block input {
+                width: 31%;
+                margin-bottom: 0;
+            }
+
+            th, td {
+                word-break: keep-all;
+            }
+        }
     </style>
 </head>
 <body>
-<span class="preheader">Help us to improve the Learning Assistant Program</span>
-<table role="presentation" class="primaryBG">
-    <tr>
-        <td class="container">
-            <div class="content">
-
-                <!-- START CENTERED WHITE CONTAINER -->
-                <div class="content" role="presentation">
-
-                    <!-- START CENTERED WHITE CONTAINER -->
-                    <table role="presentation" class="main">
-
-                        <!-- START MAIN CONTENT AREA -->
-                        <tbody>
-                        <tr>
-                            <td class="wrapper">
-                                <table role="presentation">
-                                    <tbody>
-                                    <tr>
-                                        <td>
-                                            <p>Hi,</p>
-                                            <p>You recently had an interaction with the learning
-                                                assistant <?php echo get_name_from_interaction(get_id()) ?>. Please help
-                                                us to know how they did. Your response will be anonymous and will help
-                                                us to improve the LA program for everyone.</p>
-                                            <div style="padding-right: 10px;">
-                                                <div class="form-group row">
-                                                    <label for="rating" class="col-sm-4 col-form-label">Rating</label>
-                                                    <select id="rating" class="custom-select col-sm-8" required>
-                                                        <option value="0">(choose)</option>
-                                                        <option value="1">1 (low)</option>
-                                                        <option value="2">2</option>
-                                                        <option value="3">3</option>
-                                                        <option value="4">4</option>
-                                                        <option value="5">5</option>
-                                                        <option value="6">6</option>
-                                                        <option value="7">7</option>
-                                                        <option value="8">8</option>
-                                                        <option value="9">9</option>
-                                                        <option value="10">10 (high)</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group row">
-                                                    <label for="comment" class="col-sm-4 col-form-label">Comment
-                                                        (Optional)</label>
-                                                    <textarea id="comment" class="col-sm-8" rows="5"
-                                                              style="resize: none;padding: 5px"
-                                                              maxlength="500"></textarea>
-                                                    <span id="char_count"
-                                                          style="float: right !important;background-color: #777777;margin-top: -30px;margin-right: 5px;margin-inline-start: auto;display: inline;padding: .2em .6em .3em;font-size: 75%;font-weight: 700;color:#ffffff;text-align: center;white-space: nowrap;border-radius: .25em;z-index: 1;height: fit-content;"></span>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <button onclick="validateSubmit()" class="btn btn-danger col-sm-11"
-                                                            style="background-color: var(--PrimaryBackground);margin: 20px auto 0">
-                                                        Submit
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-
-
-                        </tbody>
-                    </table>
-                    <!-- END MAIN CONTENT AREA -->
-                </div>
-                <!-- END CENTERED WHITE CONTAINER -->
-
-                <!-- START FOOTER -->
-                <div class="footer">
-                    <table role="presentation">
-                        <tr>
-                            <td class="content-block">
-                                <a class="apple-link" href="http://cse.unl.edu" target="_blank">Learning Assistant
-                                    Program, University of Nebraska-Lincoln - CSE Department</a>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
+<div class="testbox">
+    <div class="form">
+        <h1>Learning Assistant Feedback</h1>
+        <p style="margin-bottom:0">Hi,</p>
+        <p>You recently had an interaction with the learning
+            assistant. Please help us to know how <?php echo get_name_from_interaction(get_id()) ?> did.
+            Your response will be kept confidential (not shared with any LAs or course personel) and will
+            help us to improve the LA program for everyone.</p>
+        <label for="rating">Rating<span>*</span></label>
+        <select id="rating" class="custom-select" onchange="adjustRequirement();" required>
+            <option value="0">(choose)</option>
+            <option value="1">1 (non-helpful)</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10 (helpful)</option>
+        </select>
+        <label for="comment">Please explain your experience<span id="commentRequirement"></span></label>
+        <div>
+            <textarea id="comment" rows="5" maxlength="500"></textarea>
+            <span id="char_count" class="char-count"></span>
+        </div>
+        <div class="btn-block">
+            <button type="submit" onclick="validateSubmit();">Send Feedback</button>
+        </div>
+        <div class="footer-link">
+            <a href="http://cse.unl.edu" target="_blank">Learning Assistant
+                Program, University of Nebraska-Lincoln — CSE Department</a>
+        </div>
+    </div>
+</div>
 <script>
     let text_max = 500;
     $('#char_count').html('0 / ' + text_max);
