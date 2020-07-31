@@ -89,7 +89,6 @@ class FeedbackForm extends Component<Props, State> {
     if (studentCSE && studentCSE.trim().length > 0 && course && course.trim().length > 0) {
       const { username } = this.state;
       this.setState({ disabled: true });
-      console.log(this.state);
       Services.sendEmail(studentCSE, username, course).then((response) => {
         const error = response === '0' || response === 0
           ? 'Interaction recorded'

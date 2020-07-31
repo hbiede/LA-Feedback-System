@@ -61,11 +61,11 @@ const LATable = ({ ratings }: Props) => {
     ? 0
     : ratings.reduce((acc, rating) => acc + rating.rating, 0) / ratings.length;
   const { column, order } = sortConfig;
-  const firstCourse = ratings[0].course;
+  const firstCourse = ratings[0].course ?? null;
   const isMultiCourseLA = !ratings.every((r) => r.course === firstCourse);
 
   return (
-    <table className="table table-hover" style={{ width: '100%' }}>
+    <table className="table table-hover" style={{ width: '100%', cursor: 'default' }}>
       <thead className="thead-dark">
         <tr>
           <th id="rating" onClick={handleSortClick}>

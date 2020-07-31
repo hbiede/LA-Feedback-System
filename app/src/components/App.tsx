@@ -36,7 +36,6 @@ function App() {
         });
         if (trimmedName !== null) {
           Services.nameREST(trimmedName).then((newName: string) => {
-            console.log(newName);
             setName(newName);
           });
         }
@@ -59,7 +58,6 @@ function App() {
       newUsername(newUser);
       Services.courseREST(newUser).then((c) => {
         setCourse(c);
-        console.log(`Course: ${c}`);
       });
     });
     // No Deps == componentDidMount

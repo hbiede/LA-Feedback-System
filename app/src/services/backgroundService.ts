@@ -5,7 +5,12 @@
  */
 
 /* eslint-disable no-console */
-import {InteractionSummary, RatingRecord, RatingResponse, RESTResponse} from '../types';
+import {
+  InteractionSummary,
+  RatingRecord,
+  RatingResponse,
+  RESTResponse,
+} from '../types';
 
 class Services {
   static username = '';
@@ -103,7 +108,9 @@ class Services {
   ).then((json) => (json.name ? json.name : ''));
 
   static getInteractions = async (username: string): Promise<InteractionSummary> => {
-    if (Services.interactions !== null && Services.interactions !== undefined) {
+    if (username !== 'INVALID_TICKET_KEY'
+      && Services.interactions !== null
+      && Services.interactions !== undefined) {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
