@@ -5,11 +5,14 @@
  */
 
 import React, { useCallback, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
 
 import packageJson from '../../package.json';
 import ServiceInterface from '../statics/ServiceInterface';
 import SettingsForm from './SettingsForm';
+
+import changelog from '../CHANGELOG.json';
 
 type Props = {
   adminAsLA: boolean;
@@ -29,6 +32,7 @@ const NavBar = ({
   username,
 } : Props) => {
   const [showingModal, setModalVisibility] = useState(false);
+  const [showingChangelog, setChangelogVisibility] = useState(false);
 
   const showModal = useCallback(() => {
     setModalVisibility(true);
@@ -37,6 +41,14 @@ const NavBar = ({
   const hideModal = useCallback(() => {
     setModalVisibility(false);
   }, [setModalVisibility]);
+
+  const showChangelog = useCallback(() => {
+    setChangelogVisibility(true);
+  }, [setChangelogVisibility]);
+
+  const hideChangelog = useCallback(() => {
+    setChangelogVisibility(false);
+  }, [setChangelogVisibility]);
 
   const switchToAdmin = useCallback(() => {
     toggleAdminAsLA();
@@ -60,7 +72,9 @@ const NavBar = ({
 
         <p className="navbar-brand" style={{ marginBottom: 0 }}>
           {`LA Feedback${isAdmin ? ' Admin' : ''} `}
-          <small>{packageJson.version}</small>
+          <button className="btn btn-dark" onClick={showChangelog}>
+          <small>{`v${packageJson.version}`}</small>
+          </button>
         </p>
 
         <div className="collapse navbar-collapse" id="laNavBar">
@@ -151,7 +165,7 @@ const NavBar = ({
         isOpen={showingModal}
         onRequestClose={hideModal}
         contentLabel="LA Settings"
-        style={{ overlay: { marginTop: 25 } }}
+        style={{ overlay: { marginTop: 50 } }}
       >
         <button
           type="button"
@@ -171,6 +185,25 @@ const NavBar = ({
         />
       </Modal>
       )}
+      <Modal
+        isOpen={showingChangelog}
+        onRequestClose={hideChangelog}
+        contentLabel="Changelog"
+        style={{ overlay: { marginTop: 50 } }}
+      >
+        <button
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          onClick={hideChangelog}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+        <div>
+          {changelog.changes.map((change) => <ReactMarkdown source={change} />)}
+        </div>
+      </Modal>
     </>
   );
 };
