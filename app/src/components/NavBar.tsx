@@ -4,9 +4,10 @@
  * File created by Hundter Biede for the UNL CSE Learning Assistant Program
  */
 
-import React, {useCallback, useMemo, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import Modal from 'react-modal';
 
+import packageJson from '../../package.json';
 import Services from '../services/backgroundService';
 import SettingsForm from './SettingsForm';
 
@@ -58,7 +59,8 @@ const NavBar = ({
         </button>
 
         <p className="navbar-brand" style={{ marginBottom: 0 }}>
-          {`LA Feedback${isAdmin ? ' Admin' : ''}`}
+          {`LA Feedback${isAdmin ? ' Admin' : ''} `}
+          <small>{packageJson.version}</small>
         </p>
 
         <div className="collapse navbar-collapse" id="laNavBar">
