@@ -92,11 +92,10 @@ const SummaryTable = ({ showLA, interactions }: Props) => {
         <input
           type="text"
           className="form-control"
-          placeholder="Search"
+          placeholder=" Search"
           aria-label="Search"
           aria-describedby="search"
           onChange={handleSearchChange}
-          style={{ paddingLeft: 0 }}
         />
         <div className="input-group-append">
           <button
