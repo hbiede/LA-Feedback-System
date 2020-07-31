@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
 
 include_once 'sqlManager.php';
 ini_set('error_log', './log/feedback.log');

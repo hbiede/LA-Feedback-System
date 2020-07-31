@@ -1,3 +1,7 @@
+-- Copyright (c) 2020.
+--
+-- File created by Hundter Biede for the UNL CSE Learning Assistant Program
+
 drop table if exists learningassistants.feedback;
 drop table if exists learningassistants.interactions;
 drop table if exists learningassistants.cse_usernames;
@@ -7,6 +11,7 @@ create table learningassistants.cse_usernames
     username_key int auto_increment unique primary key,
     username     varchar(20) not null,
     name         varchar(70),
+    course       varchar(10),
     constraint cse_usernames_username_key_uindex
         unique (username_key),
     constraint cse_usernames_username_uindex

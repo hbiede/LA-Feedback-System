@@ -1,4 +1,10 @@
 <?php
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
+
 include_once 'sqlManager.php';
 ini_set('error_log', './log/form.log');
 
@@ -307,8 +313,9 @@ if (!can_give_feedback(get_id())) {
     <div class="form">
         <h1>Learning Assistant Feedback</h1>
         <p style="margin-bottom:0">Hi,</p>
-        <p>You recently had an interaction with the learning
-            assistant. Please help us to know how <?php echo get_name_from_interaction(get_id()) ?> did.
+        <p>You recently had an interaction with a learning
+            assistant for <?php echo get_course_from_interaction(get_id()) ?>. Please help us to know
+            how <?php echo get_name_from_interaction(get_id()) ?> did.
             Your response will be kept confidential (not shared with any LAs or course personel) and will
             help us to improve the LA program for everyone.</p>
         <label for="rating">Rating<span>*</span></label>

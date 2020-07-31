@@ -1,13 +1,25 @@
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
+
 import React, {
+  ChangeEvent,
   CSSProperties,
   useCallback,
   useEffect,
   useState,
 } from 'react';
 
-import { InteractionRecord, InteractionSummary, RatingRecord } from '../types';
+import {
+  COURSES, InteractionRecord, InteractionSummary, RatingRecord,
+} from '../types';
 
 import Services from '../services/backgroundService';
+import FeedbackTimeText from './FeedbackTimeText';
+import LATable from './LATable';
+import SummaryTable from './SummaryTable';
 
 type Props = {
   style?: CSSProperties;
@@ -17,12 +29,16 @@ type Props = {
 type LA = {
   username: string;
   name?: string;
+  course?: string|null;
 };
 
 export default function AdminTable(props: Props) {
   const [interactions, setInteractions] = useState<InteractionSummary>({ ratings: [], time: -1 });
-  const [selectedLA, setSelectedLA] = useState<LA|null>(null);
+  const [selectedLA, setSelectedLA] = useState<LA | null>(null);
   const [ratings, setRatings] = useState<RatingRecord[]>([]);
+  const [editingName, setEditingName] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string | null>(null);
+  const [course, setCourse] = useState<string|null>(null);
 
   const { username, style } = props;
 
@@ -33,84 +49,142 @@ export default function AdminTable(props: Props) {
   }, []);
 
   const showLA = useCallback((la: LA) => {
-    setSelectedLA(la);
-    Services.getRatings(username, la.username).then((newRatings) => setRatings(newRatings));
+    Services.getRatings(username, la.username).then((newRatings) => {
+      setRatings(newRatings);
+      const modifiedLA = la;
+      setNewName(modifiedLA.name ?? modifiedLA.username);
+      Services.courseREST(la.username).then((laCourse) => {
+        modifiedLA.course = laCourse;
+        setSelectedLA(modifiedLA);
+        setCourse(laCourse);
+      });
+    });
   }, [setSelectedLA, username, setRatings]);
 
   const clearSelection = useCallback(() => {
     setSelectedLA(null);
     setRatings([]);
+    setCourse(null);
   }, [setSelectedLA, setRatings]);
 
+  const setEditing = useCallback(() => {
+    setEditingName(true);
+    setNewName(selectedLA?.name || '');
+  }, [selectedLA, setNewName, setEditingName]);
+
+  const saveEditing = useCallback(() => {
+    setEditingName(false);
+    if (selectedLA !== null && newName !== null) {
+      const trimmedName = newName.trim();
+      setSelectedLA({
+        ...selectedLA,
+        name: trimmedName,
+        course,
+      });
+      const matchingLA = interactions.ratings
+        .findIndex((la) => la.username === selectedLA.username);
+      let newLAEntry = interactions.ratings[matchingLA];
+      newLAEntry = {
+        ...newLAEntry,
+        name: trimmedName,
+      };
+      setInteractions({
+        ...interactions,
+        ratings: [
+          ...interactions.ratings.slice(0, matchingLA),
+          newLAEntry,
+          ...interactions.ratings.slice(matchingLA + 1),
+        ],
+      });
+
+      Services.nameREST(selectedLA.username, trimmedName);
+    }
+  }, [interactions, selectedLA, setSelectedLA, setEditingName, newName]);
+
+  const changeName = useCallback((event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setNewName(event.target.value);
+  }, [setNewName]);
+
+  const handleCourseSelect = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      setCourse(event.currentTarget.value);
+    }, [],
+  );
+
+  if (interactions.ratings.length === 0) {
+    return (
+      <h6>
+        No feedback recorded. Go help students!!
+      </h6>
+    );
+  }
+
   if (selectedLA === null) {
-    const { time } = interactions;
-    const minutes = Math.floor(time / 1000 / 60);
-    const seconds = (time / 1000) % 60;
-    const timeText = `Average time to give feed back for ${
-      interactions.ratings.reduce((acc: number, la: InteractionRecord) => acc + la.count, 0)
-    } interactions: ${minutes} minutes${
-      seconds >= 1 ? ` and ${seconds.toPrecision(3)} seconds` : ''
-    }`;
     return (
       <div style={style} className="col-md-10">
-        <table className="table table-hover" style={{ width: '100%' }}>
-          <thead className="thead-dark">
-            <tr>
-              <th>LA</th>
-              <th>Interactions</th>
-              <th>Average Rating</th>
-            </tr>
-          </thead>
-          <tbody>
-            {interactions.ratings.map((row: InteractionRecord) => (
-              row.username && row.username.trim().length > 0 && !Number.isNaN(row.count) && (
-              <tr onClick={() => showLA(row)}>
-                <td>{row.name ? row.name : row.username}</td>
-                <td>{row.count}</td>
-                <td>{Number.isNaN(row.avg) ? 0 : row.avg}</td>
-              </tr>
-              )
-            ))}
-          </tbody>
-        </table>
-        {interactions.time >= 0 && (
-        <p>
-          {timeText}
-        </p>
-        )}
+        <SummaryTable showLA={showLA} interactions={interactions} />
+        <FeedbackTimeText interactions={interactions} />
       </div>
     );
   }
 
-  const avg = ratings.length === 0
-    ? 0
-    : ratings.reduce((acc, rating) => acc + rating.rating, 0) / ratings.length;
   return (
     <div style={style} className="col-md-10">
-      <h6>
-        <button className="btn btn-dark" type="button" onClick={clearSelection}>(&lt;Back)</button>
-        {` ${selectedLA.name ? selectedLA.name : selectedLA.username}`}
-      </h6>
-      <table className="table table-hover" style={{ width: '100%' }}>
-        <thead className="thead-dark">
-          <tr>
-            <th>
-              Rating (Avg:
-              {` ${avg}`}
+      <div className="form-row">
+        <button className="btn btn-dark" type="button" onClick={clearSelection}>Back</button>
+        <div style={{ marginTop: 10 }} className="input-group mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="LA's Name"
+            aria-label="LA's Name"
+            aria-describedby="basic-addon2"
+            value={newName || ''}
+            onChange={changeName}
+            disabled={!editingName}
+          />
+          <div className="input-group-append">
+            {editingName
+              ? (
+                <>
+                  <button
+                    className="btn btn-outline-secondary dropdown-toggle"
+                    type="button"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                  >
+                    {course}
+                  </button>
+                  <div className="dropdown-menu">
+                    {COURSES.map((c) => (
+                      <button
+                        type="button"
+                        className="dropdown-item"
+                        value={c}
+                        onClick={handleCourseSelect}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
+                  <button className="btn btn-outline-secondary" type="button" onClick={saveEditing}>
+                    Save
+                  </button>
+                </>
               )
-            </th>
-            <th>Comment</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ratings.map((row) => (
-            <tr>
-              <td>{row.rating}</td>
-              <td>{row.comment}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              : (
+                <>
+                  <span className="input-group-text">{course}</span>
+                  <button className="btn btn-outline-secondary" type="button" onClick={setEditing}>
+                    Edit
+                  </button>
+                </>
+              )}
+          </div>
+        </div>
+      </div>
+      <LATable ratings={ratings} />
     </div>
   );
 }

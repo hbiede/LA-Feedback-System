@@ -1,4 +1,10 @@
 <?php
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
+
 include_once 'sqlManager.php';
 
 session_start();
@@ -20,23 +26,27 @@ function get_time_to_complete() {
 
 function get_interactions() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username, name, COUNT(i.interaction_key) AS count, AVG(rating) AS avg ' .
-        'FROM cse_usernames LEFT JOIN interactions i on cse_usernames.username_key = i.la_username_key LEFT JOIN ' .
-        'feedback f on i.interaction_key = f.interaction_key GROUP BY username ORDER BY username;');
-    $ps->execute();
-    $result = $ps->get_result();
+    $ps = $conn->prepare('SELECT username, name, cse_usernames.course, COUNT(i.interaction_key) AS count, ' .
+        'AVG(rating) AS avg FROM cse_usernames LEFT JOIN interactions i on ' .
+        'cse_usernames.username_key = i.la_username_key LEFT JOIN feedback f on i.interaction_key = f.interaction_key ' .
+        'GROUP BY username ORDER BY username;');
     $returnVal = [];
-    while ($row = $result->fetch_assoc()) {
-        array_push($returnVal, $row);
+    if ($ps) {
+        $ps->execute();
+        $result = $ps->get_result();
+        while ($row = $result->fetch_assoc()) {
+            array_push($returnVal, $row);
+        }
+        $ps->close();
     }
-    $ps->close();
     $conn->close();
     return $returnVal;
 }
 
 function get_ratings($la_username) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT rating, comment FROM feedback WHERE interaction_key IN ' .
+    $ps = $conn->prepare('SELECT rating, comment, course, time_of_interaction AS time FROM feedback LEFT JOIN ' .
+        'interactions i on feedback.interaction_key = i.interaction_key WHERE feedback.interaction_key IN ' .
         '(SELECT interaction_key FROM interactions WHERE la_username_key = ' .
         '(SELECT username_key FROM cse_usernames WHERE username = ?)) ORDER BY rating DESC;');
     $ps->bind_param('s', $la_username);

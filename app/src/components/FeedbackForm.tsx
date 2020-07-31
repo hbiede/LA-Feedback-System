@@ -1,38 +1,56 @@
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
+
+/* eslint-disable no-alert */
 import React, {
   ChangeEvent, Component, MutableRefObject,
 } from 'react';
 
 import Services from '../services/backgroundService';
 
-const COURSES = ['101', '155E', '155N', '156'];
+import { COURSES } from '../types';
 
 type Props = {
-  username: string;
+  defaultCourse: string|null;
+  isAdmin: boolean;
+  name: string|null;
   responseDivRef?: MutableRefObject<HTMLDivElement | null>;
+  username: string;
 };
 
 type State = {
   course: string;
   disabled: boolean;
   studentCSE: string;
+  username: string;
 };
 
 class FeedbackForm extends Component<Props, State> {
-  constructor(props: Readonly<any>) {
+  constructor(props: Readonly<Props>) {
     super(props);
+    const { defaultCourse, username } = this.props;
     this.state = {
-      course: '',
+      course: defaultCourse ?? '',
       disabled: false,
       studentCSE: '',
+      username,
     };
   }
 
   handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { responseDivRef } = this.props;
+    const { isAdmin, responseDivRef } = this.props;
     if (responseDivRef?.current) {
       responseDivRef.current.innerHTML = '';
     }
     switch (event.target.name) {
+      case 'la_username':
+        if (isAdmin) {
+          this.setState({ username: event.target.value });
+        }
+        break;
       case 'student_cse_login':
         this.setState({ studentCSE: event.target.value });
         break;
@@ -52,45 +70,74 @@ class FeedbackForm extends Component<Props, State> {
       studentCSE,
       course,
     } = this.state;
-    const { responseDivRef } = this.props;
+    const { name, responseDivRef } = this.props;
+    if (name === null) {
+      const error = 'Please set your name before submitting feedback (See the LA Settings)';
+      if (responseDivRef?.current) {
+        const alertType = 'danger';
+        let alert = `<div class="alert alert-${alertType}" role="alert">`;
+        alert += error;
+        alert += '</div>';
+
+        responseDivRef.current.innerHTML = alert;
+      } else {
+        alert(error);
+      }
+      return;
+    }
+
     if (studentCSE && studentCSE.trim().length > 0 && course && course.trim().length > 0) {
-      const { username } = this.props;
+      const { username } = this.state;
       this.setState({ disabled: true });
       console.log(this.state);
       Services.sendEmail(studentCSE, username, course).then((response) => {
+        const error = response === '0' || response === 0
+          ? 'Interaction recorded'
+          : `Failed to Send Message. Please Try Again. (Error Code ${response})`;
         if (responseDivRef?.current) {
           const alertType = response === '0' || response === 0 ? 'success' : 'danger';
           let alert = `<div class="alert alert-${alertType}" role="alert">`;
-          alert += response === '0' || response === 0
-            ? 'Interaction recorded'
-            : `Failed to Send Message. Please Try Again. (Error Code ${response})`;
+          alert += error;
           alert += '</div>';
 
           responseDivRef.current.innerHTML = alert;
+        } else {
+          alert(error);
         }
         this.setState({ disabled: false });
       }).catch((error) => {
+        const errorMsg = `Failed to Send Message. Please Try Again. (Error: ${error})`;
         if (responseDivRef?.current) {
           let alert = '<div class="alert alert-danger" role="alert">';
-          alert += `Failed to Send Message. Please Try Again. (Error: ${error})`;
+          alert += errorMsg;
           alert += '</div>';
 
           responseDivRef.current.innerHTML = alert;
+        } else {
+          alert(errorMsg);
         }
         this.setState({ disabled: false });
       });
-    } else if (responseDivRef?.current) {
-      let alert = '<div class="alert alert-danger" role="alert">';
-      alert += 'Invalid input';
-      alert += '</div>';
+    } else {
+      const error = studentCSE && studentCSE.trim().length > 0
+        ? 'Invalid course'
+        : 'Invalid student';
+      if (responseDivRef?.current) {
+        let alert = '<div class="alert alert-danger" role="alert">';
+        alert += error;
+        alert += '</div>';
 
-      responseDivRef.current.innerHTML = alert;
+        responseDivRef.current.innerHTML = alert;
+      } else {
+        alert(error);
+      }
     }
   };
 
   render() {
-    const { disabled } = this.state;
-    const { username } = this.props;
+    const { disabled, username } = this.state;
+    const { defaultCourse, isAdmin } = this.props;
+    // TODO: Allow username to be carried to admin version of LA Settings (needs Redux)
     return (
       <form>
         <div className="form-group row">
@@ -104,7 +151,8 @@ class FeedbackForm extends Component<Props, State> {
               name="la_username"
               id="la_username"
               value={username}
-              disabled
+              onChange={this.handleChange}
+              disabled={!isAdmin}
             />
           </div>
         </div>
@@ -121,8 +169,15 @@ class FeedbackForm extends Component<Props, State> {
               placeholder="Course"
               onChange={this.handleChange}
             >
-              <option value="choose">(choose)</option>
-              {COURSES.map((course) => <option value={course}>{course}</option>)}
+              <option
+                value="choose"
+                selected={defaultCourse !== null && !COURSES.includes(defaultCourse)}
+              >
+                (choose)
+              </option>
+              {COURSES.map((course) => (
+                <option value={course} selected={course === defaultCourse}>{course}</option>
+              ))}
             </select>
           </div>
         </div>

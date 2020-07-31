@@ -1,4 +1,9 @@
 <?php
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
 
 function get_connection() {
     $sql_info = json_decode(file_get_contents("data/sql.json"));
@@ -35,6 +40,25 @@ function get_name_from_interaction($interaction_id) {
     $ps->close();
     $conn->close();
     return ($la_name === null || strlen(trim($la_name)) === 0) ? $la_username : $la_name;
+}
+
+function get_course_from_interaction($interaction_id) {
+    $conn = get_connection();
+    $ps = $conn->prepare('SELECT course FROM interactions WHERE interaction_key = ?;');
+    if (!$ps) {
+        error_log('Failed to build prepped statement');
+        $conn->close();
+        return 'ERROR1';
+    }
+    $ps->bind_param('i', $interaction_id);
+    $ps->execute();
+    if ($ps->error) {
+        error_log($ps->error);
+    }
+    $result = $ps->get_result()->fetch_assoc()['course'];
+    $ps->close();
+    $conn->close();
+    return $result;
 }
 
 function get_la_username_from_interaction($interaction_id) {
