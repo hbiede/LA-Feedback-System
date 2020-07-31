@@ -11,7 +11,7 @@ import {
   InteractionSummary,
   SortConfig,
   SORT_CHARS,
-} from '../types';
+} from '../statics/Types';
 
 type Props = {
   showLA: (la: InteractionRecord) => void;

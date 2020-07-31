@@ -6,7 +6,7 @@
 
 import React from 'react';
 
-import { InteractionRecord, InteractionSummary } from '../types';
+import { InteractionRecord, InteractionSummary } from '../statics/Types';
 
 type Props = {
   interactions: InteractionSummary;

@@ -10,7 +10,7 @@ import {
   RatingRecord,
   RatingResponse,
   RESTResponse,
-} from '../types';
+} from './Types';
 
 class ServiceInterface {
   static username = '';

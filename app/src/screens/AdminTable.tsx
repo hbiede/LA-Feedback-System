@@ -14,7 +14,7 @@ import React, {
 
 import {
   COURSES, InteractionRecord, InteractionSummary, RatingRecord,
-} from '../types';
+} from '../statics/Types';
 
 import ServiceInterface from '../statics/ServiceInterface';
 import FeedbackTimeText from '../components/FeedbackTimeText';

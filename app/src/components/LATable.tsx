@@ -6,7 +6,7 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { RatingRecord, SortConfig, SORT_CHARS } from '../types';
+import { RatingRecord, SortConfig, SORT_CHARS } from '../statics/Types';
 
 type Props = {
   ratings: RatingRecord[];

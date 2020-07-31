@@ -11,7 +11,7 @@ import React, {
 
 import ServiceInterface from '../statics/ServiceInterface';
 
-import { COURSES } from '../types';
+import { COURSES } from '../statics/Types';
 
 type Props = {
   defaultCourse: string|null;

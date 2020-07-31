@@ -8,7 +8,7 @@ import React, { ChangeEvent, useCallback, useState } from 'react';
 
 import ServiceInterface from '../statics/ServiceInterface';
 
-import { COURSES } from '../types';
+import { COURSES } from '../statics/Types';
 
 type Props = {
   closeModal: () => void;
