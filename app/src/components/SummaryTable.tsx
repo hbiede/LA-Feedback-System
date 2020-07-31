@@ -88,7 +88,7 @@ const SummaryTable = ({ showLA, interactions }: Props) => {
   const clearableSearch = searchTerm.length > 0;
   return (
     <>
-      <div className="input-group mt-3 mb-2 col-4">
+      <div className="input-group mt-3 mb-2 col-4" style={{ paddingLeft: 0 }}>
         <input
           type="text"
           className="form-control"

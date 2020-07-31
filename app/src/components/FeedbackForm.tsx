@@ -149,7 +149,6 @@ class FeedbackForm extends Component<Props, State> {
   render() {
     const { disabled, username } = this.state;
     const { defaultCourse, isAdmin } = this.props;
-    // TODO: Allow username to be carried to admin version of LA Settings (needs Redux)
     return (
       <form>
         <div className="form-group row">
