@@ -72,7 +72,7 @@ function App() {
           <main role="main">
             <div className="jumbotron">
               <div className="container">
-                <h4 style={{ marginLeft: 0, marginTop: '25px' }}>
+                <h4 style={{ marginLeft: 0, marginTop: 45 }}>
                   Loading
                 </h4>
               </div>
@@ -94,7 +94,7 @@ function App() {
                 {isAdmin && !adminAsLA
                   ? (
                     <div className="container">
-                      <h4 style={{ marginLeft: 0, marginTop: '25px' }}>
+                      <h4 style={{ marginLeft: 0, marginTop: 45 }}>
                         LA Feedback Admin Interface
                       </h4>
                       <AdminTable style={{ marginTop: '25px' }} username={username} />
@@ -102,7 +102,7 @@ function App() {
                   )
                   : (
                     <div className="container">
-                      <h4 style={{ marginLeft: 0, marginTop: '25px' }}>LA Feedback Interface</h4>
+                      <h4 style={{ marginLeft: 0, marginTop: 45 }}>LA Feedback Interface</h4>
                       <p style={{ marginLeft: 0 }}>
                         This web interface allows LAs to receive anonymous feedback on
                         their performance from students. Select the course you worked with and enter
