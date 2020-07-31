@@ -40,6 +40,15 @@ class FeedbackForm extends Component<Props, State> {
     };
   }
 
+  resetAlert = () => {
+    const { responseDivRef } = this.props;
+    setTimeout(() => {
+      if (responseDivRef?.current) {
+        responseDivRef.current.innerHTML = '';
+      }
+    }, 10000);
+  }
+
   handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { isAdmin, responseDivRef } = this.props;
     if (responseDivRef?.current) {
@@ -80,6 +89,7 @@ class FeedbackForm extends Component<Props, State> {
         alert += '</div>';
 
         responseDivRef.current.innerHTML = alert;
+        this.resetAlert();
       } else {
         alert(error);
       }
@@ -100,6 +110,7 @@ class FeedbackForm extends Component<Props, State> {
           alert += '</div>';
 
           responseDivRef.current.innerHTML = alert;
+          this.resetAlert();
         } else {
           alert(error);
         }
@@ -112,6 +123,7 @@ class FeedbackForm extends Component<Props, State> {
           alert += '</div>';
 
           responseDivRef.current.innerHTML = alert;
+          this.resetAlert();
         } else {
           alert(errorMsg);
         }
@@ -127,6 +139,7 @@ class FeedbackForm extends Component<Props, State> {
         alert += '</div>';
 
         responseDivRef.current.innerHTML = alert;
+        this.resetAlert();
       } else {
         alert(error);
       }
