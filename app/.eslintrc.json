@@ -33,6 +33,8 @@
     "prettier"
   ],
   "rules": {
+    "no-multi-spaces": "off",
+    "no-case-declarations": "off",
     "prefer-promise-reject-errors": "off",
     "react/no-did-update-set-state": "off",
     "global-require": "off",
