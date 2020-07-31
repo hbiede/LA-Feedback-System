@@ -11,11 +11,11 @@ import React, {
   useState,
 } from 'react';
 
-import FeedbackForm from './FeedbackForm';
-import AdminTable from './AdminTable';
+import FeedbackForm from './screens/FeedbackForm';
+import AdminTable from './screens/AdminTable';
 
-import Services from '../services/backgroundService';
-import NavBar from './NavBar';
+import ServiceInterface from './statics/ServiceInterface';
+import NavBar from './components/NavBar';
 
 function App() {
   const [username, setUsername] = useState<string | null>(null);
@@ -27,15 +27,15 @@ function App() {
   const newUsername = useCallback((newUser: string) => {
     if (newUser !== null && newUser.trim().length > 0) {
       if (newUser.includes('INVALID_TICKET_KEY')) {
-        Services.login();
+        ServiceInterface.login();
       } else {
         const trimmedName = newUser.trim();
         setUsername(trimmedName);
-        Services.isAdmin(trimmedName).then((adminState) => {
+        ServiceInterface.isAdmin(trimmedName).then((adminState) => {
           setIsAdmin(adminState);
         });
         if (trimmedName !== null) {
-          Services.nameREST(trimmedName).then((newName: string) => {
+          ServiceInterface.nameREST(trimmedName).then((newName: string) => {
             setName(newName);
           });
         }
@@ -47,16 +47,16 @@ function App() {
     if (newName !== name && username !== null) {
       setName(newName);
       // noinspection JSIgnoredPromiseFromCall
-      Services.nameREST(username, newName);
+      ServiceInterface.nameREST(username, newName);
     }
   }, [username, name, setName]);
 
   const toggleAdminAsLA = useCallback(() => setAdminAsLA(!adminAsLA), [setAdminAsLA, adminAsLA]);
 
   useEffect(() => {
-    Services.getUsername().then((newUser) => {
+    ServiceInterface.getUsername().then((newUser) => {
       newUsername(newUser);
-      Services.courseREST(newUser).then((c) => {
+      ServiceInterface.courseREST(newUser).then((c) => {
         setCourse(c);
       });
     });

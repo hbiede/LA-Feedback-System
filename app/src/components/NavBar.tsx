@@ -8,7 +8,7 @@ import React, { useCallback, useState } from 'react';
 import Modal from 'react-modal';
 
 import packageJson from '../../package.json';
-import Services from '../services/backgroundService';
+import ServiceInterface from '../statics/ServiceInterface';
 import SettingsForm from './SettingsForm';
 
 type Props = {
@@ -138,7 +138,7 @@ const NavBar = ({
               <button
                 className="btn btn-dark"
                 type="button"
-                onClick={Services.logout}
+                onClick={ServiceInterface.logout}
               >
                 Logout
               </button>

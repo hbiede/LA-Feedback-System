@@ -9,7 +9,7 @@ import React, {
   ChangeEvent, Component, MutableRefObject,
 } from 'react';
 
-import Services from '../services/backgroundService';
+import ServiceInterface from '../statics/ServiceInterface';
 
 import { COURSES } from '../types';
 
@@ -99,7 +99,7 @@ class FeedbackForm extends Component<Props, State> {
     if (studentCSE && studentCSE.trim().length > 0 && course && course.trim().length > 0) {
       const { username } = this.state;
       this.setState({ disabled: true });
-      Services.sendEmail(studentCSE, username, course).then((response) => {
+      ServiceInterface.sendEmail(studentCSE, username, course).then((response) => {
         const error = response === '0' || response === 0
           ? 'Interaction recorded'
           : `Failed to Send Message. Please Try Again. (Error Code ${response})`;

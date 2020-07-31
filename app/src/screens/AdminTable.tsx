@@ -16,10 +16,10 @@ import {
   COURSES, InteractionRecord, InteractionSummary, RatingRecord,
 } from '../types';
 
-import Services from '../services/backgroundService';
-import FeedbackTimeText from './FeedbackTimeText';
-import LATable from './LATable';
-import SummaryTable from './SummaryTable';
+import ServiceInterface from '../statics/ServiceInterface';
+import FeedbackTimeText from '../components/FeedbackTimeText';
+import LATable from '../components/LATable';
+import SummaryTable from '../components/SummaryTable';
 
 type Props = {
   style?: CSSProperties;
@@ -43,17 +43,17 @@ export default function AdminTable(props: Props) {
   const { username, style } = props;
 
   useEffect(() => {
-    Services.getInteractions(username).then((ints) => setInteractions(ints));
+    ServiceInterface.getInteractions(username).then((ints) => setInteractions(ints));
     // No Deps == componentDidMount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const showLA = useCallback((la: LA) => {
-    Services.getRatings(username, la.username).then((newRatings) => {
+    ServiceInterface.getRatings(username, la.username).then((newRatings) => {
       setRatings(newRatings);
       const modifiedLA = la;
       setNewName(modifiedLA.name ?? modifiedLA.username);
-      Services.courseREST(la.username).then((laCourse) => {
+      ServiceInterface.courseREST(la.username).then((laCourse) => {
         modifiedLA.course = laCourse;
         setSelectedLA(modifiedLA);
         setCourse(laCourse);
@@ -97,7 +97,7 @@ export default function AdminTable(props: Props) {
         ],
       });
 
-      Services.nameREST(selectedLA.username, trimmedName);
+      ServiceInterface.nameREST(selectedLA.username, trimmedName);
     }
   }, [interactions, selectedLA, setSelectedLA, setEditingName, newName]);
 

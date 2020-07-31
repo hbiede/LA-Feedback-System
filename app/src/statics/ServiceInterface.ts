@@ -12,7 +12,7 @@ import {
   RESTResponse,
 } from '../types';
 
-class Services {
+class ServiceInterface {
   static username = '';
 
   static interactions: InteractionSummary = { ratings: [], time: -1 };
@@ -40,23 +40,23 @@ class Services {
 
   static login = () => {
     const casService = 'https://cse-apps.unl.edu/cas';
-    window.location.href = `${casService}/login?service=${Services.getPath()}`;
+    window.location.href = `${casService}/login?service=${ServiceInterface.getPath()}`;
   }
 
   static logout = () => {
     const casService = 'https://cse-apps.unl.edu/cas';
-    window.location.href = `${casService}/logout?service=${Services.getPath()}`;
+    window.location.href = `${casService}/logout?service=${ServiceInterface.getPath()}`;
   }
 
   static getUsername = async (): Promise<string> => {
-    if (Services.username && Services.username !== '') {
-      return Services.username;
+    if (ServiceInterface.username && ServiceInterface.username !== '') {
+      return ServiceInterface.username;
     }
 
     const ticketService = 'https://cse.unl.edu/~learningassistants/LA-Feedback/ticketAccessor.php';
     const ticket = new URLSearchParams(window.location.search).get('ticket');
     if (ticket === null) {
-      Services.login();
+      ServiceInterface.login();
     }
     let username = '';
     const requestConfig = {
@@ -67,9 +67,9 @@ class Services {
     await fetch(ticketService, requestConfig).then((response) => response.text())
       .then((text) => {
         if (username && username.includes('INVALID_TICKET_KEY')) {
-          Services.login();
+          ServiceInterface.login();
         } else {
-          Services.username = text;
+          ServiceInterface.username = text;
           username = text;
         }
       })
@@ -101,7 +101,7 @@ class Services {
 
   static nameREST = async (
     username: string,
-    name: string|null = null): Promise<string> => Services.rest(
+    name: string|null = null): Promise<string> => ServiceInterface.rest(
     'https://cse.unl.edu/~learningassistants/LA-Feedback/name.php',
     username,
     name,
@@ -109,8 +109,8 @@ class Services {
 
   static getInteractions = async (username: string): Promise<InteractionSummary> => {
     if (username !== 'INVALID_TICKET_KEY'
-      && Services.interactions !== null
-      && Services.interactions !== undefined) {
+      && ServiceInterface.interactions !== null
+      && ServiceInterface.interactions !== undefined) {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -121,19 +121,19 @@ class Services {
         .then((response) => response.json())
         .then((json) => {
           if (Array.isArray(json)) {
-            Services.interactions = {
+            ServiceInterface.interactions = {
               ratings: json,
               time: -1,
             };
           } else {
-            Services.interactions = json;
-            if (Services.interactions.time === null) {
-              Services.interactions.time = 0;
+            ServiceInterface.interactions = json;
+            if (ServiceInterface.interactions.time === null) {
+              ServiceInterface.interactions.time = 0;
             }
           }
         }).catch((error) => console.error(error));
     }
-    return Services.interactions;
+    return ServiceInterface.interactions;
   }
 
   static getRatings = async (username: string, la: string): Promise<RatingRecord[]> => {
@@ -158,7 +158,7 @@ class Services {
 
   static isAdmin = async (username: string):
       Promise<boolean> => {
-    const interactions = (await Services.getInteractions(username));
+    const interactions = (await ServiceInterface.getInteractions(username));
     return interactions.ratings.length > 0
         || (interactions.time !== null
             && !Number.isNaN(interactions.time)
@@ -167,11 +167,11 @@ class Services {
 
   static courseREST = async (
     username: string,
-    course: string|null = null): Promise<string> => Services.rest(
+    course: string|null = null): Promise<string> => ServiceInterface.rest(
     'https://cse.unl.edu/~learningassistants/LA-Feedback/course.php',
     username,
     course,
   ).then((json) => (json.course ? json.course : ''));
 }
 
-export default Services;
+export default ServiceInterface;

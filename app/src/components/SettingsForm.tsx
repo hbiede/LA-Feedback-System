@@ -6,7 +6,7 @@
 
 import React, { ChangeEvent, useCallback, useState } from 'react';
 
-import Services from '../services/backgroundService';
+import ServiceInterface from '../statics/ServiceInterface';
 
 import { COURSES } from '../types';
 
@@ -59,16 +59,16 @@ const SettingsForm = ({
       setDisabled(true);
 
       const trimmedName = nameRecord.trim();
-      Services.nameREST(selectedUsername, trimmedName);
-      Services.courseREST(selectedUsername, course);
+      ServiceInterface.nameREST(selectedUsername, trimmedName);
+      ServiceInterface.courseREST(selectedUsername, course);
       if (!isAdmin) {
         setName(trimmedName);
         closeModal();
       }
     } else {
       setHasSelectedUsername(true);
-      Services.nameREST(selectedUsername).then((laName) => setNameRecord(laName));
-      Services.courseREST(selectedUsername).then((laCourse) => setCourse(laCourse));
+      ServiceInterface.nameREST(selectedUsername).then((laName) => setNameRecord(laName));
+      ServiceInterface.courseREST(selectedUsername).then((laCourse) => setCourse(laCourse));
     }
   }, [
     isAdmin,
