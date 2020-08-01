@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.2.1\n- Allow dismissing changelog modal with navbar button",
     "## 1.2.0\n- Animation feedback responses",
     "## 1.1.0\n- Display Version and Changelog in NavBar\n- Make Admin table searchable, filterable, and sortable\n- Allow LAs to modify their name and default course\n- Allow Admins to modify the names and default courses of all LAs\n- Add time stamp to rating table on Admin panel\n- Accept willingness to be contacted from students\n- Redesign form and thank you pages\n- Display real names (instead of CSE usernames) of LAs on Admin and form pages\n- Add context to ratings on form",
     "## 1.0.0\n- Initial release"

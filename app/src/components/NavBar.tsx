@@ -42,13 +42,13 @@ const NavBar = ({
     setModalVisibility(false);
   }, [setModalVisibility]);
 
-  const showChangelog = useCallback(() => {
-    setChangelogVisibility(true);
-  }, [setChangelogVisibility]);
-
   const hideChangelog = useCallback(() => {
     setChangelogVisibility(false);
   }, [setChangelogVisibility]);
+
+  const toggleChangelog = useCallback(() => {
+    setChangelogVisibility(!showingChangelog);
+  }, [showingChangelog, setChangelogVisibility]);
 
   const switchToAdmin = useCallback(() => {
     toggleAdminAsLA();
@@ -72,8 +72,8 @@ const NavBar = ({
 
         <p className="navbar-brand" style={{ marginBottom: 0 }}>
           {`LA Feedback${isAdmin ? ' Admin' : ''} `}
-          <button className="btn btn-dark" onClick={showChangelog}>
-          <small>{`v${packageJson.version}`}</small>
+          <button type="button" className="btn btn-dark" onClick={toggleChangelog}>
+            <small>{`v${packageJson.version}`}</small>
           </button>
         </p>
 

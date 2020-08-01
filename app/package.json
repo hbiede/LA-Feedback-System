@@ -1,6 +1,6 @@
 {
   "name": "la-feedback-system",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "license": "Apache-2.0",
   "description": "A website to gather feedback from students after interactions with LAs",
