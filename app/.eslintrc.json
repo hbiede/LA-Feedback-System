@@ -33,6 +33,7 @@
     "prettier"
   ],
   "rules": {
+    "key-spacing": "off",
     "no-multi-spaces": "off",
     "no-case-declarations": "off",
     "prefer-promise-reject-errors": "off",
