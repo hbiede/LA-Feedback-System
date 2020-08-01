@@ -6,150 +6,168 @@
 
 /* eslint-disable no-alert */
 import React, {
-  ChangeEvent, Component, MutableRefObject,
+  ChangeEvent, useCallback, useState,
 } from 'react';
 
-import ServiceInterface from '../statics/ServiceInterface';
+import { Transition } from 'react-transition-group';
 
+import ServiceInterface from '../statics/ServiceInterface';
 import { COURSES } from '../statics/Types';
 
 type Props = {
   defaultCourse: string|null;
   isAdmin: boolean;
   name: string|null;
-  responseDivRef?: MutableRefObject<HTMLDivElement | null>;
   username: string;
 };
 
-type State = {
-  course: string;
-  disabled: boolean;
-  studentCSE: string;
-  username: string;
+type Response = {
+  class: string;
+  content: string;
+}
+
+const TRANSITION_TIME = 300;
+const DEFAULT_STYLES = {
+  transition: `opacity ${TRANSITION_TIME}ms ease-in-out`,
+  opacity: 0,
 };
 
-class FeedbackForm extends Component<Props, State> {
-  constructor(props: Readonly<Props>) {
-    super(props);
-    const { defaultCourse, username } = this.props;
-    this.state = {
-      course: defaultCourse ?? '',
-      disabled: false,
-      studentCSE: '',
-      username,
-    };
-  }
+const TRANSITION_STYLE = {
+  entering:  { opacity: 1 },
+  entered:   { opacity: 1 },
+  exiting:   { opacity: 0 },
+  exited:    { opacity: 0 },
+  unmounted: { opacity: 0 },
+};
 
-  resetAlert = () => {
-    const { responseDivRef } = this.props;
+const FeedbackForm = ({
+  defaultCourse, isAdmin, name, username: usernameProp,
+}: Props) => {
+  // constructor(props: Readonly<Props>) {
+  //   super(props);
+  //   const { defaultCourse, username } = this.props;
+  //   this.state = {
+  //     course: defaultCourse ?? '',
+  //     disabled: false,
+  //     studentCSE: '',
+  //     username,
+  //   };
+  // }
+
+  const [course, setCourse] = useState(defaultCourse ?? '');
+  const [disabled, setDisabled] = useState(true);
+  const [displayingResponse, setDisplayingResponse] = useState(false);
+  const [responseContent, setResponseContent] = useState<Response|null>(null);
+  const [studentCSE, setStudentCSE] = useState('');
+  const [username, setUsername] = useState(usernameProp);
+
+  const resetAlert = useCallback(() => {
     setTimeout(() => {
-      if (responseDivRef?.current) {
-        responseDivRef.current.innerHTML = '';
-      }
+      setDisplayingResponse(false);
     }, 10000);
-  }
+  }, [setDisplayingResponse]);
 
-  handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { isAdmin, responseDivRef } = this.props;
-    if (responseDivRef?.current) {
-      responseDivRef.current.innerHTML = '';
-    }
+  const changeResponse = useCallback((newContent: Response) => {
+    setResponseContent(newContent);
+    resetAlert();
+  }, [resetAlert, setResponseContent]);
+
+  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setResponseContent(null);
     switch (event.target.name) {
       case 'la_username':
         if (isAdmin) {
-          this.setState({ username: event.target.value });
+          setUsername(event.target.value);
         }
         break;
       case 'student_cse_login':
-        this.setState({ studentCSE: event.target.value });
+        setStudentCSE(event.target.value);
         break;
       case 'course':
-        if (event.target.value !== 'choose') {
-          this.setState({ course: event.target.value.toLowerCase().trim() });
-        }
+        setCourse(event.target.value);
         break;
       default:
-        console.warn(`${event.target.name} is an invalid ID`);
+        alert(`${event.target.name} is an invalid ID`);
         break;
     }
-  };
+    const shouldBeDisabled = course === 'choose'
+      || studentCSE.trim().length === 0
+      || username.trim().length === 0;
+    if (disabled !== shouldBeDisabled) {
+      setDisabled(shouldBeDisabled);
+    }
+  }, [
+    course,
+    setCourse,
+    disabled,
+    isAdmin,
+    studentCSE,
+    setStudentCSE,
+    username,
+    setUsername,
+    setResponseContent,
+  ]);
 
-  handleSubmit = () => {
-    const {
-      studentCSE,
-      course,
-    } = this.state;
-    const { name, responseDivRef } = this.props;
+  const handleSubmit = useCallback(() => {
     if (name === null) {
-      const error = 'Please set your name before submitting feedback (See the LA Settings)';
-      if (responseDivRef?.current) {
-        const alertType = 'danger';
-        let alert = `<div class="alert alert-${alertType}" role="alert">`;
-        alert += error;
-        alert += '</div>';
-
-        responseDivRef.current.innerHTML = alert;
-        this.resetAlert();
-      } else {
-        alert(error);
-      }
+      changeResponse({
+        class: 'alert-danger',
+        content: 'Please set your name before submitting feedback (See the LA Settings)',
+      });
       return;
     }
 
     if (studentCSE && studentCSE.trim().length > 0 && course && course.trim().length > 0) {
-      const { username } = this.state;
-      this.setState({ disabled: true });
+      setDisabled(true);
       ServiceInterface.sendEmail(studentCSE, username, course).then((response) => {
-        const error = response === '0' || response === 0
-          ? 'Interaction recorded'
-          : `Failed to Send Message. Please Try Again. (Error Code ${response})`;
-        if (responseDivRef?.current) {
-          const alertType = response === '0' || response === 0 ? 'success' : 'danger';
-          let alert = `<div class="alert alert-${alertType}" role="alert">`;
-          alert += error;
-          alert += '</div>';
-
-          responseDivRef.current.innerHTML = alert;
-          this.resetAlert();
+        if (response === '0' || response === 0) {
+          changeResponse({
+            class: 'alert-success',
+            content: 'Interaction recorded',
+          });
         } else {
-          alert(error);
+          changeResponse({
+            class: 'alert-danger',
+            content: `Failed to Send Message. Please Try Again. (Error Code ${response})`,
+          });
         }
-        this.setState({ disabled: false });
+        setDisabled(false);
       }).catch((error) => {
-        const errorMsg = `Failed to Send Message. Please Try Again. (Error: ${error})`;
-        if (responseDivRef?.current) {
-          let alert = '<div class="alert alert-danger" role="alert">';
-          alert += errorMsg;
-          alert += '</div>';
-
-          responseDivRef.current.innerHTML = alert;
-          this.resetAlert();
-        } else {
-          alert(errorMsg);
-        }
-        this.setState({ disabled: false });
+        changeResponse({
+          class: 'alert-danger',
+          content: `Failed to Send Message. Please Try Again. (Error: ${error})`,
+        });
+        setDisabled(false);
       });
     } else {
-      const error = studentCSE && studentCSE.trim().length > 0
-        ? 'Invalid course'
-        : 'Invalid student';
-      if (responseDivRef?.current) {
-        let alert = '<div class="alert alert-danger" role="alert">';
-        alert += error;
-        alert += '</div>';
-
-        responseDivRef.current.innerHTML = alert;
-        this.resetAlert();
-      } else {
-        alert(error);
-      }
+      changeResponse({
+        class: 'alert-danger',
+        content: studentCSE && studentCSE.trim().length > 0
+          ? 'Invalid course'
+          : 'Invalid student',
+      });
     }
-  };
+  }, [changeResponse, course, name, studentCSE, username]);
 
-  render() {
-    const { disabled, username } = this.state;
-    const { defaultCourse, isAdmin } = this.props;
-    return (
+  const hasResponse = displayingResponse
+    && responseContent !== null
+    && responseContent.content.trim().length !== 0;
+  return (
+    <>
+      <Transition in={hasResponse} timeout={TRANSITION_TIME}>
+        {(state) => (
+          <div
+            className={['alert', responseContent?.class].join(' ')}
+            id="responseDiv"
+            style={{
+              ...DEFAULT_STYLES,
+              ...TRANSITION_STYLE[state],
+            }}
+          >
+            {responseContent?.content}
+          </div>
+        )}
+      </Transition>
       <form>
         <div className="form-group row">
           <label htmlFor="la_username" className="col-sm-4 col-form-label">
@@ -162,7 +180,7 @@ class FeedbackForm extends Component<Props, State> {
               name="la_username"
               id="la_username"
               value={username}
-              onChange={this.handleChange}
+              onChange={handleChange}
               disabled={!isAdmin}
             />
           </div>
@@ -178,7 +196,7 @@ class FeedbackForm extends Component<Props, State> {
               name="course"
               id="course"
               placeholder="Course"
-              onChange={this.handleChange}
+              onChange={handleChange}
             >
               <option
                 value="choose"
@@ -186,8 +204,8 @@ class FeedbackForm extends Component<Props, State> {
               >
                 (choose)
               </option>
-              {COURSES.map((course) => (
-                <option value={course} selected={course === defaultCourse}>{course}</option>
+              {COURSES.map((c) => (
+                <option value={c} selected={c === defaultCourse}>{c}</option>
               ))}
             </select>
           </div>
@@ -204,7 +222,7 @@ class FeedbackForm extends Component<Props, State> {
               name="student_cse_login"
               id="student_cse_login"
               placeholder="Student CSE Login"
-              onChange={this.handleChange}
+              onChange={handleChange}
             />
           </div>
         </div>
@@ -216,7 +234,7 @@ class FeedbackForm extends Component<Props, State> {
               type="button"
               className="btn btn-primary active"
               value="Submit"
-              onClick={this.handleSubmit}
+              onClick={handleSubmit}
               disabled={disabled}
             >
               Submit
@@ -224,8 +242,8 @@ class FeedbackForm extends Component<Props, State> {
           </div>
         </div>
       </form>
-    );
-  }
-}
+    </>
+  );
+};
 
 export default FeedbackForm;
