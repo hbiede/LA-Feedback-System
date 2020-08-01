@@ -4,12 +4,7 @@
  * File created by Hundter Biede for the UNL CSE Learning Assistant Program
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import FeedbackForm from './screens/FeedbackForm';
 import AdminTable from './screens/AdminTable';
@@ -64,7 +59,6 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const responseDivRef = useRef<HTMLDivElement | null>(null);
   return (
     <div className="App">
       {username === null
@@ -109,14 +103,11 @@ function App() {
                         the Student&apos;s CSE username
                       </p>
 
-                      <div id="responseDiv" ref={responseDivRef} />
-
                       <div className="col-md-6">
                         <FeedbackForm
                           defaultCourse={course}
                           isAdmin={isAdmin}
                           name={name}
-                          responseDivRef={responseDivRef}
                           username={username}
                         />
                       </div>
