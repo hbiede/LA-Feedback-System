@@ -6,7 +6,12 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { RatingRecord, SortConfig, SORT_CHARS } from '../statics/Types';
+import {
+  RatingRecord,
+  SortConfig,
+  SORT_CHARS,
+  LOW_RATING_BAR,
+} from '../statics/Types';
 
 type Props = {
   ratings: RatingRecord[];
@@ -81,7 +86,12 @@ const LATable = ({ ratings }: Props) => {
       </thead>
       <tbody>
         {getData.map((row) => (
-          <tr>
+          <tr className={
+            (row.rating !== null && !Number.isNaN(row.rating) && row.rating < LOW_RATING_BAR)
+              ? 'table-danger'
+              : ''
+            }
+          >
             <td>{row.rating}</td>
             <td>{row.time.toLocaleString()}</td>
             {isMultiCourseLA

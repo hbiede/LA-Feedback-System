@@ -45,3 +45,5 @@ export type RESTResponse = {
 export const COURSES = ['101', '155E', '155N', '156'];
 
 export const SORT_CHARS = new Map<number, string>().set(1, '\u25b2').set(-1, '\u25bc');
+
+export const LOW_RATING_BAR = 5;

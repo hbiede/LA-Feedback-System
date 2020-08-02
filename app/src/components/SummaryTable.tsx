@@ -11,6 +11,7 @@ import {
   InteractionSummary,
   SortConfig,
   SORT_CHARS,
+  LOW_RATING_BAR,
 } from '../statics/Types';
 
 type Props = {
@@ -131,7 +132,14 @@ const SummaryTable = ({ showLA, interactions }: Props) => {
         <tbody>
           {getData.map((row: InteractionRecord) => (
             row.username && row.username.trim().length > 0 && !Number.isNaN(row.count) && (
-            <tr onClick={() => showLA(row)}>
+            <tr
+              className={
+                (row.avg !== null && !Number.isNaN(row.avg) && row.avg < LOW_RATING_BAR)
+                  ? 'table-danger'
+                  : ''
+              }
+              onClick={() => showLA(row)}
+            >
               <td>{row.name ? row.name : row.username}</td>
               <td>{row.course}</td>
               <td>{row.count}</td>
