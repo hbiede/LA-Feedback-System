@@ -7,53 +7,79 @@
 import React, { useCallback, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
+import shallow from 'zustand/shallow';
 
 import packageJson from '../../package.json';
-import ServiceInterface from '../statics/ServiceInterface';
+import Redux from '../redux/modules';
 import SettingsForm from './SettingsForm';
 
 import changelog from '../CHANGELOG.json';
 
 type Props = {
   adminAsLA: boolean;
-  isAdmin: boolean;
-  name: string|null;
   toggleAdminAsLA: () => void;
-  setName: (newName: string) => void;
-  username: string;
 };
 
-const NavBar = ({
-  adminAsLA,
-  isAdmin,
-  name,
-  toggleAdminAsLA,
-  setName,
-  username,
-} : Props) => {
-  const [showingModal, setModalVisibility] = useState(false);
+const MODAL_STYLE = {
+  overlay: { marginTop: 50, zIndex: 2, },
+};
+
+const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
+  const {
+    isAdmin,
+    logout,
+  } = Redux((state) => ({
+    isAdmin: state.isAdmin,
+    logout: state.logout,
+  }), shallow);
+  const [showingSettings, setSettingsVisibility] = useState(false);
   const [showingChangelog, setChangelogVisibility] = useState(false);
 
-  const showModal = useCallback(() => {
-    setModalVisibility(true);
-  }, [setModalVisibility]);
+  const hideSettings = useCallback(() => {
+    setSettingsVisibility(false);
+  }, [setSettingsVisibility]);
 
-  const hideModal = useCallback(() => {
-    setModalVisibility(false);
-  }, [setModalVisibility]);
+  const toggleSettings = useCallback(() => {
+    if (showingSettings) {
+      setSettingsVisibility(false);
+    } else {
+      setChangelogVisibility(false);
+      setSettingsVisibility(true);
+    }
+  }, [showingSettings, setSettingsVisibility, setChangelogVisibility]);
 
   const hideChangelog = useCallback(() => {
     setChangelogVisibility(false);
   }, [setChangelogVisibility]);
 
   const toggleChangelog = useCallback(() => {
-    setChangelogVisibility(!showingChangelog);
-  }, [showingChangelog, setChangelogVisibility]);
+    if (showingChangelog) {
+      setChangelogVisibility(false);
+    } else {
+      setSettingsVisibility(false);
+      setChangelogVisibility(true);
+    }
+  }, [showingChangelog, setChangelogVisibility, setSettingsVisibility]);
 
   const switchToAdmin = useCallback(() => {
     toggleAdminAsLA();
-    hideModal();
-  }, [toggleAdminAsLA, hideModal]);
+    hideSettings();
+  }, [toggleAdminAsLA, hideSettings]);
+
+  if (!changelog.changes[0].includes(packageJson.version)) {
+    return (
+      <Modal
+        isOpen
+        onRequestClose={() => {}}
+        contentLabel="Changelog"
+        style={{ overlay: { marginTop: 50 } }}
+      >
+        <div>
+          Someone forgot to update the changelog and/or version number
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <>
@@ -79,6 +105,29 @@ const NavBar = ({
 
         <div className="collapse navbar-collapse" id="laNavBar">
           <ul className="navbar-nav mr-auto">
+            {isAdmin && (
+            <li className="nav-item">
+              <button
+                className="btn btn-dark"
+                type="button"
+                onClick={switchToAdmin}
+              >
+                {adminAsLA ? 'Admin Panel' : 'LA Page'}
+              </button>
+            </li>
+            )}
+            {(!isAdmin || adminAsLA)
+              && (
+                <li className="nav-item">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={toggleSettings}
+                  >
+                    LA Settings
+                  </button>
+                </li>
+              )}
             <li className="nav-item dropdown">
               <button
                 aria-expanded="false"
@@ -125,34 +174,11 @@ const NavBar = ({
                 </a>
               </div>
             </li>
-            {isAdmin && (
             <li className="nav-item">
               <button
                 className="btn btn-dark"
                 type="button"
-                onClick={switchToAdmin}
-              >
-                {adminAsLA ? 'Admin Panel' : 'LA Page'}
-              </button>
-            </li>
-            )}
-            {(!isAdmin || adminAsLA)
-              && (
-                <li className="nav-item">
-                  <button
-                    className="btn btn-dark"
-                    type="button"
-                    onClick={showingModal ? hideModal : showModal}
-                  >
-                    LA Settings
-                  </button>
-                </li>
-              )}
-            <li className="nav-item">
-              <button
-                className="btn btn-dark"
-                type="button"
-                onClick={ServiceInterface.logout}
+                onClick={logout}
               >
                 Logout
               </button>
@@ -162,26 +188,22 @@ const NavBar = ({
       </nav>
       {(!isAdmin || adminAsLA) && (
       <Modal
-        isOpen={showingModal}
-        onRequestClose={hideModal}
+        isOpen={showingSettings}
+        onRequestClose={hideSettings}
         contentLabel="LA Settings"
-        style={{ overlay: { marginTop: 50 } }}
+        style={MODAL_STYLE}
       >
         <button
           type="button"
           className="close"
           data-dismiss="modal"
           aria-label="Close"
-          onClick={hideModal}
+          onClick={hideSettings}
         >
           <span aria-hidden="true">×</span>
         </button>
         <SettingsForm
-          closeModal={hideModal}
-          isAdmin={isAdmin}
-          name={name}
-          setName={setName}
-          username={username}
+          closeModal={hideSettings}
         />
       </Modal>
       )}
@@ -189,7 +211,7 @@ const NavBar = ({
         isOpen={showingChangelog}
         onRequestClose={hideChangelog}
         contentLabel="Changelog"
-        style={{ overlay: { marginTop: 50 } }}
+        style={MODAL_STYLE}
       >
         <button
           type="button"

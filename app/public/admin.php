@@ -27,7 +27,7 @@ function get_time_to_complete() {
 function get_interactions() {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT username, name, cse_usernames.course, COUNT(i.interaction_key) AS count, ' .
-        'AVG(rating) AS avg FROM cse_usernames LEFT JOIN interactions i on ' .
+        'COUNT(f.feedback_key) AS fCount, AVG(rating) AS avg FROM cse_usernames LEFT JOIN interactions i on ' .
         'cse_usernames.username_key = i.la_username_key LEFT JOIN feedback f on i.interaction_key = f.interaction_key ' .
         'GROUP BY username ORDER BY username;');
     $returnVal = [];

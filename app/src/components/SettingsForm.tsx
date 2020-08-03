@@ -5,98 +5,111 @@
  */
 
 import React, { ChangeEvent, useCallback, useState } from 'react';
-
-import ServiceInterface from '../statics/ServiceInterface';
+import shallow from 'zustand/shallow';
 
 import { COURSES } from '../statics/Types';
 
+import Redux from '../redux/modules';
+
 type Props = {
   closeModal: () => void;
-  isAdmin: boolean;
-  name: string|null;
-  setName: (newName: string) => void;
-  username: string;
 };
 
 const SettingsForm = ({
   closeModal,
-  isAdmin,
-  name,
-  setName,
-  username,
 } : Props) => {
-  const [selectedUsername, setSelectedUsername] = useState(username);
-  const [hasSelectedUsername, setHasSelectedUsername] = useState(!isAdmin);
-  const [nameRecord, setNameRecord] = useState<string>(name || '');
-  const [disabled, setDisabled] = useState<boolean>(
-    !isAdmin || name === null || name.trim().length === 0,
+  const {
+    selectedUsername,
+    setSelectedUsername,
+    name,
+    setName,
+    course,
+    setCourse,
+    isAdmin,
+    setResponse,
+  } = Redux((state) => (
+    {
+      selectedUsername: state.selectedUsername,
+      setSelectedUsername: state.setSelectedUsername,
+      name: state.name,
+      setName: state.setName,
+      course: state.course,
+      setCourse: state.setCourse,
+      isAdmin: state.isAdmin,
+      setResponse: state.setResponse,
+    }
+  ), shallow);
+
+  const [selectedUsernameRecord, setSelectedUsernameRecord] = useState<string>(selectedUsername);
+  const [nameRecord, setNameRecord] = useState<string>(name);
+  const [courseRecord, setCourseRecord] = useState<string|null>(course);
+  const [hasSelectedUsername, setHasSelectedUsername] = useState<boolean>(
+    !isAdmin || (selectedUsername !== null && selectedUsername.trim().length > 0),
   );
-  const [course, setCourse] = useState<string|null>(null);
 
   const handleChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     if (event.target.name === 'selected_username') {
-      setSelectedUsername(event.target.value);
+      setSelectedUsernameRecord(event.target.value);
     } else if (event.target.name === 'la_name') {
       const changedName = event.target.value;
       setNameRecord(changedName);
-
-      const shouldBeDisabled = (changedName === null || changedName.trim().length === 0)
-          && (course === null || course.trim().length === 0);
-      if (disabled !== shouldBeDisabled) {
-        setDisabled(shouldBeDisabled);
-      }
     } else if (event.target.name === 'course') {
       const isChoose = event.target.value === 'choose';
-      setCourse(isChoose ? null : event.target.value);
-      setDisabled(isChoose);
+      setCourseRecord(isChoose ? null : event.target.value);
     } else {
-      console.warn(`${event.target.name} is an invalid ID`);
+      setResponse({ class: 'danger', content: `${event.target.name} is an invalid ID` });
     }
-  }, [course, disabled, setDisabled, setNameRecord, setSelectedUsername]);
+  }, [setResponse]);
 
   const handleSubmit = useCallback(() => {
     if (hasSelectedUsername) {
-      setDisabled(true);
-
       const trimmedName = nameRecord.trim();
-      ServiceInterface.nameREST(selectedUsername, trimmedName);
-      ServiceInterface.courseREST(selectedUsername, course);
+      setName({ name: trimmedName });
+      if (courseRecord !== null && courseRecord !== 'choose') {
+        setCourse({ course: courseRecord });
+      }
       if (!isAdmin) {
-        setName(trimmedName);
         closeModal();
       }
-    } else {
+    } else if (isAdmin) {
+      setSelectedUsername({ username: selectedUsernameRecord });
       setHasSelectedUsername(true);
-      ServiceInterface.nameREST(selectedUsername).then((laName) => setNameRecord(laName));
-      ServiceInterface.courseREST(selectedUsername).then((laCourse) => setCourse(laCourse));
     }
   }, [
-    isAdmin,
-    course,
+    hasSelectedUsername,
     nameRecord,
     setName,
-    setDisabled,
+    setCourse,
+    courseRecord,
+    isAdmin,
+    setSelectedUsername,
+    selectedUsernameRecord,
     closeModal,
-    selectedUsername,
-    hasSelectedUsername,
-    setHasSelectedUsername,
   ]);
 
   const changeLA = useCallback(() => {
+    setSelectedUsername({ username: '' });
     setHasSelectedUsername(false);
-    setDisabled(false);
-  }, [setHasSelectedUsername]);
+  }, [setSelectedUsername]);
+
+  const disabled = (hasSelectedUsername && (!nameRecord || nameRecord.trim().length === 0))
+    || (!hasSelectedUsername && isAdmin
+      && (!selectedUsernameRecord || selectedUsernameRecord.trim().length === 0));
 
   return (
     <>
-      <h2>LA Settings</h2>
+      <h2>
+        {`LA Settings${(isAdmin)
+          ? ` (${hasSelectedUsername ? selectedUsername : 'Admin Panel'})`
+          : ''}`}
+      </h2>
       <form>
         {hasSelectedUsername
           ? (
             <>
               <div className="form-group row">
                 <label htmlFor="la_name" className="col-sm-4 col-form-label">
-                  Your Name
+                  {isAdmin ? 'LA\'s Name' : 'Your Name'}
                 </label>
                 <div className="col-sm-8">
                   <input
@@ -104,6 +117,7 @@ const SettingsForm = ({
                     className="form-control"
                     name="la_name"
                     id="la_name"
+                    defaultValue={name}
                     value={nameRecord || ''}
                     onChange={handleChange}
                   />
@@ -120,6 +134,7 @@ const SettingsForm = ({
                     id="course"
                     placeholder="Course"
                     onChange={handleChange}
+                    defaultValue={course}
                   >
                     <option value="0">(choose)</option>
                     {COURSES.map((c) => <option value={c} selected={course === c}>{c}</option>)}
@@ -156,7 +171,7 @@ const SettingsForm = ({
                   className="form-control"
                   name="selected_username"
                   id="selected_username"
-                  value={selectedUsername}
+                  value={selectedUsernameRecord.length > 0 ? selectedUsernameRecord : undefined}
                   onChange={handleChange}
                 />
               </div>

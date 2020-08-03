@@ -11,19 +11,18 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import shallow from 'zustand/shallow';
 
-import {
-  COURSES, InteractionRecord, InteractionSummary, RatingRecord,
-} from '../statics/Types';
+import { COURSES } from '../statics/Types';
 
-import ServiceInterface from '../statics/ServiceInterface';
 import FeedbackTimeText from '../components/FeedbackTimeText';
 import LATable from '../components/LATable';
 import SummaryTable from '../components/SummaryTable';
 
+import Redux from '../redux/modules';
+
 type Props = {
   style?: CSSProperties;
-  username: string;
 };
 
 type LA = {
@@ -33,39 +32,60 @@ type LA = {
 };
 
 export default function AdminTable(props: Props) {
-  const [interactions, setInteractions] = useState<InteractionSummary>({ ratings: [], time: -1 });
-  const [selectedLA, setSelectedLA] = useState<LA | null>(null);
-  const [ratings, setRatings] = useState<RatingRecord[]>([]);
-  const [editingName, setEditingName] = useState<boolean>(false);
-  const [newName, setNewName] = useState<string | null>(null);
-  const [course, setCourse] = useState<string|null>(null);
+  const {
+    interactions,
+    getInteractions,
+    setInteractions,
+    getRatings,
+    selectedUsername,
+    setSelectedUsername,
+    name,
+    setName,
+    course,
+    setCourse,
+  } = Redux((state) => (
+    {
+      interactions: state.interactions,
+      getInteractions: state.getInteractions,
+      setInteractions: state.setInteractions,
+      getRatings: state.getRatings,
+      selectedUsername: state.selectedUsername,
+      setSelectedUsername: state.setSelectedUsername,
+      name: state.name,
+      setName: state.setName,
+      course: state.course,
+      setCourse: state.setCourse,
+    }
+  ), shallow);
 
-  const { username, style } = props;
+  const [selectedLA, setSelectedLA] = useState<LA | null>(null);
+  const [editingName, setEditingName] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string | null>(name);
+  const [courseRecord, setCourseRecord] = useState<string|null>(course);
+
+  const { style } = props;
+
+  const showLA = useCallback((la: LA) => {
+    setSelectedLA(la);
+    setSelectedUsername(la);
+    setNewName(la.name ?? la.username);
+    setCourseRecord(la.course ?? null);
+  }, [setSelectedUsername]);
 
   useEffect(() => {
-    ServiceInterface.getInteractions(username).then((ints) => setInteractions(ints));
+    setInterval(() => (getInteractions()), 900000); // Update every 15 minutes
+    if (selectedUsername !== null && selectedUsername.trim().length > 0) {
+      getRatings();
+      showLA(interactions.ratings.filter((la) => la.username === selectedUsername)[0]);
+    }
     // No Deps == componentDidMount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const showLA = useCallback((la: LA) => {
-    ServiceInterface.getRatings(username, la.username).then((newRatings) => {
-      setRatings(newRatings);
-      const modifiedLA = la;
-      setNewName(modifiedLA.name ?? modifiedLA.username);
-      ServiceInterface.courseREST(la.username).then((laCourse) => {
-        modifiedLA.course = laCourse;
-        setSelectedLA(modifiedLA);
-        setCourse(laCourse);
-      });
-    });
-  }, [setSelectedLA, username, setRatings]);
-
   const clearSelection = useCallback(() => {
     setSelectedLA(null);
-    setRatings([]);
-    setCourse(null);
-  }, [setSelectedLA, setRatings]);
+    setCourseRecord(null);
+  }, [setSelectedLA, setCourseRecord]);
 
   const setEditing = useCallback(() => {
     setEditingName(true);
@@ -79,7 +99,7 @@ export default function AdminTable(props: Props) {
       setSelectedLA({
         ...selectedLA,
         name: trimmedName,
-        course,
+        course: courseRecord,
       });
       const matchingLA = interactions.ratings
         .findIndex((la) => la.username === selectedLA.username);
@@ -97,9 +117,12 @@ export default function AdminTable(props: Props) {
         ],
       });
 
-      ServiceInterface.nameREST(selectedLA.username, trimmedName);
+      setName({ name: trimmedName });
+      if (courseRecord !== null && courseRecord !== 'choose') {
+        setCourse({ course: courseRecord });
+      }
     }
-  }, [interactions, selectedLA, setSelectedLA, setEditingName, newName]);
+  }, [selectedLA, newName, courseRecord, interactions, setInteractions, setName, setCourse]);
 
   const changeName = useCallback((event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setNewName(event.target.value);
@@ -107,8 +130,8 @@ export default function AdminTable(props: Props) {
 
   const handleCourseSelect = useCallback(
     (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      setCourse(event.currentTarget.value);
-    }, [],
+      setCourseRecord(event.currentTarget.value);
+    }, [setCourseRecord],
   );
 
   if (interactions.ratings.length === 0) {
@@ -122,8 +145,8 @@ export default function AdminTable(props: Props) {
   if (selectedLA === null) {
     return (
       <div style={style} className="col-md-10">
-        <SummaryTable showLA={showLA} interactions={interactions} />
-        <FeedbackTimeText interactions={interactions} />
+        <SummaryTable showLA={showLA} />
+        <FeedbackTimeText />
       </div>
     );
   }
@@ -131,14 +154,15 @@ export default function AdminTable(props: Props) {
   return (
     <div style={style} className="col-md-10">
       <div className="form-row">
-        <button className="btn btn-dark" type="button" onClick={clearSelection}>Back</button>
         <div style={{ marginTop: 10 }} className="input-group mb-3">
+          <button className="btn btn-dark" type="button" onClick={clearSelection}>Back</button>
           <input
+            style={{ marginLeft: 10 }}
             type="text"
             className="form-control"
             placeholder="LA's Name"
             aria-label="LA's Name"
-            aria-describedby="basic-addon2"
+            aria-describedby="LA's Name"
             value={newName || ''}
             onChange={changeName}
             disabled={!editingName}
@@ -154,7 +178,7 @@ export default function AdminTable(props: Props) {
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    {course}
+                    {courseRecord}
                   </button>
                   <div className="dropdown-menu">
                     {COURSES.map((c) => (
@@ -175,7 +199,7 @@ export default function AdminTable(props: Props) {
               )
               : (
                 <>
-                  <span className="input-group-text">{course}</span>
+                  <span className="input-group-text">{courseRecord}</span>
                   <button className="btn btn-outline-secondary" type="button" onClick={setEditing}>
                     Edit
                   </button>
@@ -184,7 +208,7 @@ export default function AdminTable(props: Props) {
           </div>
         </div>
       </div>
-      <LATable ratings={ratings} />
+      <LATable />
     </div>
   );
 }

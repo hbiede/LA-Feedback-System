@@ -5,21 +5,27 @@
  */
 
 import React from 'react';
+import shallow from 'zustand/shallow';
 
-import { InteractionRecord, InteractionSummary } from '../statics/Types';
+import Redux from '../redux/modules';
 
-type Props = {
-  interactions: InteractionSummary;
-}
+import { InteractionRecord } from '../statics/Types';
 
-const FeedbackTimeText = ({ interactions }: Props) => {
+const FeedbackTimeText = () => {
+  const {
+    interactions,
+  } = Redux((state) => (
+    {
+      interactions: state.interactions,
+    }
+  ), shallow);
   const { time } = interactions;
   let timeText = null;
   if (time !== null && time > 0) {
     const minutes = Math.floor(time / 1000 / 60);
     const seconds = (time / 1000) % 60;
     const numberOfInteractions = interactions.ratings
-      .reduce((acc: number, la: InteractionRecord) => acc + la.count, 0);
+      .reduce((acc: number, la: InteractionRecord) => acc + la.fCount, 0);
     timeText = `Average time to give feedback for ${numberOfInteractions} interaction${
       minutes !== 1 ? 's' : ''}: ${minutes} minute${minutes !== 1 ? 's' : ''}${
       seconds > 1 ? ` and ${seconds.toPrecision(3)} seconds` : ''

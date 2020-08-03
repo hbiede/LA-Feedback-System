@@ -5,10 +5,12 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
+import shallow from 'zustand/shallow';
+
+import Redux from '../redux/modules';
 
 import {
   InteractionRecord,
-  InteractionSummary,
   SortConfig,
   SORT_CHARS,
   LOW_RATING_BAR,
@@ -16,10 +18,17 @@ import {
 
 type Props = {
   showLA: (la: InteractionRecord) => void;
-  interactions: InteractionSummary;
 };
 
-const SummaryTable = ({ showLA, interactions }: Props) => {
+const SummaryTable = ({ showLA }: Props) => {
+  const {
+    interactions,
+  } = Redux((state) => (
+    {
+      interactions: state.interactions,
+    }
+  ), shallow);
+
   const [sortConfig, setSortConfig] = useState<SortConfig>({ column: 'la', order: 1 });
   const [searchTerm, setSearchTerm] = useState<string>('');
 

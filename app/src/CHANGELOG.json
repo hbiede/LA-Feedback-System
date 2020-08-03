@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.2.0\n- Convert to Redux state management (using Zustand)\n- Implement Dispatch\n- Add version check",
     "## 1.1.2\n- Mark low ratings on admin table",
     "## 1.1.1\n- Allow dismissing changelog modal with navbar button",
     "## 1.1.0\n- Animate feedback responses",

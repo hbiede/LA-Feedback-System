@@ -10,6 +10,7 @@ export type InteractionRecord = {
   name?: string;
   course: string;
   count: number;
+  fCount: number;
   avg: number;
 };
 

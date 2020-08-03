@@ -5,63 +5,67 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { Transition } from 'react-transition-group';
+import shallow from 'zustand/shallow';
 
 import FeedbackForm from './screens/FeedbackForm';
 import AdminTable from './screens/AdminTable';
 
-import ServiceInterface from './statics/ServiceInterface';
 import NavBar from './components/NavBar';
 
+import Redux, { api } from './redux/modules';
+
+const TRANSITION_TIME = 300;
+const DEFAULT_STYLES = {
+  transition: `opacity ${TRANSITION_TIME}ms ease-in-out`,
+  opacity: 0,
+};
+
+const TRANSITION_STYLE = {
+  entering:  { opacity: 1 },
+  entered:   { opacity: 1 },
+  exiting:   { opacity: 0 },
+  exited:    { opacity: 0 },
+  unmounted: { opacity: 0 },
+};
+
 function App() {
-  const [username, setUsername] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { loading, isAdmin, response } = Redux((state) => (
+    {
+      loading: state.loading,
+      isAdmin: state.isAdmin,
+      response: state.response,
+    }
+  ), shallow);
   const [adminAsLA, setAdminAsLA] = useState(false);
-  const [course, setCourse] = useState<string | null>(null);
-
-  const newUsername = useCallback((newUser: string) => {
-    if (newUser !== null && newUser.trim().length > 0) {
-      if (newUser.includes('INVALID_TICKET_KEY')) {
-        ServiceInterface.login();
-      } else {
-        const trimmedName = newUser.trim();
-        setUsername(trimmedName);
-        ServiceInterface.isAdmin(trimmedName).then((adminState) => {
-          setIsAdmin(adminState);
-        });
-        if (trimmedName !== null) {
-          ServiceInterface.nameREST(trimmedName).then((newName: string) => {
-            setName(newName);
-          });
-        }
-      }
-    }
-  }, [setUsername, setName, setIsAdmin]);
-
-  const setNewName = useCallback((newName: string) => {
-    if (newName !== name && username !== null) {
-      setName(newName);
-      // noinspection JSIgnoredPromiseFromCall
-      ServiceInterface.nameREST(username, newName);
-    }
-  }, [username, name, setName]);
 
   const toggleAdminAsLA = useCallback(() => setAdminAsLA(!adminAsLA), [setAdminAsLA, adminAsLA]);
 
   useEffect(() => {
-    ServiceInterface.getUsername().then((newUser) => {
-      newUsername(newUser);
-      ServiceInterface.courseREST(newUser).then((c) => {
-        setCourse(c);
-      });
-    });
+    api.getState().getUsername();
     // No Deps == componentDidMount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const hasResponse = (response && response.content.trim().length !== 0) ?? false;
 
   return (
     <div className="App">
-      {username === null
+      <Transition in={hasResponse} timeout={TRANSITION_TIME}>
+        {(state) => (
+          <div
+            className={['alert', `alert-${response?.class}`].join(' ')}
+            id="responseDiv"
+            style={{
+              ...DEFAULT_STYLES,
+              ...TRANSITION_STYLE[state],
+            }}
+          >
+            {response?.content}
+          </div>
+        )}
+      </Transition>
+
+      {loading
         ? (
           <main role="main">
             <div className="jumbotron">
@@ -77,11 +81,7 @@ function App() {
           <>
             <NavBar
               adminAsLA={adminAsLA}
-              isAdmin={isAdmin}
-              name={name}
               toggleAdminAsLA={toggleAdminAsLA}
-              setName={setNewName}
-              username={username}
             />
             <main role="main">
               <div className="jumbotron">
@@ -91,26 +91,12 @@ function App() {
                       <h4 style={{ marginLeft: 0, marginTop: 45 }}>
                         LA Feedback Admin Interface
                       </h4>
-                      <AdminTable style={{ marginTop: '25px' }} username={username} />
+                      <AdminTable style={{ marginTop: '25px' }} />
                     </div>
                   )
                   : (
                     <div className="container">
-                      <h4 style={{ marginLeft: 0, marginTop: 45 }}>LA Feedback Interface</h4>
-                      <p style={{ marginLeft: 0 }}>
-                        This web interface allows LAs to receive anonymous feedback on
-                        their performance from students. Select the course you worked with and enter
-                        the Student&apos;s CSE username
-                      </p>
-
-                      <div className="col-md-6">
-                        <FeedbackForm
-                          defaultCourse={course}
-                          isAdmin={isAdmin}
-                          name={name}
-                          username={username}
-                        />
-                      </div>
+                      <FeedbackForm />
                     </div>
                   )}
               </div>

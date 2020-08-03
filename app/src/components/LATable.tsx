@@ -5,19 +5,25 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
+import shallow from 'zustand/shallow';
+
+import Redux from '../redux/modules';
 
 import {
-  RatingRecord,
   SortConfig,
   SORT_CHARS,
   LOW_RATING_BAR,
 } from '../statics/Types';
 
-type Props = {
-  ratings: RatingRecord[];
-};
+const LATable = () => {
+  const {
+    ratings,
+  } = Redux((state) => (
+    {
+      ratings: state.ratings,
+    }
+  ), shallow);
 
-const LATable = ({ ratings }: Props) => {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ column: 'la', order: 1 });
 
   const getData = useMemo(() => ratings.slice().sort((a, b) => {
@@ -66,7 +72,7 @@ const LATable = ({ ratings }: Props) => {
     ? 0
     : ratings.reduce((acc, rating) => acc + rating.rating, 0) / ratings.length;
   const { column, order } = sortConfig;
-  const firstCourse = ratings[0].course ?? null;
+  const firstCourse = ratings[0]?.course ?? null;
   const isMultiCourseLA = !ratings.every((r) => r.course === firstCourse);
 
   return (
