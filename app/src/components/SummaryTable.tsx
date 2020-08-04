@@ -5,13 +5,21 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
+
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Table from 'react-bootstrap/Table';
+
 import shallow from 'zustand/shallow';
 
-import Redux from 'redux/modules';
-
-import { InteractionRecord, SortConfig, SORT_CHARS } from 'statics/Types';
+import { InteractionRecord, SORT_CHARS, SortConfig } from 'statics/Types';
 
 import getRowClass from 'components/TableRowColors';
+import Redux from 'redux/modules';
+import PaginationButton, {
+  RATINGS_PER_PAGE,
+} from 'components/PaginationButton';
 
 type Props = {
   showLA: (la: InteractionRecord) => void;
@@ -30,16 +38,17 @@ const SummaryTable = ({ showLA }: Props) => {
     order: 1,
   });
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [activePage, setActivePage] = useState(1);
 
   const getData = useMemo(
     () =>
       interactions.ratings
         .slice()
         .filter((rating) => {
-          const trimmedTerm = searchTerm.trim();
+          const trimmedTerm = searchTerm.trim().toLowerCase();
           return (
-            rating.username.includes(trimmedTerm) ||
-            (rating.name && rating.name.includes(trimmedTerm))
+            rating.username.toLowerCase().includes(trimmedTerm) ||
+            (rating.name && rating.name.toLowerCase().includes(trimmedTerm))
           );
         })
         .sort((a, b) => {
@@ -112,37 +121,32 @@ const SummaryTable = ({ showLA }: Props) => {
   const clearableSearch = searchTerm.length > 0;
   return (
     <>
-      <div className="input-group mt-3 mb-2 col-4" style={{ paddingLeft: 0 }}>
-        <input
-          type="text"
-          className="form-control"
+      <InputGroup className="mt-3 mb-2 col-4" style={{ paddingLeft: 0 }}>
+        <FormControl
           placeholder=" Search"
           aria-label="Search"
           aria-describedby="search"
           onChange={handleSearchChange}
+          value={searchTerm}
         />
-        <div className="input-group-append">
-          <button
-            type="button"
-            className="input-group-text"
-            id="search"
-            onClick={clearSearch}
-            style={{ cursor: 'default' }}
-          >
-            {
-              clearableSearch ? (
-                '\u274C' // X Emoji
-              ) : (
-                <>&#x1F50D;</>
-              ) /* Magnifying Class */
-            }
-          </button>
-        </div>
-      </div>
-      <table
-        className="table table-hover"
-        style={{ width: '100%', cursor: 'default' }}
-      >
+        <InputGroup.Append>
+          {
+            clearableSearch ? (
+              <Button
+                id="search"
+                onClick={clearSearch}
+                variant="outline-secondary"
+                style={{ cursor: 'default' }}
+              >
+                {'\u274C' /* X Emoji */}
+              </Button>
+            ) : (
+              <InputGroup.Text id="search">&#x1F50D;</InputGroup.Text>
+            ) /* Magnifying Class */
+          }
+        </InputGroup.Append>
+      </InputGroup>
+      <Table hover style={{ width: '100%', cursor: 'default' }}>
         <thead className="thead-dark">
           <tr>
             <th id="la" onClick={handleSortClick}>
@@ -164,28 +168,38 @@ const SummaryTable = ({ showLA }: Props) => {
           </tr>
         </thead>
         <tbody>
-          {getData.map(
-            (row: InteractionRecord) =>
-              row.username &&
-              row.username.trim().length > 0 &&
-              !Number.isNaN(row.count) && (
-                <tr
-                  className={getRowClass(row.avg)}
-                  onClick={() => showLA(row)}
-                >
-                  <td>{row.name ? row.name : row.username}</td>
-                  <td>{row.course}</td>
-                  <td>{row.count}</td>
-                  <td>
-                    {row.avg === null || Number.isNaN(row.avg)
-                      ? 'No Reviews'
-                      : row.avg}
-                  </td>
-                </tr>
-              )
-          )}
+          {getData
+            .slice(
+              (activePage - 1) * RATINGS_PER_PAGE,
+              activePage * RATINGS_PER_PAGE
+            )
+            .map(
+              (row: InteractionRecord) =>
+                row.username &&
+                row.username.trim().length > 0 &&
+                !Number.isNaN(row.count) && (
+                  <tr
+                    className={getRowClass(row.avg)}
+                    onClick={() => showLA(row)}
+                  >
+                    <td>{row.name ? row.name : row.username}</td>
+                    <td>{row.course}</td>
+                    <td>{row.count}</td>
+                    <td>
+                      {row.avg === null || Number.isNaN(row.avg)
+                        ? 'No Reviews'
+                        : row.avg}
+                    </td>
+                  </tr>
+                )
+            )}
         </tbody>
-      </table>
+      </Table>
+      <PaginationButton
+        activePage={activePage}
+        itemCount={interactions.ratings.length}
+        setActivePage={setActivePage}
+      />
     </>
   );
 };

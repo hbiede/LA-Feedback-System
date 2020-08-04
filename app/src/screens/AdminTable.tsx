@@ -11,15 +11,22 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+
 import shallow from 'zustand/shallow';
 
-import { COURSES } from 'statics/Types';
-
-import FeedbackTimeText from 'components/FeedbackTimeText';
-import LATable from 'components/LATable';
-import SummaryTable from 'components/SummaryTable';
-
 import Redux from 'redux/modules';
+
+import { COURSES } from 'statics/Types';
+import SummaryTable from 'components/SummaryTable';
+import LATable from 'components/LATable';
+import FeedbackTimeText from 'components/FeedbackTimeText';
 
 type Props = {
   style?: CSSProperties;
@@ -168,19 +175,15 @@ export default function AdminTable(props: Props) {
 
   return (
     <div style={style} className="col-md-10">
-      <div className="form-row">
-        <div style={{ marginTop: 10 }} className="input-group mb-3">
-          <button
-            className="btn btn-dark"
-            type="button"
-            onClick={clearSelection}
-          >
+      <Form.Row>
+        <InputGroup style={{ marginTop: 10 }} className="mb-3">
+          <Button variant="dark" type="button" onClick={clearSelection}>
             Back
-          </button>
-          <input
+          </Button>
+
+          <FormControl
             style={{ marginLeft: 10 }}
             type="text"
-            className="form-control"
             placeholder="LA's Name"
             aria-label="LA's Name"
             aria-describedby="LA's Name"
@@ -188,53 +191,48 @@ export default function AdminTable(props: Props) {
             onChange={changeName}
             disabled={!editingName}
           />
-          <div className="input-group-append">
-            {editingName ? (
-              <>
-                <button
-                  className="btn btn-outline-secondary dropdown-toggle"
-                  type="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  {courseRecord}
-                </button>
-                <div className="dropdown-menu">
-                  {COURSES.map((c) => (
-                    <button
-                      type="button"
-                      className="dropdown-item"
-                      value={c}
-                      onClick={handleCourseSelect}
-                    >
-                      {c}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  className="btn btn-outline-secondary"
-                  type="button"
-                  onClick={saveEditing}
-                >
-                  Save
-                </button>
-              </>
-            ) : (
-              <>
-                <span className="input-group-text">{courseRecord}</span>
-                <button
-                  className="btn btn-outline-secondary"
-                  type="button"
-                  onClick={setEditing}
-                >
-                  Edit
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+          {editingName ? (
+            <>
+              <DropdownButton
+                as={InputGroup.Append}
+                variant="outline-secondary"
+                id="course-dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                title={courseRecord}
+              >
+                {COURSES.map((c) => (
+                  <Dropdown.Item
+                    type="button"
+                    value={c}
+                    onClick={handleCourseSelect}
+                  >
+                    {c}
+                  </Dropdown.Item>
+                ))}
+              </DropdownButton>
+              <Button
+                variant="outline-secondary"
+                type="submit"
+                onClick={saveEditing}
+              >
+                Save
+              </Button>
+            </>
+          ) : (
+            <>
+              <InputGroup.Text>{courseRecord}</InputGroup.Text>
+              <Button
+                variant="outline-secondary"
+                type="button"
+                onClick={setEditing}
+              >
+                Edit
+              </Button>
+            </>
+          )}
+        </InputGroup>
+      </Form.Row>
       <LATable />
     </div>
   );

@@ -7,9 +7,6 @@
 // @flow
 import { create } from 'zustand';
 
-import ServiceInterface from 'statics/ServiceInterface';
-import { InteractionSummary, RatingRecord } from 'statics/Types';
-
 import {
   CourseRest,
   GetAverages,
@@ -28,6 +25,9 @@ import {
   SetSelectedUsernameArgs,
   Time,
 } from 'redux/modules/Types';
+
+import ServiceInterface from 'statics/ServiceInterface';
+import { InteractionSummary, RatingRecord } from 'statics/Types';
 
 export type AppReduxState = {
   loading: boolean;
@@ -48,7 +48,7 @@ export type AppReduxState = {
   ratings: RatingRecord[];
   getRatings: () => void;
   response: Response | null;
-  setResponse: (res: Response) => void;
+  setResponse: (res: Response | null) => void;
   sendEmail: (studentCSE: string) => void;
   logout: () => void;
   getTimes: () => Promise<Time[]>;
@@ -118,7 +118,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     GetRatings(get).then((result) => set(() => ({ ratings: result })));
   },
   response: null,
-  setResponse: (res: Response) => {
+  setResponse: (res: Response | null) => {
     set(() => ({ response: res }));
     setTimeout(() => set(() => ({ response: null })), 10000); // timeout after 10 seconds
   },

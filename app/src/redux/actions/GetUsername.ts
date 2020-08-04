@@ -6,9 +6,9 @@
 
 import { SetState } from 'zustand';
 
-import ServiceInterface from 'statics/ServiceInterface';
+import { api, AppReduxState } from 'redux/modules';
 
-import { AppReduxState, api } from 'redux/modules';
+import ServiceInterface from 'statics/ServiceInterface';
 
 const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
   const ticketService =

@@ -5,15 +5,24 @@
  */
 
 import React, { ChangeEvent, useCallback, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+
 import shallow from 'zustand/shallow';
 
-import { COURSES } from 'statics/Types';
-
 import Redux from 'redux/modules';
+
+import { COURSES } from 'statics/Types';
 
 type Props = {
   closeModal: () => void;
 };
+
+const SELECTED_USERNAME_ID = 'selected_username';
+const LA_NAME_ID = 'la_name';
+const COURSE_ID = 'course';
 
 const SettingsForm = ({ closeModal }: Props) => {
   const {
@@ -51,19 +60,24 @@ const SettingsForm = ({ closeModal }: Props) => {
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      if (event.target.name === 'selected_username') {
-        setSelectedUsernameRecord(event.target.value);
-      } else if (event.target.name === 'la_name') {
-        const changedName = event.target.value;
-        setNameRecord(changedName);
-      } else if (event.target.name === 'course') {
-        const isChoose = event.target.value === 'choose';
-        setCourseRecord(isChoose ? null : event.target.value);
-      } else {
-        setResponse({
-          class: 'danger',
-          content: `${event.target.name} is an invalid ID`,
-        });
+      const { id, value } = event.target;
+      switch (id) {
+        case SELECTED_USERNAME_ID:
+          setSelectedUsernameRecord(value);
+          break;
+        case LA_NAME_ID:
+          setNameRecord(value);
+          break;
+        case COURSE_ID:
+          const isChoose = value === 'choose';
+          setCourseRecord(isChoose ? null : value);
+          break;
+        default:
+          setResponse({
+            class: 'danger',
+            content: `${id} is an invalid ID`,
+          });
+          break;
       }
     },
     [setResponse]
@@ -115,102 +129,81 @@ const SettingsForm = ({ closeModal }: Props) => {
             : ''
         }`}
       </h2>
-      <form>
+      <Form>
         {hasSelectedUsername ? (
           <>
-            <div className="form-group row">
-              <label htmlFor="la_name" className="col-sm-4 col-form-label">
-                {isAdmin ? "LA's Name" : 'Your Name'}
-              </label>
-              <div className="col-sm-8">
-                <input
-                  type="text"
-                  className="form-control"
-                  name="la_name"
-                  id="la_name"
-                  defaultValue={name}
-                  value={nameRecord || ''}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <div className="form-group row">
-              <label htmlFor="course" className="col-sm-4 col-form-label">
-                Default Course
-              </label>
-              <div className="col-sm-8">
-                <select
-                  className="form-control"
-                  name="course"
-                  id="course"
-                  placeholder="Course"
-                  onChange={handleChange}
-                  defaultValue={course}
-                >
-                  <option value="0">(choose)</option>
-                  {COURSES.map((c) => (
-                    <option value={c} selected={course === c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <Form.Group as={Row} controlId={LA_NAME_ID} className="col-sm-8">
+              <Form.Label>{isAdmin ? "LA's Name" : 'Your Name'}</Form.Label>
+              <Form.Control
+                type="text"
+                defaultValue={name}
+                placeholder="LA Username"
+                value={nameRecord || ''}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group as={Row} controlId={COURSE_ID} className="col-sm-8">
+              <Form.Label>Default Course</Form.Label>
+              <Form.Control
+                as="select"
+                onChange={handleChange}
+                defaultValue={course}
+              >
+                <option value="0">(choose)</option>
+                {COURSES.map((c) => (
+                  <option value={c} selected={course === c}>
+                    {c}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
             {isAdmin && (
-              <div className="form-group row">
-                <div className="col-sm-9">
-                  <button
-                    id="submitButton"
-                    type="button"
-                    className="btn btn-primary active"
-                    value="Change LA"
-                    onClick={changeLA}
-                  >
-                    Change LA
-                  </button>
-                </div>
-              </div>
+              <Form.Group as={Row}>
+                <Button
+                  id="submitButton"
+                  type="reset"
+                  variant="primary"
+                  value="Change LA"
+                  onClick={changeLA}
+                >
+                  Change LA
+                </Button>
+              </Form.Group>
             )}
           </>
         ) : (
-          <div className="form-group row">
-            <label
-              htmlFor="selected_username"
-              className="col-sm-4 col-form-label"
-            >
-              Username to Modify
-            </label>
-            <div className="col-sm-8">
-              <input
-                type="text"
-                className="form-control"
-                name="selected_username"
-                id="selected_username"
-                value={
-                  selectedUsernameRecord.length > 0
-                    ? selectedUsernameRecord
-                    : undefined
-                }
-                onChange={handleChange}
-              />
-            </div>
-          </div>
+          <Form.Group
+            as={Row}
+            controlId={SELECTED_USERNAME_ID}
+            className="col-sm-8"
+          >
+            <Form.Label>Username to Modify</Form.Label>
+            <Form.Control
+              type="text"
+              className="form-control"
+              name="selected_username"
+              value={
+                selectedUsernameRecord.length > 0
+                  ? selectedUsernameRecord
+                  : undefined
+              }
+              onChange={handleChange}
+            />
+          </Form.Group>
         )}
-        <div className="form-group row">
-          <div className="col-sm-9">
-            <button
-              id="submitButton"
-              type="button"
-              className="btn btn-primary active"
-              value="Submit"
-              onClick={handleSubmit}
-              disabled={disabled}
-            >
-              Submit
-            </button>
-          </div>
-        </div>
-      </form>
+        <Form.Group as={Row}>
+          <Button
+            id="submitButton"
+            type="submit"
+            variant="primary"
+            value="Submit"
+            onClick={handleSubmit}
+            disabled={disabled}
+          >
+            Submit
+          </Button>
+        </Form.Group>
+      </Form>
     </>
   );
 };

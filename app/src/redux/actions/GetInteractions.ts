@@ -6,9 +6,9 @@
 
 import { GetState } from 'zustand';
 
-import { InteractionSummary } from 'statics/Types';
-
 import { AppReduxState } from 'redux/modules';
+
+import { InteractionSummary } from 'statics/Types';
 
 const getInteractions = async (
   state: GetState<AppReduxState>

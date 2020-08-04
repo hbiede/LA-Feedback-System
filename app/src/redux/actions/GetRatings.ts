@@ -6,9 +6,9 @@
 
 import { GetState } from 'zustand';
 
-import { RatingRecord, RatingResponse } from 'statics/Types';
-
 import { AppReduxState } from 'redux/modules';
+
+import { RatingRecord, RatingResponse } from 'statics/Types';
 
 const getRatings = async (
   get: GetState<AppReduxState>

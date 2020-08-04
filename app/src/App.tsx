@@ -5,36 +5,30 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Transition } from 'react-transition-group';
+
+import Alert from 'react-bootstrap/Alert';
+import Collapse from 'react-bootstrap/Collapse';
+import Container from 'react-bootstrap/Container';
+import Jumbotron from 'react-bootstrap/Jumbotron';
+
 import shallow from 'zustand/shallow';
-
-import FeedbackForm from 'screens/FeedbackForm';
-import AdminTable from 'screens/AdminTable';
-
-import NavBar from 'components/NavBar';
 
 import Redux, { api } from 'redux/modules';
 
-const TRANSITION_TIME = 300;
-const DEFAULT_STYLES = {
-  transition: `opacity ${TRANSITION_TIME}ms ease-in-out`,
-  opacity: 0,
-};
+import AdminTable from 'screens/AdminTable';
 
-const TRANSITION_STYLE = {
-  entering: { opacity: 1 },
-  entered: { opacity: 1 },
-  exiting: { opacity: 0 },
-  exited: { opacity: 0 },
-  unmounted: { opacity: 0 },
-};
+import FeedbackForm from 'screens/FeedbackForm';
+
+import NavBar from 'components/NavBar';
+import FeedbackHeader from 'components/FeedbackHeader';
 
 function App() {
-  const { loading, isAdmin, response } = Redux(
+  const { loading, isAdmin, response, setResponse } = Redux(
     (state) => ({
       loading: state.loading,
       isAdmin: state.isAdmin,
       response: state.response,
+      setResponse: state.setResponse,
     }),
     shallow
   );
@@ -50,52 +44,57 @@ function App() {
     // No Deps == componentDidMount
   }, []);
 
-  const hasResponse: boolean =
-    (response && response?.content?.trim().length !== 0) ?? false;
-
   return (
     <div className="App">
-      <Transition in={hasResponse} timeout={TRANSITION_TIME}>
-        {(state) => (
-          <div
-            className={['alert', `alert-${response?.class}`].join(' ')}
-            id="responseDiv"
-            style={{
-              ...DEFAULT_STYLES,
-              ...TRANSITION_STYLE[state],
-            }}
-          >
-            {response?.content}
-          </div>
-        )}
-      </Transition>
-
       {loading ? (
         <main role="main">
-          <div className="jumbotron">
-            <div className="container">
+          <Jumbotron fluid>
+            <Container>
               <h4 style={{ marginLeft: 0, marginTop: 45 }}>Loading</h4>
-            </div>
-          </div>
+            </Container>
+          </Jumbotron>
         </main>
       ) : (
         <>
           <NavBar adminAsLA={adminAsLA} toggleAdminAsLA={toggleAdminAsLA} />
           <main role="main">
-            <div className="jumbotron">
-              {isAdmin && !adminAsLA ? (
-                <div className="container">
-                  <h4 style={{ marginLeft: 0, marginTop: 45 }}>
-                    LA Feedback Admin Interface
-                  </h4>
-                  <AdminTable style={{ marginTop: '25px' }} />
-                </div>
-              ) : (
-                <div className="container">
-                  <FeedbackForm />
-                </div>
-              )}
-            </div>
+            <Jumbotron>
+              <Container>
+                {isAdmin && !adminAsLA ? (
+                  <>
+                    <h4 style={{ marginLeft: 0, marginTop: 45 }}>
+                      LA Feedback Admin Interface
+                    </h4>
+                    <Collapse in={response !== null}>
+                      <Alert
+                        variant={response?.class}
+                        id="responseDiv"
+                        onClose={() => setResponse(null)}
+                        dismissible={response !== null}
+                      >
+                        {response?.content}
+                      </Alert>
+                    </Collapse>
+                    <AdminTable style={{ marginTop: '25px' }} />
+                  </>
+                ) : (
+                  <>
+                    <FeedbackHeader />
+                    <Collapse in={response !== null}>
+                      <Alert
+                        variant={response?.class}
+                        id="responseDiv"
+                        onClose={() => setResponse(null)}
+                        dismissible={response !== null}
+                      >
+                        {response?.content}
+                      </Alert>
+                    </Collapse>
+                    <FeedbackForm />
+                  </>
+                )}
+              </Container>
+            </Jumbotron>
           </main>
         </>
       )}

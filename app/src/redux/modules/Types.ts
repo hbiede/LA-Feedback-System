@@ -32,7 +32,7 @@ export type Response = {
     | 'info'
     | 'light'
     | 'dark';
-  content: string;
+  content: string | Element;
 };
 
 export type Time = {

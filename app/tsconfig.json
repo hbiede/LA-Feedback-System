@@ -20,7 +20,7 @@
     "strictNullChecks": true,
     "jsx": "react",
     "baseUrl": "src",
-    "rootDir": "src"
+    "rootDir": "."
   },
   "include": [
     "src",

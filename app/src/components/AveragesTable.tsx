@@ -1,8 +1,17 @@
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
+
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Table from 'react-bootstrap/Table';
+
 import { shallow } from 'zustand/shallow';
 
-import { CourseAverages } from 'redux/modules/Types';
 import Redux from 'redux/modules';
+
+import { CourseAverages } from 'redux/modules/Types';
 
 import { SORT_CHARS, SortConfig } from 'statics/Types';
 
@@ -81,10 +90,7 @@ const AveragesTable = () => {
   return (
     <>
       <h4>Average Feedback By Course</h4>
-      <table
-        className="table table-hover"
-        style={{ width: '100%', cursor: 'default' }}
-      >
+      <Table hover style={{ width: '100%', cursor: 'default' }}>
         <thead className="thead-dark">
           <tr>
             <th id="course" onClick={handleSortClick}>
@@ -110,7 +116,7 @@ const AveragesTable = () => {
               )
           )}
         </tbody>
-      </table>
+      </Table>
     </>
   );
 };

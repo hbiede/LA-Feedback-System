@@ -5,12 +5,17 @@
  */
 
 import React, { useCallback, useState } from 'react';
+
+import Button from 'react-bootstrap/Button';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
+
 import shallow from 'zustand/shallow';
 
 import Redux from 'redux/modules';
-
 import SettingsForm from 'components/SettingsForm';
 
 import packageJson from '../../package.json';
@@ -26,6 +31,8 @@ type Props = {
 const MODAL_STYLE = {
   overlay: { marginTop: 50, zIndex: 2 },
 };
+
+const NAVBAR_ID = 'laNavBar';
 
 const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   const { loading, isAdmin, logout } = Redux(
@@ -72,8 +79,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   }, [showingChangelog, setChangelogVisibility, setSettingsVisibility]);
 
   const hideTimeChart = useCallback(() => {
-    setChangelogVisibility(false);
-  }, [setChangelogVisibility]);
+    setTimeChartVisibility(false);
+  }, [setTimeChartVisibility]);
 
   const toggleTimeChart = useCallback(() => {
     if (showingTimeChart) {
@@ -87,8 +94,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   }, [showingTimeChart]);
 
   const hideCourseAverages = useCallback(() => {
-    setChangelogVisibility(false);
-  }, [setChangelogVisibility]);
+    setCourseAveragesVisibility(false);
+  }, [setCourseAveragesVisibility]);
 
   const toggleCourseAverages = useCallback(() => {
     if (showingCourseAverages) {
@@ -101,7 +108,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     }
   }, [showingCourseAverages]);
 
-  const switchToAdmin = useCallback(() => {
+  const toggleAdminStatus = useCallback(() => {
     toggleAdminAsLA();
     hideSettings();
     hideChangelog();
@@ -130,130 +137,96 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
 
   return (
     <>
-      <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#laNavBar"
-          aria-controls="laNavBar"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
-
-        <p className="navbar-brand" style={{ marginBottom: 0 }}>
+      <Navbar fixed="top" expand="md" bg="dark" variant="dark">
+        <Navbar.Brand style={{ marginBottom: 0 }}>
           {`LA Feedback${isAdmin ? ' Admin' : ''} `}
-          <button
-            type="button"
-            className="btn btn-dark"
-            onClick={toggleChangelog}
-          >
+          <Button type="button" variant="dark" onClick={toggleChangelog}>
             <small>{`v${packageJson.version}`}</small>
-          </button>
-        </p>
+          </Button>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls={NAVBAR_ID} />
 
-        <div className="collapse navbar-collapse" id="laNavBar">
-          <ul className="navbar-nav mr-auto">
+        <Navbar.Collapse id={NAVBAR_ID}>
+          <Nav variant="pills">
             {isAdmin && (
-              <li className="nav-item">
-                <button
-                  className="btn btn-dark"
+              <Nav.Item>
+                <Button
+                  variant="dark"
                   type="button"
-                  onClick={switchToAdmin}
+                  onClick={toggleAdminStatus}
                 >
                   {adminAsLA ? 'Admin Panel' : 'LA Page'}
-                </button>
-              </li>
+                </Button>
+              </Nav.Item>
             )}
             {(!isAdmin || adminAsLA) && (
-              <li className="nav-item">
-                <button
-                  className="btn btn-dark"
-                  type="button"
-                  onClick={toggleSettings}
-                >
+              <Nav.Item>
+                <Button variant="dark" type="button" onClick={toggleSettings}>
                   LA Settings
-                </button>
-              </li>
+                </Button>
+              </Nav.Item>
             )}
             {!loading && (
               <>
-                <li className="nav-item">
-                  <button
-                    className="btn btn-dark"
+                <Nav.Item>
+                  <Button
+                    variant="dark"
                     type="button"
                     onClick={toggleTimeChart}
                   >
                     Interaction Chart
-                  </button>
-                </li>
-                <li className="nav-item">
-                  <button
-                    className="btn btn-dark"
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    variant="dark"
                     type="button"
                     onClick={toggleCourseAverages}
                   >
                     Course Avgs
-                  </button>
-                </li>
+                  </Button>
+                </Nav.Item>
               </>
             )}
-            <li className="nav-item dropdown">
-              <button
-                aria-expanded="false"
-                className="btn btn-dark dropdown-toggle"
-                type="button"
-                id="dropdown01"
-                data-toggle="dropdown"
-                aria-haspopup="true"
+            <NavDropdown title="Resources" id="resourceDropdown">
+              <NavDropdown.Item
+                href="https://cse-apps.unl.edu/handin"
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                Resources
-              </button>
-              <div className="dropdown-menu" aria-labelledby="dropdown01">
-                <a
-                  className="dropdown-item"
-                  href="https://cse-apps.unl.edu/handin"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  CSE Handin
-                </a>
-                <a
-                  className="dropdown-item"
-                  href="https://canvas.unl.edu/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Canvas
-                </a>
-                <a
-                  className="dropdown-item"
-                  href="https://cse.unl.edu/faq"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  System FAQ
-                </a>
-                <a
-                  className="dropdown-item"
-                  href="https://cse.unl.edu/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Department Home
-                </a>
-              </div>
-            </li>
-            <li className="nav-item">
-              <button className="btn btn-dark" type="button" onClick={logout}>
+                CSE Handin
+              </NavDropdown.Item>
+              <NavDropdown.Item
+                href="https://canvas.unl.edu/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Canvas
+              </NavDropdown.Item>
+              <NavDropdown.Item
+                href="https://cse.unl.edu/faq"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                CSE FAQ
+              </NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item
+                href="https://cse.unl.edu/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Department Home
+              </NavDropdown.Item>
+            </NavDropdown>
+            <Nav.Item>
+              <Button variant="dark" type="button" onClick={logout}>
                 Logout
-              </button>
-            </li>
-          </ul>
-        </div>
-      </nav>
+              </Button>
+            </Nav.Item>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
       {(!isAdmin || adminAsLA) && (
         <Modal
           isOpen={showingSettings}

@@ -1,9 +1,15 @@
+/*
+ * Copyright (c) 2020.
+ *
+ * File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ */
+
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { Time } from 'redux/modules/Types';
+import CanvasJSReact from 'canvas/canvasjs.react';
 import { api } from 'redux/modules';
 
-import CanvasJSReact from 'canvas/canvasjs.react';
+import { Time } from 'redux/modules/Types';
 
 type TimeData = {
   type: string;

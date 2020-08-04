@@ -5,13 +5,20 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
+
+import Table from 'react-bootstrap/Table';
+
 import shallow from 'zustand/shallow';
+
+import PaginationButton, {
+  RATINGS_PER_PAGE,
+} from 'components/PaginationButton';
+
+import getRowClass from 'components/TableRowColors';
 
 import Redux from 'redux/modules';
 
-import { SortConfig, SORT_CHARS } from 'statics/Types';
-
-import getRowClass from 'components/TableRowColors';
+import { SORT_CHARS, SortConfig } from 'statics/Types';
 
 const LATable = () => {
   const { ratings } = Redux(
@@ -25,6 +32,7 @@ const LATable = () => {
     column: 'la',
     order: 1,
   });
+  const [activePage, setActivePage] = useState(1);
 
   const getData = useMemo(
     () =>
@@ -55,6 +63,7 @@ const LATable = () => {
 
   const handleSortClick = useCallback(
     (event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => {
+      setActivePage(1);
       const clickedHeader = event.currentTarget.id;
       const { column, order } = sortConfig;
 
@@ -83,41 +92,50 @@ const LATable = () => {
   const isMultiCourseLA = !ratings.every((r) => r.course === firstCourse);
 
   return (
-    <table
-      className="table table-hover"
-      style={{ width: '100%', cursor: 'default' }}
-    >
-      <thead className="thead-dark">
-        <tr>
-          <th id="rating" onClick={handleSortClick}>
-            {`Rating (Avg: ${avg}) ${
-              column === 'rating' ? SORT_CHARS.get(order) : ' '
-            }`}
-          </th>
-          <th id="time" onClick={handleSortClick}>
-            {`Time of Interaction ${
-              column === 'time' ? SORT_CHARS.get(order) : ' '
-            }`}
-          </th>
-          {isMultiCourseLA && (
-            <th id="course" onClick={handleSortClick}>
-              Course
+    <>
+      <Table hover style={{ width: '100%', cursor: 'default' }}>
+        <thead className="thead-dark">
+          <tr>
+            <th id="rating" onClick={handleSortClick}>
+              {`Rating (Avg: ${avg}) ${
+                column === 'rating' ? SORT_CHARS.get(order) : ' '
+              }`}
             </th>
-          )}
-          <th>Comment</th>
-        </tr>
-      </thead>
-      <tbody>
-        {getData.map((row) => (
-          <tr className={getRowClass(row.rating)}>
-            <td>{row.rating}</td>
-            <td>{row.time.toLocaleString()}</td>
-            {isMultiCourseLA && <td>{row.course}</td>}
-            <td>{row.comment}</td>
+            <th id="time" onClick={handleSortClick}>
+              {`Time of Interaction ${
+                column === 'time' ? SORT_CHARS.get(order) : ' '
+              }`}
+            </th>
+            {isMultiCourseLA && (
+              <th id="course" onClick={handleSortClick}>
+                Course
+              </th>
+            )}
+            <th>Comment</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {getData
+            .slice(
+              (activePage - 1) * RATINGS_PER_PAGE,
+              activePage * RATINGS_PER_PAGE
+            )
+            .map((row) => (
+              <tr className={getRowClass(row.rating)}>
+                <td>{row.rating}</td>
+                <td>{row.time.toLocaleString()}</td>
+                {isMultiCourseLA && <td>{row.course}</td>}
+                <td>{row.comment}</td>
+              </tr>
+            ))}
+        </tbody>
+      </Table>
+      <PaginationButton
+        activePage={activePage}
+        itemCount={ratings.length}
+        setActivePage={setActivePage}
+      />
+    </>
   );
 };
 
