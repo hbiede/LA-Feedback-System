@@ -12,9 +12,14 @@ class ServiceInterface {
   static sendEmail = async (
     studentCSE: string
   ): Promise<string | number | null> => {
-    const { course } = api.getState();
+    const { course, setResponse } = api.getState();
     const laCSE = ServiceInterface.getActiveUser();
-    if (laCSE !== null && laCSE !== 'INVALID') {
+    if (laCSE === studentCSE) {
+      setResponse({
+        class: 'danger',
+        content: 'No self-interaction',
+      });
+    } else if (laCSE !== null && laCSE !== 'INVALID') {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
