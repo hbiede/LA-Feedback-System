@@ -7,8 +7,6 @@
 
 include_once 'sqlManager.php';
 
-session_start();
-
 ini_set('error_log', './log/admin.log');
 
 function get_time_to_complete() {

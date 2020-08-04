@@ -17,6 +17,11 @@ export type SetNameArgs = {
   name: string;
 };
 
+export type CourseAverages = {
+  course: string;
+  avg: number;
+};
+
 export type Response = {
   class:
     | 'primary'
@@ -28,4 +33,9 @@ export type Response = {
     | 'light'
     | 'dark';
   content: string;
+};
+
+export type Time = {
+  time: number;
+  course: string;
 };

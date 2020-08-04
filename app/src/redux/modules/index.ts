@@ -12,17 +12,21 @@ import { InteractionSummary, RatingRecord } from 'statics/Types';
 
 import {
   CourseRest,
+  GetAverages,
   GetInteractions,
   GetRatings,
+  GetTimes,
   GetUsername,
   NameRest,
 } from 'redux/actions';
 
 import {
+  CourseAverages,
   Response,
   SetCourseArgs,
   SetNameArgs,
   SetSelectedUsernameArgs,
+  Time,
 } from 'redux/modules/Types';
 
 export type AppReduxState = {
@@ -47,6 +51,8 @@ export type AppReduxState = {
   setResponse: (res: Response) => void;
   sendEmail: (studentCSE: string) => void;
   logout: () => void;
+  getTimes: () => Promise<Time[]>;
+  getAverages: () => Promise<CourseAverages[]>;
 };
 
 export const [useStore, api] = create<AppReduxState>((set, get) => ({
@@ -140,6 +146,8 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
       });
   },
   logout: () => ServiceInterface.logout(),
+  getTimes: GetTimes,
+  getAverages: GetAverages,
 }));
 
 export default useStore;

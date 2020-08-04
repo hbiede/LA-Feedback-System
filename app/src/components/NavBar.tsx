@@ -15,6 +15,8 @@ import SettingsForm from 'components/SettingsForm';
 
 import packageJson from '../../package.json';
 import changelog from '../CHANGELOG.json';
+import AveragesTable from './AveragesTable';
+import TimeChart from './TimeChart';
 
 type Props = {
   adminAsLA: boolean;
@@ -26,8 +28,9 @@ const MODAL_STYLE = {
 };
 
 const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
-  const { isAdmin, logout } = Redux(
+  const { loading, isAdmin, logout } = Redux(
     (state) => ({
+      loading: state.loading,
       isAdmin: state.isAdmin,
       logout: state.logout,
     }),
@@ -35,6 +38,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   );
   const [showingSettings, setSettingsVisibility] = useState(false);
   const [showingChangelog, setChangelogVisibility] = useState(false);
+  const [showingTimeChart, setTimeChartVisibility] = useState(false);
+  const [showingCourseAverages, setCourseAveragesVisibility] = useState(false);
 
   const hideSettings = useCallback(() => {
     setSettingsVisibility(false);
@@ -45,6 +50,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setSettingsVisibility(false);
     } else {
       setChangelogVisibility(false);
+      setTimeChartVisibility(false);
+      setCourseAveragesVisibility(false);
       setSettingsVisibility(true);
     }
   }, [showingSettings, setSettingsVisibility, setChangelogVisibility]);
@@ -58,14 +65,55 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setChangelogVisibility(false);
     } else {
       setSettingsVisibility(false);
+      setTimeChartVisibility(false);
+      setCourseAveragesVisibility(false);
       setChangelogVisibility(true);
     }
   }, [showingChangelog, setChangelogVisibility, setSettingsVisibility]);
 
+  const hideTimeChart = useCallback(() => {
+    setChangelogVisibility(false);
+  }, [setChangelogVisibility]);
+
+  const toggleTimeChart = useCallback(() => {
+    if (showingTimeChart) {
+      setTimeChartVisibility(false);
+    } else {
+      setSettingsVisibility(false);
+      setChangelogVisibility(false);
+      setCourseAveragesVisibility(false);
+      setTimeChartVisibility(true);
+    }
+  }, [showingTimeChart]);
+
+  const hideCourseAverages = useCallback(() => {
+    setChangelogVisibility(false);
+  }, [setChangelogVisibility]);
+
+  const toggleCourseAverages = useCallback(() => {
+    if (showingCourseAverages) {
+      setCourseAveragesVisibility(false);
+    } else {
+      setSettingsVisibility(false);
+      setChangelogVisibility(false);
+      setTimeChartVisibility(false);
+      setCourseAveragesVisibility(true);
+    }
+  }, [showingCourseAverages]);
+
   const switchToAdmin = useCallback(() => {
     toggleAdminAsLA();
     hideSettings();
-  }, [toggleAdminAsLA, hideSettings]);
+    hideChangelog();
+    hideTimeChart();
+    hideCourseAverages();
+  }, [
+    toggleAdminAsLA,
+    hideSettings,
+    hideChangelog,
+    hideTimeChart,
+    hideCourseAverages,
+  ]);
 
   if (!changelog.changes[0].includes(packageJson.version)) {
     return (
@@ -129,6 +177,28 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                   LA Settings
                 </button>
               </li>
+            )}
+            {!loading && (
+              <>
+                <li className="nav-item">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={toggleTimeChart}
+                  >
+                    Interaction Chart
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button
+                    className="btn btn-dark"
+                    type="button"
+                    onClick={toggleCourseAverages}
+                  >
+                    Course Avgs
+                  </button>
+                </li>
+              </>
             )}
             <li className="nav-item dropdown">
               <button
@@ -223,6 +293,42 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
             <ReactMarkdown source={change} />
           ))}
         </div>
+      </Modal>
+      <Modal
+        isOpen={showingTimeChart}
+        onRequestClose={hideTimeChart}
+        contentLabel="Times of LA Interactions"
+        style={MODAL_STYLE}
+      >
+        <button
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          onClick={hideTimeChart}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+        <div style={{ marginTop: 30 }}>
+          <TimeChart />
+        </div>
+      </Modal>
+      <Modal
+        isOpen={showingCourseAverages}
+        onRequestClose={hideCourseAverages}
+        contentLabel="Course Averages"
+        style={MODAL_STYLE}
+      >
+        <button
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          onClick={hideCourseAverages}
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+        <AveragesTable />
       </Modal>
     </>
   );

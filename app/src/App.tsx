@@ -50,8 +50,8 @@ function App() {
     // No Deps == componentDidMount
   }, []);
 
-  const hasResponse =
-    (response && response.content.trim().length !== 0) ?? false;
+  const hasResponse: boolean =
+    (response && response?.content?.trim().length !== 0) ?? false;
 
   return (
     <div className="App">
