@@ -7,18 +7,23 @@
 // @flow
 import { create } from 'zustand';
 
-import ServiceInterface from '../../statics/ServiceInterface';
-import { InteractionSummary, RatingRecord } from '../../statics/Types';
-
-import courseREST from '../actions/GetCourse';
-import getInteractions from '../actions/GetInteractions';
-import getRatings from '../actions/GetRatings';
-import getUsername from '../actions/GetUsername';
-import nameREST from '../actions/GetName';
+import ServiceInterface from 'statics/ServiceInterface';
+import { InteractionSummary, RatingRecord } from 'statics/Types';
 
 import {
-  Response, SetCourseArgs, SetNameArgs, SetSelectedUsernameArgs,
-} from './Types';
+  CourseRest,
+  GetInteractions,
+  GetRatings,
+  GetUsername,
+  NameRest,
+} from 'redux/actions';
+
+import {
+  Response,
+  SetCourseArgs,
+  SetNameArgs,
+  SetSelectedUsernameArgs,
+} from 'redux/modules/Types';
 
 export type AppReduxState = {
   loading: boolean;
@@ -38,7 +43,7 @@ export type AppReduxState = {
   setSelectedUsername: (args: SetSelectedUsernameArgs) => void;
   ratings: RatingRecord[];
   getRatings: () => void;
-  response: Response|null;
+  response: Response | null;
   setResponse: (res: Response) => void;
   sendEmail: (studentCSE: string) => void;
   logout: () => void;
@@ -48,7 +53,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   loading: true,
   username: '',
   getUsername: () => {
-    getUsername(set).then(() => {
+    GetUsername(set).then(() => {
       const { getCourse, getInteractions: getInts, getName } = api.getState();
       getCourse();
       getInts();
@@ -56,23 +61,25 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     });
   },
   name: '',
-  getName: () => (nameREST().then((result) => set(() => ({ name: result })))),
+  getName: () => NameRest().then((result) => set(() => ({ name: result }))),
   setName: (args: SetNameArgs) => {
-    nameREST(args.name).then((result) => set(() => ({ name: result })));
+    NameRest(args.name).then((result) => set(() => ({ name: result })));
   },
   course: '',
-  getCourse: () => (courseREST().then((result) => set(() => ({ course: result })))),
+  getCourse: () =>
+    CourseRest().then((result) => set(() => ({ course: result }))),
   setCourse: (args: SetCourseArgs) => {
-    courseREST(args.course).then((result) => set(() => ({ course: result })));
+    CourseRest(args.course).then((result) => set(() => ({ course: result })));
   },
   isAdmin: false,
   interactions: { ratings: [], time: -1 },
   getInteractions: () => {
-    getInteractions(get).then((ints) => {
-      const isAdmin = ints.ratings.length > 0
-        || (ints.time !== null
-          && !Number.isNaN(ints.time)
-          && Number.isFinite(ints.time));
+    GetInteractions(get).then((ints) => {
+      const isAdmin =
+        ints.ratings.length > 0 ||
+        (ints.time !== null &&
+          !Number.isNaN(ints.time) &&
+          Number.isFinite(ints.time));
       const { name, course } = api.getState();
       set(() => ({
         interactions: ints,
@@ -83,7 +90,8 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
       }));
     });
   },
-  setInteractions: (ints: InteractionSummary) => set(() => ({ interactions: ints })),
+  setInteractions: (ints: InteractionSummary) =>
+    set(() => ({ interactions: ints })),
   selectedUsername: '',
   setSelectedUsername: (args: SetSelectedUsernameArgs) => {
     set(() => ({ selectedUsername: args.username }));
@@ -101,7 +109,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   },
   ratings: [],
   getRatings: () => {
-    getRatings(get).then((result) => set(() => ({ ratings: result })));
+    GetRatings(get).then((result) => set(() => ({ ratings: result })));
   },
   response: null,
   setResponse: (res: Response) => {
@@ -110,26 +118,28 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   },
   sendEmail: (studentCSE: string) => {
     const { setResponse } = api.getState();
-    ServiceInterface.sendEmail(studentCSE).then((response) => {
-      if (response === '0' || response === 0) {
-        setResponse({
-          class: 'success',
-          content: 'Interaction recorded',
-        });
-      } else {
+    ServiceInterface.sendEmail(studentCSE)
+      .then((response) => {
+        if (response === '0' || response === 0) {
+          setResponse({
+            class: 'success',
+            content: 'Interaction recorded',
+          });
+        } else {
+          setResponse({
+            class: 'danger',
+            content: `Failed to Send Message. Please Try Again. (Error Code ${response})`,
+          });
+        }
+      })
+      .catch((error) => {
         setResponse({
           class: 'danger',
-          content: `Failed to Send Message. Please Try Again. (Error Code ${response})`,
+          content: `Failed to Send Message. Please Try Again. (Error: ${error})`,
         });
-      }
-    }).catch((error) => {
-      setResponse({
-        class: 'danger',
-        content: `Failed to Send Message. Please Try Again. (Error: ${error})`,
       });
-    });
   },
-  logout: () => (ServiceInterface.logout()),
+  logout: () => ServiceInterface.logout(),
 }));
 
 export default useStore;

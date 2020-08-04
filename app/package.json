@@ -1,6 +1,6 @@
 {
   "name": "la-feedback-system",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "license": "Apache-2.0",
   "description": "A website to gather feedback from students after interactions with LAs",
@@ -31,6 +31,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-import-resolver-typescript": "^2.2.0",
     "eslint-plugin-button-label-required": "^1.0.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
@@ -39,6 +40,8 @@
     "eslint-plugin-react-hooks": "^2.5.1",
     "prettier": "^2.0.5",
     "prettier-eslint": "^11.0.0",
+    "react-app-rewired": "^2.1.6",
+    "tsconfig-paths-webpack-plugin": "^3.3.0",
     "typescript": "^3.7.5"
   },
   "scripts": {

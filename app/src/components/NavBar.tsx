@@ -9,10 +9,11 @@ import ReactMarkdown from 'react-markdown';
 import Modal from 'react-modal';
 import shallow from 'zustand/shallow';
 
-import packageJson from '../../package.json';
-import Redux from '../redux/modules';
-import SettingsForm from './SettingsForm';
+import Redux from 'redux/modules';
 
+import SettingsForm from 'components/SettingsForm';
+
+import packageJson from '../../package.json';
 import changelog from '../CHANGELOG.json';
 
 type Props = {
@@ -21,17 +22,17 @@ type Props = {
 };
 
 const MODAL_STYLE = {
-  overlay: { marginTop: 50, zIndex: 2, },
+  overlay: { marginTop: 50, zIndex: 2 },
 };
 
-const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
-  const {
-    isAdmin,
-    logout,
-  } = Redux((state) => ({
-    isAdmin: state.isAdmin,
-    logout: state.logout,
-  }), shallow);
+const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
+  const { isAdmin, logout } = Redux(
+    (state) => ({
+      isAdmin: state.isAdmin,
+      logout: state.logout,
+    }),
+    shallow
+  );
   const [showingSettings, setSettingsVisibility] = useState(false);
   const [showingChangelog, setChangelogVisibility] = useState(false);
 
@@ -74,9 +75,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
         contentLabel="Changelog"
         style={{ overlay: { marginTop: 50 } }}
       >
-        <div>
-          Someone forgot to update the changelog and/or version number
-        </div>
+        <div>Someone forgot to update the changelog and/or version number</div>
       </Modal>
     );
   }
@@ -98,7 +97,11 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
 
         <p className="navbar-brand" style={{ marginBottom: 0 }}>
           {`LA Feedback${isAdmin ? ' Admin' : ''} `}
-          <button type="button" className="btn btn-dark" onClick={toggleChangelog}>
+          <button
+            type="button"
+            className="btn btn-dark"
+            onClick={toggleChangelog}
+          >
             <small>{`v${packageJson.version}`}</small>
           </button>
         </p>
@@ -106,28 +109,27 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
         <div className="collapse navbar-collapse" id="laNavBar">
           <ul className="navbar-nav mr-auto">
             {isAdmin && (
-            <li className="nav-item">
-              <button
-                className="btn btn-dark"
-                type="button"
-                onClick={switchToAdmin}
-              >
-                {adminAsLA ? 'Admin Panel' : 'LA Page'}
-              </button>
-            </li>
+              <li className="nav-item">
+                <button
+                  className="btn btn-dark"
+                  type="button"
+                  onClick={switchToAdmin}
+                >
+                  {adminAsLA ? 'Admin Panel' : 'LA Page'}
+                </button>
+              </li>
             )}
-            {(!isAdmin || adminAsLA)
-              && (
-                <li className="nav-item">
-                  <button
-                    className="btn btn-dark"
-                    type="button"
-                    onClick={toggleSettings}
-                  >
-                    LA Settings
-                  </button>
-                </li>
-              )}
+            {(!isAdmin || adminAsLA) && (
+              <li className="nav-item">
+                <button
+                  className="btn btn-dark"
+                  type="button"
+                  onClick={toggleSettings}
+                >
+                  LA Settings
+                </button>
+              </li>
+            )}
             <li className="nav-item dropdown">
               <button
                 aria-expanded="false"
@@ -175,11 +177,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
               </div>
             </li>
             <li className="nav-item">
-              <button
-                className="btn btn-dark"
-                type="button"
-                onClick={logout}
-              >
+              <button className="btn btn-dark" type="button" onClick={logout}>
                 Logout
               </button>
             </li>
@@ -187,25 +185,23 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
         </div>
       </nav>
       {(!isAdmin || adminAsLA) && (
-      <Modal
-        isOpen={showingSettings}
-        onRequestClose={hideSettings}
-        contentLabel="LA Settings"
-        style={MODAL_STYLE}
-      >
-        <button
-          type="button"
-          className="close"
-          data-dismiss="modal"
-          aria-label="Close"
-          onClick={hideSettings}
+        <Modal
+          isOpen={showingSettings}
+          onRequestClose={hideSettings}
+          contentLabel="LA Settings"
+          style={MODAL_STYLE}
         >
-          <span aria-hidden="true">×</span>
-        </button>
-        <SettingsForm
-          closeModal={hideSettings}
-        />
-      </Modal>
+          <button
+            type="button"
+            className="close"
+            data-dismiss="modal"
+            aria-label="Close"
+            onClick={hideSettings}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+          <SettingsForm closeModal={hideSettings} />
+        </Modal>
       )}
       <Modal
         isOpen={showingChangelog}
@@ -223,7 +219,9 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA } : Props) => {
           <span aria-hidden="true">×</span>
         </button>
         <div>
-          {changelog.changes.map((change) => <ReactMarkdown source={change} />)}
+          {changelog.changes.map((change) => (
+            <ReactMarkdown source={change} />
+          ))}
         </div>
       </Modal>
     </>

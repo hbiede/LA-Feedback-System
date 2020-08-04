@@ -7,47 +7,51 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import shallow from 'zustand/shallow';
 
-import Redux from '../redux/modules';
+import Redux from 'redux/modules';
 
-import {
-  SortConfig,
-  SORT_CHARS,
-  LOW_RATING_BAR,
-} from '../statics/Types';
+import { SortConfig, SORT_CHARS } from 'statics/Types';
+
+import getRowClass from 'components/TableRowColors';
 
 const LATable = () => {
-  const {
-    ratings,
-  } = Redux((state) => (
-    {
+  const { ratings } = Redux(
+    (state) => ({
       ratings: state.ratings,
-    }
-  ), shallow);
+    }),
+    shallow
+  );
 
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ column: 'la', order: 1 });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    column: 'la',
+    order: 1,
+  });
 
-  const getData = useMemo(() => ratings.slice().sort((a, b) => {
-    let cmp = 0;
-    const { column, order } = sortConfig;
-    switch (column) {
-      case 'time':
-        if (a.time < b.time) {
-          cmp = -1;
-        } else if (a.time > b.time) {
-          cmp = 1;
+  const getData = useMemo(
+    () =>
+      ratings.slice().sort((a, b) => {
+        let cmp = 0;
+        const { column, order } = sortConfig;
+        switch (column) {
+          case 'time':
+            if (a.time < b.time) {
+              cmp = -1;
+            } else if (a.time > b.time) {
+              cmp = 1;
+            }
+            return order * cmp;
+          case 'course':
+            return order * a.course.localeCompare(b.course);
+          default:
+            if (a.rating < b.rating) {
+              cmp = -1;
+            } else if (a.rating > b.rating) {
+              cmp = 1;
+            }
+            return order * cmp;
         }
-        return order * cmp;
-      case 'course':
-        return order * a.course.localeCompare(b.course);
-      default:
-        if (a.rating < b.rating) {
-          cmp = -1;
-        } else if (a.rating > b.rating) {
-          cmp = 1;
-        }
-        return order * cmp;
-    }
-  }), [sortConfig, ratings]);
+      }),
+    [sortConfig, ratings]
+  );
 
   const handleSortClick = useCallback(
     (event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => {
@@ -65,43 +69,50 @@ const LATable = () => {
           order: 1,
         });
       }
-    }, [sortConfig, setSortConfig],
+    },
+    [sortConfig, setSortConfig]
   );
 
-  const avg = ratings.length === 0
-    ? 0
-    : ratings.reduce((acc, rating) => acc + rating.rating, 0) / ratings.length;
+  const avg =
+    ratings.length === 0
+      ? 0
+      : ratings.reduce((acc, rating) => acc + rating.rating, 0) /
+        ratings.length;
   const { column, order } = sortConfig;
   const firstCourse = ratings[0]?.course ?? null;
   const isMultiCourseLA = !ratings.every((r) => r.course === firstCourse);
 
   return (
-    <table className="table table-hover" style={{ width: '100%', cursor: 'default' }}>
+    <table
+      className="table table-hover"
+      style={{ width: '100%', cursor: 'default' }}
+    >
       <thead className="thead-dark">
         <tr>
           <th id="rating" onClick={handleSortClick}>
-            {`Rating (Avg: ${avg}) ${column === 'rating' ? (SORT_CHARS.get(order)) : ' '}`}
+            {`Rating (Avg: ${avg}) ${
+              column === 'rating' ? SORT_CHARS.get(order) : ' '
+            }`}
           </th>
           <th id="time" onClick={handleSortClick}>
-            {`Time of Interaction ${column === 'time' ? (SORT_CHARS.get(order)) : ' '}`}
+            {`Time of Interaction ${
+              column === 'time' ? SORT_CHARS.get(order) : ' '
+            }`}
           </th>
-          {isMultiCourseLA
-          && <th id="course" onClick={handleSortClick}>Course</th>}
+          {isMultiCourseLA && (
+            <th id="course" onClick={handleSortClick}>
+              Course
+            </th>
+          )}
           <th>Comment</th>
         </tr>
       </thead>
       <tbody>
         {getData.map((row) => (
-          <tr className={
-            (row.rating !== null && !Number.isNaN(row.rating) && row.rating < LOW_RATING_BAR)
-              ? 'table-danger'
-              : ''
-            }
-          >
+          <tr className={getRowClass(row.rating)}>
             <td>{row.rating}</td>
             <td>{row.time.toLocaleString()}</td>
-            {isMultiCourseLA
-            && <td>{row.course}</td>}
+            {isMultiCourseLA && <td>{row.course}</td>}
             <td>{row.comment}</td>
           </tr>
         ))}

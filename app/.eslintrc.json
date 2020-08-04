@@ -6,10 +6,13 @@
   },
   "extends": [
     "plugin:react/recommended",
-    "plugin:flowtype/recommended",
+    "airbnb",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:prettier/recommended",
     "prettier",
-    "prettier/@typescript-eslint",
-    "airbnb"
+    "prettier/@typescript-eslint"
   ],
   "globals": {
     "Atomics": "readonly",
@@ -22,7 +25,8 @@
       "jsx": true
     },
     "ecmaVersion": 2018,
-    "sourceType": "module"
+    "sourceType": "module",
+    "tsconfigRootDir": "."
   },
   "plugins": [
     "button-label-required",
@@ -30,9 +34,23 @@
     "react",
     "react-hooks",
     "@typescript-eslint",
-    "prettier"
+    "prettier",
+    "eslint-plugin-prettier",
+    "import"
   ],
   "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "trailingQuote": "always",
+        "allowParens": "always",
+        "useTabs": false,
+        "tabWidth": 2
+      }
+    ],
+    "import/no-unresolved": "error",
+    "no-nested-ternary": "off",
     "key-spacing": "off",
     "no-multi-spaces": "off",
     "no-case-declarations": "off",
@@ -57,7 +75,8 @@
       {
         "js": "never",
         "ts": "never",
-        "tsx": "never"
+        "tsx": "never",
+        "json": "always"
       }
     ],
     "no-unused-vars": "off",
@@ -148,6 +167,9 @@
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", "tsx"]
+      },
+      "typescript": {
+        "alwaysTryTypes": true
       }
     },
     "import/parser": {

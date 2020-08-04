@@ -1,10 +1,11 @@
 {
   "changes": [
+    "## 1.2.1\n- Highlight borderline ratings in admin table",
     "## 1.2.0\n- Convert to Redux state management (using Zustand)\n- Implement Dispatch\n- Add version check",
     "## 1.1.2\n- Mark low ratings on admin table",
     "## 1.1.1\n- Allow dismissing changelog modal with navbar button",
     "## 1.1.0\n- Animate feedback responses",
-    "## 1.0.0\n- Display Version and Changelog in NavBar\n- Make Admin table searchable, filterable, and sortable\n- Allow LAs to modify their name and default course\n- Allow Admins to modify the names and default courses of all LAs\n- Add time stamp to rating table on Admin panel\n- Accept willingness to be contacted from students\n- Redesign form and thank you pages\n- Display real names (instead of CSE usernames) of LAs on Admin and form pages\n- Add context to ratings on form",
+    "## 1.0.0\n- Display Version and Changelog in NavBar\n- Make admin table searchable, filterable, and sortable\n- Allow LAs to modify their name and default course\n- Allow admins to modify the names and default courses of all LAs\n- Add time stamp to rating table on admin panel\n- Accept willingness to be contacted from students\n- Redesign form and thank you pages\n- Display real names (instead of CSE usernames) of LAs on admin and form pages\n- Add context to ratings on form",
     "## 0.1.0\n- Initial release"
   ]
 }

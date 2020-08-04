@@ -6,10 +6,13 @@
 
 import { GetState } from 'zustand';
 
-import { InteractionSummary } from '../../statics/Types';
-import { AppReduxState } from '../modules';
+import { InteractionSummary } from 'statics/Types';
 
-const getInteractions = async (state: GetState<AppReduxState>): Promise<InteractionSummary> => {
+import { AppReduxState } from 'redux/modules';
+
+const getInteractions = async (
+  state: GetState<AppReduxState>
+): Promise<InteractionSummary> => {
   const { username, setResponse } = state();
   let interactions: InteractionSummary = { ratings: [], time: -1 };
   if (username !== 'INVALID_TICKET_KEY') {
@@ -18,8 +21,10 @@ const getInteractions = async (state: GetState<AppReduxState>): Promise<Interact
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user: username }),
     };
-    await fetch('https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
-      requestOptions)
+    await fetch(
+      'https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
+      requestOptions
+    )
       .then((response) => response.json())
       .then((json) => {
         if (Array.isArray(json)) {
@@ -33,7 +38,8 @@ const getInteractions = async (state: GetState<AppReduxState>): Promise<Interact
             interactions.time = 0;
           }
         }
-      }).catch((error) => setResponse(error));
+      })
+      .catch((error) => setResponse(error));
   }
   return interactions;
 };

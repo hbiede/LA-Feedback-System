@@ -5,15 +5,13 @@
  */
 
 /* eslint-disable no-alert */
-import React, {
-  ChangeEvent, useCallback, useState,
-} from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 
 import shallow from 'zustand/shallow';
 
-import Redux from '../redux/modules';
+import { COURSES } from 'statics/Types';
 
-import { COURSES } from '../statics/Types';
+import Redux from 'redux/modules';
 
 const FeedbackForm = () => {
   const {
@@ -24,8 +22,8 @@ const FeedbackForm = () => {
     isAdmin,
     setResponse,
     sendEmail,
-  } = Redux((state) => (
-    {
+  } = Redux(
+    (state) => ({
       username: state.username,
       name: state.username,
       selectedUsername: state.selectedUsername,
@@ -33,93 +31,107 @@ const FeedbackForm = () => {
       isAdmin: state.isAdmin,
       setResponse: state.setResponse,
       sendEmail: state.sendEmail,
-    }
-  ), shallow);
+    }),
+    shallow
+  );
 
   const [usernameRecord, setUsernameRecord] = useState<string>(
-    isAdmin ? selectedUsername : username,
+    isAdmin ? selectedUsername : username
   );
   const [disabled, setDisabled] = useState(true);
   const [studentCSE, setStudentCSE] = useState('');
-  const [courseRecord, setCourseRecord] = useState<string|null>(null);
+  const [courseRecord, setCourseRecord] = useState<string | null>(null);
 
-  const handleChange = useCallback((event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    switch (event.target.name) {
-      case 'la_username':
-        if (isAdmin) {
-          setUsernameRecord(event.target.value);
-        }
-        break;
-      case 'student_cse_login':
-        setStudentCSE(event.target.value);
-        break;
-      case 'course':
-        setCourseRecord(event.target.value);
-        break;
-      default:
-        alert(`${event.target.name} is an invalid ID`);
-        break;
-    }
-    const shouldBeDisabled = course === 'choose'
-      || studentCSE.trim().length === 0
-      || usernameRecord.trim().length === 0;
-    if (disabled !== shouldBeDisabled) {
-      setDisabled(shouldBeDisabled);
-    }
-  }, [
-    course,
-    setCourseRecord,
-    disabled,
-    isAdmin,
-    studentCSE,
-    setStudentCSE,
-    usernameRecord,
-    setUsernameRecord,
-  ]);
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      switch (event.target.name) {
+        case 'la_username':
+          if (isAdmin) {
+            setUsernameRecord(event.target.value);
+          }
+          break;
+        case 'student_cse_login':
+          setStudentCSE(event.target.value);
+          break;
+        case 'course':
+          setCourseRecord(event.target.value);
+          break;
+        default:
+          alert(`${event.target.name} is an invalid ID`);
+          break;
+      }
+      const shouldBeDisabled =
+        course === 'choose' ||
+        studentCSE.trim().length === 0 ||
+        usernameRecord.trim().length === 0;
+      if (disabled !== shouldBeDisabled) {
+        setDisabled(shouldBeDisabled);
+      }
+    },
+    [
+      course,
+      setCourseRecord,
+      disabled,
+      isAdmin,
+      studentCSE,
+      setStudentCSE,
+      usernameRecord,
+      setUsernameRecord,
+    ]
+  );
 
   const handleSubmit = useCallback(() => {
     if (!isAdmin && name === null) {
       setResponse({
         class: 'danger',
-        content: 'Please set your name before submitting feedback (See the LA Settings)',
+        content:
+          'Please set your name before submitting feedback (See the LA Settings)',
       });
       return;
     }
 
-    if (studentCSE && studentCSE.trim().length > 0 && course && course.trim().length > 0) {
+    if (
+      studentCSE &&
+      studentCSE.trim().length > 0 &&
+      course &&
+      course.trim().length > 0
+    ) {
       setDisabled(true);
       sendEmail(studentCSE);
     } else {
       setResponse({
         class: 'danger',
-        content: studentCSE && studentCSE.trim().length > 0
-          ? 'Invalid course'
-          : 'Invalid student',
+        content:
+          studentCSE && studentCSE.trim().length > 0
+            ? 'Invalid course'
+            : 'Invalid student',
       });
     }
   }, [isAdmin, name, studentCSE, course, setResponse, sendEmail]);
 
   return (
     <>
-      {isAdmin
-        ? (
-          <>
-            <h4 style={{ marginLeft: 0, marginTop: 45 }}>LA Feedback Interface (Admin)</h4>
-            <p style={{ marginLeft: 0 }}>
-              Record interactions on behalf of an LA
-            </p>
-          </>
-        )
-        : (
-          <>
-            <h4 style={{ marginLeft: 0, marginTop: 45 }}>LA Feedback Interface</h4>
-            <p style={{ marginLeft: 0 }}>
-              This web interface allows LAs to receive anonymous feedback on
-              their performance from students. Select the course you worked with and enter
-              the Student&apos;s CSE username
-            </p>
-          </>
-        )}
+      {isAdmin ? (
+        <>
+          <h4 style={{ marginLeft: 0, marginTop: 45 }}>
+            LA Feedback Interface (Admin)
+          </h4>
+          <p style={{ marginLeft: 0 }}>
+            Record interactions on behalf of an LA
+          </p>
+        </>
+      ) : (
+        <>
+          <h4 style={{ marginLeft: 0, marginTop: 45 }}>
+            LA Feedback Interface
+          </h4>
+          <p style={{ marginLeft: 0 }}>
+            This web interface allows LAs to receive anonymous feedback on their
+            performance from students. Select the course you worked with and
+            enter the Student&apos;s CSE username
+          </p>
+        </>
+      )}
 
       <div className="col-md-6">
         <form>
@@ -154,19 +166,26 @@ const FeedbackForm = () => {
               >
                 <option
                   value="choose"
-                  selected={courseRecord !== null && !COURSES.includes(courseRecord)}
+                  selected={
+                    courseRecord !== null && !COURSES.includes(courseRecord)
+                  }
                 >
                   (choose)
                 </option>
                 {COURSES.map((c) => (
-                  <option value={c} selected={c === (courseRecord ?? course)}>{c}</option>
+                  <option value={c} selected={c === (courseRecord ?? course)}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
 
           <div className="form-group row">
-            <label htmlFor="student_cse_login" className="col-sm-4 col-form-label">
+            <label
+              htmlFor="student_cse_login"
+              className="col-sm-4 col-form-label"
+            >
               Student CSE
             </label>
             <div className="col-sm-8">

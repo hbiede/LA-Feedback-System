@@ -6,11 +6,13 @@
 
 import { GetState } from 'zustand';
 
-import { RatingRecord, RatingResponse } from '../../statics/Types';
+import { RatingRecord, RatingResponse } from 'statics/Types';
 
-import { AppReduxState } from '../modules';
+import { AppReduxState } from 'redux/modules';
 
-const getRatings = async (get: GetState<AppReduxState>): Promise<RatingRecord[]> => {
+const getRatings = async (
+  get: GetState<AppReduxState>
+): Promise<RatingRecord[]> => {
   const { username, selectedUsername, setResponse } = get();
 
   let ratings: RatingRecord[] = [];
@@ -19,16 +21,21 @@ const getRatings = async (get: GetState<AppReduxState>): Promise<RatingRecord[]>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user: username, la: selectedUsername }),
   };
-  await fetch('https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
-    requestOptions)
+  await fetch(
+    'https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
+    requestOptions
+  )
     .then((response) => response.json())
     .then((json) => {
       const ratingsResponse: RatingResponse[] = json;
       ratings = ratingsResponse.map((rating) => ({
         ...rating,
-        time: new Date(Date.parse(rating.time.replace(new RegExp(String.raw`\s`), 'T'))),
+        time: new Date(
+          Date.parse(rating.time.replace(new RegExp(String.raw`\s`), 'T'))
+        ),
       }));
-    }).catch((error) => setResponse(error));
+    })
+    .catch((error) => setResponse(error));
   return ratings;
 };
 
