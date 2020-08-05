@@ -55,7 +55,8 @@
     "eject": "react-scripts eject",
     "test": "react-scripts test",
     "eslint": "eslint . --ext .ts,.tsx",
-    "prettify": "npx prettier --write ."
+    "prettify": "npx prettier --write .",
+    "lc": "git ls-files | egrep \".*\\.(tsx?)|(html)|(php)\" | xargs wc -l"
   },
   "eslintConfig": {
     "extends": "react-app"
