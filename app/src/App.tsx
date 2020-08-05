@@ -10,6 +10,7 @@ import Alert from 'react-bootstrap/Alert';
 import Collapse from 'react-bootstrap/Collapse';
 import Container from 'react-bootstrap/Container';
 import Jumbotron from 'react-bootstrap/Jumbotron';
+import Spinner from 'react-bootstrap/Spinner';
 
 import shallow from 'zustand/shallow';
 
@@ -50,6 +51,7 @@ function App() {
         <main role="main">
           <Jumbotron fluid>
             <Container>
+              <Spinner animation="border" variant="primary" />
               <h4 style={{ marginLeft: 0, marginTop: 45 }}>Loading</h4>
             </Container>
           </Jumbotron>

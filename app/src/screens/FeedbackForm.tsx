@@ -136,7 +136,11 @@ const FeedbackForm = () => {
               value={usernameRecord}
               onChange={handleChange}
               disabled={!isAdmin}
+              required
             />
+            <Form.Control.Feedback type="invalid">
+              Must enter a username
+            </Form.Control.Feedback>
           </div>
         </FormGroup>
 
@@ -147,6 +151,8 @@ const FeedbackForm = () => {
               as="select"
               placeholder="Course"
               onChange={handleChange}
+              required
+              custom
             >
               <option
                 value="choose"
@@ -172,7 +178,12 @@ const FeedbackForm = () => {
               type="text"
               placeholder="Student CSE Login"
               onChange={handleChange}
+              required
+              isValid={usernameRecord !== studentCSE}
             />
+            <Form.Control.Feedback type="invalid">
+              Please enter a valid username
+            </Form.Control.Feedback>
           </div>
         </FormGroup>
 

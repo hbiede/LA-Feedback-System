@@ -7,7 +7,9 @@
 import React from 'react';
 import shallow from 'zustand/shallow';
 
-import Redux from '../redux/modules';
+import Badge from 'react-bootstrap/Badge';
+
+import Redux from 'redux/modules';
 
 const FeedbackHeader = () => {
   const { isAdmin } = Redux(
@@ -22,7 +24,8 @@ const FeedbackHeader = () => {
       {isAdmin ? (
         <>
           <h4 style={{ marginLeft: 0, marginTop: 45 }}>
-            LA Feedback Interface (Admin)
+            LA Feedback Interface
+            <Badge variant="secondary">Admin</Badge>
           </h4>
           <p style={{ marginLeft: 0 }}>
             Record interactions on behalf of an LA

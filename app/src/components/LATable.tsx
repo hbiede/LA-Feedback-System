@@ -63,7 +63,6 @@ const LATable = () => {
 
   const handleSortClick = useCallback(
     (event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => {
-      setActivePage(1);
       const clickedHeader = event.currentTarget.id;
       const { column, order } = sortConfig;
 
@@ -77,6 +76,7 @@ const LATable = () => {
           column: clickedHeader,
           order: 1,
         });
+        setActivePage(1);
       }
     },
     [sortConfig, setSortConfig]
@@ -97,7 +97,7 @@ const LATable = () => {
         <thead className="thead-dark">
           <tr>
             <th id="rating" onClick={handleSortClick}>
-              {`Rating (Avg: ${avg}) ${
+              {`Rating (Avg: ${avg.toFixed(2)}) ${
                 column === 'rating' ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
@@ -122,7 +122,7 @@ const LATable = () => {
             )
             .map((row) => (
               <tr className={getRowClass(row.rating)}>
-                <td>{row.rating}</td>
+                <td>{row.rating.toFixed(2)}</td>
                 <td>{row.time.toLocaleString()}</td>
                 {isMultiCourseLA && <td>{row.course}</td>}
                 <td>{row.comment}</td>
@@ -132,7 +132,7 @@ const LATable = () => {
       </Table>
       <PaginationButton
         activePage={activePage}
-        itemCount={ratings.length}
+        itemCount={getData.length}
         setActivePage={setActivePage}
       />
     </>

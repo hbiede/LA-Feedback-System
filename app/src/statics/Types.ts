@@ -34,7 +34,7 @@ export type RatingRecord = {
 export type RatingResponse = {
   comment?: string;
   course: string;
-  rating: number;
+  rating: string;
   time: string;
 };
 

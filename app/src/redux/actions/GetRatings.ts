@@ -33,6 +33,7 @@ const getRatings = async (
         time: new Date(
           Date.parse(rating.time.replace(new RegExp(String.raw`\s`), 'T'))
         ),
+        rating: Number.parseFloat(rating.rating),
       }));
     })
     .catch((error) => setResponse(error));

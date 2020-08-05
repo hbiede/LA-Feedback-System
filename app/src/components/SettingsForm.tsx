@@ -148,6 +148,7 @@ const SettingsForm = ({ closeModal }: Props) => {
                 as="select"
                 onChange={handleChange}
                 defaultValue={course}
+                custom
               >
                 <option value="0">(choose)</option>
                 {COURSES.map((c) => (

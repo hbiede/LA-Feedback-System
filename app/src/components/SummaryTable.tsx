@@ -108,6 +108,7 @@ const SummaryTable = ({ showLA }: Props) => {
           order: order * -1,
         });
       } else {
+        setActivePage(1);
         setSortConfig({
           column: clickedHeader,
           order: 1,
@@ -183,12 +184,14 @@ const SummaryTable = ({ showLA }: Props) => {
                     onClick={() => showLA(row)}
                   >
                     <td>{row.name ? row.name : row.username}</td>
-                    <td>{row.course}</td>
+                    <td>{row.course ?? '---'}</td>
                     <td>{row.count}</td>
                     <td>
-                      {row.avg === null || Number.isNaN(row.avg)
-                        ? 'No Reviews'
-                        : row.avg}
+                      {row.avg !== null &&
+                      !Number.isNaN(row.avg) &&
+                      row.avg.toFixed
+                        ? row.avg.toFixed(2)
+                        : 'No Reviews'}
                     </td>
                   </tr>
                 )
@@ -197,7 +200,7 @@ const SummaryTable = ({ showLA }: Props) => {
       </Table>
       <PaginationButton
         activePage={activePage}
-        itemCount={interactions.ratings.length}
+        itemCount={getData.length}
         setActivePage={setActivePage}
       />
     </>

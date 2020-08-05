@@ -1,6 +1,7 @@
 {
   "changes": [
-    "#  1.3.2\n- Convert Bootstrap to npm module\n- Search admin table => case-insensitive\n- Fix modal close buttons",
+    "## 1.3.3\n- Make pagination row responsive to the length of the table\n- Limit longer decimal point values\n- Correct importing of numbers",
+    "## 1.3.2\n- Convert Bootstrap to npm module\n- Search admin table => case-insensitive\n- Fix modal close buttons\n- Paginate long tables",
     "## 1.3.1\n- Prevent self-interacting",
     "## 1.3.0\n- Chart interactions based on hour of the day\n- Display the average feedback for the last 7 days based on course",
     "## 1.2.1\n- Highlight borderline ratings in admin table",
