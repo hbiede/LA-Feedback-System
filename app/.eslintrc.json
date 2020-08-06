@@ -43,10 +43,14 @@
       {
         "singleQuote": true,
         "trailingQuote": "always",
-        "allowParens": "always",
+        "arrowParens": "always",
         "useTabs": false,
         "tabWidth": 2
       }
+    ],
+    "quotes": [
+      "error",
+      "single"
     ],
     "import/no-unresolved": "error",
     "no-nested-ternary": "off",

@@ -8,10 +8,12 @@ type AvgResponse = {
 
 const getAverages = async (): Promise<CourseAverages[]> => {
   let avgs: AvgResponse[] = [];
+
   const requestOptions = {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   };
+
   await fetch(
     'https://cse.unl.edu/~learningassistants/LA-Feedback/averages.php',
     requestOptions

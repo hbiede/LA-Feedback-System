@@ -39,20 +39,22 @@ const LATable = () => {
       ratings.slice().sort((a, b) => {
         let cmp = 0;
         const { column, order } = sortConfig;
+        const { rating: ratingA, time: timeA, course: courseA } = a;
+        const { rating: ratingB, time: timeB, course: courseB } = b;
         switch (column) {
           case 'time':
-            if (a.time < b.time) {
+            if (timeA < timeB) {
               cmp = -1;
-            } else if (a.time > b.time) {
+            } else if (timeA > timeB) {
               cmp = 1;
             }
             return order * cmp;
           case 'course':
-            return order * a.course.localeCompare(b.course);
+            return order * courseA.localeCompare(courseB);
           default:
-            if (a.rating < b.rating) {
+            if (ratingA < ratingB) {
               cmp = -1;
-            } else if (a.rating > b.rating) {
+            } else if (ratingA > ratingB) {
               cmp = 1;
             }
             return order * cmp;
@@ -63,7 +65,7 @@ const LATable = () => {
 
   const handleSortClick = useCallback(
     (event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => {
-      const clickedHeader = event.currentTarget.id;
+      const { id: clickedHeader } = event.currentTarget;
       const { column, order } = sortConfig;
 
       if (column === clickedHeader) {
@@ -88,8 +90,9 @@ const LATable = () => {
       : ratings.reduce((acc, rating) => acc + rating.rating, 0) /
         ratings.length;
   const { column, order } = sortConfig;
-  const firstCourse = ratings[0]?.course ?? null;
-  const isMultiCourseLA = !ratings.every((r) => r.course === firstCourse);
+  const [course, ...rest] = ratings;
+  const firstCourse = course.course ?? null;
+  const isMultiCourseLA = !rest.every((r) => r.course === firstCourse);
 
   return (
     <>
