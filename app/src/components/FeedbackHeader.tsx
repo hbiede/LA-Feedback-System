@@ -20,12 +20,14 @@ const FeedbackHeader = () => {
   );
 
   return (
-    <>
+    <header role="banner">
       {isAdmin ? (
         <>
           <h4 style={{ marginLeft: 0, marginTop: 45 }}>
             LA Feedback Interface
-            <Badge variant="secondary">Admin</Badge>
+            <Badge variant="secondary" style={{ marginLeft: 10 }}>
+              Admin
+            </Badge>
           </h4>
           <p style={{ marginLeft: 0 }}>
             Record interactions on behalf of an LA
@@ -43,7 +45,7 @@ const FeedbackHeader = () => {
           </p>
         </>
       )}
-    </>
+    </header>
   );
 };
 

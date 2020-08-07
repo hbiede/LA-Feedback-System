@@ -27,6 +27,7 @@ const FeedbackForm = () => {
     username,
     name,
     selectedUsername,
+    setSelectedUsername,
     course,
     isAdmin,
     setResponse,
@@ -36,6 +37,7 @@ const FeedbackForm = () => {
       username: state.username,
       name: state.username,
       selectedUsername: state.selectedUsername,
+      setSelectedUsername: state.setSelectedUsername,
       course: state.course,
       isAdmin: state.isAdmin,
       setResponse: state.setResponse,
@@ -44,19 +46,18 @@ const FeedbackForm = () => {
     shallow
   );
 
+  const [validated, setValidated] = useState(false);
+  const [disabled, setDisabled] = useState(true);
   const [usernameRecord, setUsernameRecord] = useState<string>(
     isAdmin ? selectedUsername : username
   );
-  const [disabled, setDisabled] = useState(true);
   const [studentCSE, setStudentCSE] = useState('');
-  const [courseRecord, setCourseRecord] = useState<string | null>(null);
+  const [courseRecord, setCourseRecord] = useState<string | null>(course);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      if (!isAdmin) {
-        return;
-      }
-
+      setValidated(false);
+      setDisabled(false);
       const { id, value } = event.target;
       switch (id) {
         case LA_USERNAME_ID:
@@ -65,7 +66,7 @@ const FeedbackForm = () => {
           }
           break;
         case COURSE_ID:
-          setCourseRecord(value);
+          setCourseRecord(value === 'choose' ? null : value);
           break;
         case STUDENT_CSE_ID:
           setStudentCSE(value);
@@ -74,28 +75,13 @@ const FeedbackForm = () => {
           alert(`${id} is an invalid ID`);
           break;
       }
-      const shouldBeDisabled =
-        course === 'choose' ||
-        studentCSE.trim().length === 0 ||
-        usernameRecord.trim().length === 0;
-      if (disabled !== shouldBeDisabled) {
-        setDisabled(shouldBeDisabled);
-      }
     },
-    [
-      course,
-      setCourseRecord,
-      disabled,
-      isAdmin,
-      studentCSE,
-      setStudentCSE,
-      usernameRecord,
-      setUsernameRecord,
-    ]
+    [isAdmin]
   );
 
   const handleSubmit = useCallback(() => {
-    if (!isAdmin && name === null) {
+    setValidated(true);
+    if (!isAdmin && (name === null || name.trim().length === 0)) {
       setResponse({
         class: 'danger',
         content:
@@ -103,29 +89,38 @@ const FeedbackForm = () => {
       });
       return;
     }
+    setResponse(null);
+    setDisabled(true);
 
     if (
       studentCSE &&
       studentCSE.trim().length > 0 &&
-      course &&
-      course.trim().length > 0
+      courseRecord &&
+      courseRecord.trim().length > 0 &&
+      courseRecord !== 'choose' &&
+      usernameRecord &&
+      usernameRecord.trim().length > 0 &&
+      usernameRecord !== studentCSE
     ) {
-      setDisabled(true);
+      if (isAdmin) {
+        setSelectedUsername({ username: usernameRecord });
+      }
       sendEmail(studentCSE);
-    } else {
-      setResponse({
-        class: 'danger',
-        content:
-          studentCSE && studentCSE.trim().length > 0
-            ? 'Invalid course'
-            : 'Invalid student',
-      });
     }
-  }, [isAdmin, name, studentCSE, course, setResponse, sendEmail]);
+  }, [
+    isAdmin,
+    name,
+    studentCSE,
+    courseRecord,
+    usernameRecord,
+    setResponse,
+    sendEmail,
+    setSelectedUsername,
+  ]);
 
   return (
     <div className="col-md-6">
-      <Form>
+      <Form noValidate>
         <FormGroup as={Row} controlId={LA_USERNAME_ID}>
           <Form.Label htmlFor="la_username" className="col-sm-4">
             LA CSE Username
@@ -133,10 +128,19 @@ const FeedbackForm = () => {
           <div className="col-sm-8">
             <Form.Control
               type="text"
-              value={usernameRecord}
+              role="textbox"
+              value={
+                usernameRecord.trim().length > 0 ? usernameRecord : undefined
+              }
+              placeholder="LA CSE Username"
+              aria-placeholder="LA CSE Username"
               onChange={handleChange}
               disabled={!isAdmin}
+              isValid={false}
+              isInvalid={validated && usernameRecord.trim().length === 0}
+              aria-invalid={validated && usernameRecord.trim().length === 0}
               required
+              aria-required
             />
             <Form.Control.Feedback type="invalid">
               Must enter a username
@@ -149,10 +153,25 @@ const FeedbackForm = () => {
           <div className="col-sm-8">
             <Form.Control
               as="select"
+              role="combobox"
               placeholder="Course"
               onChange={handleChange}
               required
+              aria-required
               custom
+              isValid={false}
+              isInvalid={
+                validated &&
+                (courseRecord === null ||
+                  courseRecord.trim().length === 0 ||
+                  courseRecord === 'choose')
+              }
+              aria-invalid={
+                validated &&
+                (courseRecord === null ||
+                  courseRecord.trim().length === 0 ||
+                  courseRecord === 'choose')
+              }
             >
               <option
                 value="choose"
@@ -163,11 +182,18 @@ const FeedbackForm = () => {
                 (choose)
               </option>
               {COURSES.map((c) => (
-                <option value={c} selected={c === (courseRecord ?? course)}>
+                <option
+                  value={c}
+                  selected={c === (courseRecord ?? course)}
+                  aria-selected={c === (courseRecord ?? course)}
+                >
                   {c}
                 </option>
               ))}
             </Form.Control>
+            <Form.Control.Feedback type="invalid">
+              Choose a course
+            </Form.Control.Feedback>
           </div>
         </FormGroup>
 
@@ -176,10 +202,25 @@ const FeedbackForm = () => {
           <div className="col-sm-8">
             <Form.Control
               type="text"
+              role="textbox"
               placeholder="Student CSE Login"
+              aria-placeholder="Student CSE Login"
               onChange={handleChange}
               required
-              isValid={usernameRecord !== studentCSE}
+              aria-required
+              isValid={false}
+              isInvalid={
+                validated &&
+                (studentCSE === null ||
+                  usernameRecord === studentCSE ||
+                  studentCSE.trim().length === 0)
+              }
+              aria-invalid={
+                validated &&
+                (studentCSE === null ||
+                  usernameRecord === studentCSE ||
+                  studentCSE.trim().length === 0)
+              }
             />
             <Form.Control.Feedback type="invalid">
               Please enter a valid username
@@ -191,11 +232,13 @@ const FeedbackForm = () => {
           <div className="col-sm-9">
             <Button
               id="submitButton"
-              type="button"
+              role="button"
+              type="submit"
               variant="primary"
               value="Submit"
               onClick={handleSubmit}
               disabled={disabled}
+              aria-disabled={disabled}
             >
               Submit
             </Button>

@@ -4,7 +4,7 @@
  * File created by Hundter Biede for the UNL CSE Learning Assistant Program
  */
 
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 
 import Form from 'react-bootstrap/Form';
@@ -12,7 +12,7 @@ import Row from 'react-bootstrap/Row';
 
 import shallow from 'zustand/shallow';
 
-import Redux from 'redux/modules';
+import Redux, { api } from 'redux/modules';
 
 import { COURSES } from 'statics/Types';
 
@@ -48,6 +48,7 @@ const SettingsForm = ({ closeModal }: Props) => {
     shallow
   );
 
+  const [validated, setValidated] = useState(false);
   const [selectedUsernameRecord, setSelectedUsernameRecord] = useState<string>(
     selectedUsername
   );
@@ -58,8 +59,37 @@ const SettingsForm = ({ closeModal }: Props) => {
       (selectedUsername !== null && selectedUsername.trim().length > 0)
   );
 
+  useEffect(() => {
+    api.subscribe(
+      (newCourse) => {
+        if (
+          newCourse !== null &&
+          typeof newCourse === 'string' &&
+          newCourse !== courseRecord
+        ) {
+          setCourseRecord(newCourse);
+        }
+      },
+      (state) => state.course
+    );
+
+    api.subscribe(
+      (newName) => {
+        if (
+          newName !== null &&
+          typeof newName === 'string' &&
+          newName !== nameRecord
+        ) {
+          setNameRecord(newName);
+        }
+      },
+      (state) => state.name
+    );
+  });
+
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setValidated(false);
       const { id, value } = event.target;
       switch (id) {
         case SELECTED_USERNAME_ID:
@@ -84,29 +114,33 @@ const SettingsForm = ({ closeModal }: Props) => {
   );
 
   const handleSubmit = useCallback(() => {
+    setValidated(true);
     if (hasSelectedUsername) {
       const trimmedName = nameRecord.trim();
-      setName({ name: trimmedName });
+      if (trimmedName.length > 0) {
+        setName({ name: trimmedName });
+      }
       if (courseRecord !== null && courseRecord !== 'choose') {
         setCourse({ course: courseRecord });
       }
-      if (!isAdmin) {
+      if (!isAdmin && trimmedName.length > 0) {
         closeModal();
       }
     } else if (isAdmin) {
+      setSelectedUsernameRecord(selectedUsernameRecord);
       setSelectedUsername({ username: selectedUsernameRecord });
       setHasSelectedUsername(true);
     }
   }, [
     hasSelectedUsername,
+    isAdmin,
     nameRecord,
     setName,
-    setCourse,
     courseRecord,
-    isAdmin,
-    setSelectedUsername,
-    selectedUsernameRecord,
+    setCourse,
     closeModal,
+    selectedUsernameRecord,
+    setSelectedUsername,
   ]);
 
   const changeLA = useCallback(() => {
@@ -129,7 +163,7 @@ const SettingsForm = ({ closeModal }: Props) => {
             : ''
         }`}
       </h2>
-      <Form>
+      <Form noValidate>
         {hasSelectedUsername ? (
           <>
             <Form.Group as={Row} controlId={LA_NAME_ID} className="col-sm-8">
@@ -137,10 +171,18 @@ const SettingsForm = ({ closeModal }: Props) => {
               <Form.Control
                 type="text"
                 defaultValue={name}
-                placeholder="LA Username"
+                placeholder={isAdmin ? "LA's Name" : 'Your Name'}
                 value={nameRecord || ''}
                 onChange={handleChange}
+                isValid={
+                  validated &&
+                  nameRecord !== null &&
+                  nameRecord.trim().length > 0
+                }
               />
+              <Form.Control.Feedback type="invalid">
+                Must enter a name
+              </Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Row} controlId={COURSE_ID} className="col-sm-8">
               <Form.Label>Default Course</Form.Label>
@@ -150,7 +192,7 @@ const SettingsForm = ({ closeModal }: Props) => {
                 defaultValue={course}
                 custom
               >
-                <option value="0">(choose)</option>
+                <option value="choose">(choose)</option>
                 {COURSES.map((c) => (
                   <option value={c} selected={course === c}>
                     {c}
@@ -159,7 +201,7 @@ const SettingsForm = ({ closeModal }: Props) => {
               </Form.Control>
             </Form.Group>
             {isAdmin && (
-              <Form.Group as={Row}>
+              <Form.Group as={Row} className="col-sm-8">
                 <Button
                   id="submitButton"
                   type="reset"
@@ -192,7 +234,7 @@ const SettingsForm = ({ closeModal }: Props) => {
             />
           </Form.Group>
         )}
-        <Form.Group as={Row}>
+        <Form.Group as={Row} className="col-sm-8">
           <Button
             id="submitButton"
             type="submit"
@@ -200,6 +242,7 @@ const SettingsForm = ({ closeModal }: Props) => {
             value="Submit"
             onClick={handleSubmit}
             disabled={disabled}
+            aria-disabled={disabled}
           >
             Submit
           </Button>

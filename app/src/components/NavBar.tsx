@@ -83,6 +83,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   }, [setTimeChartVisibility]);
 
   const toggleTimeChart = useCallback(() => {
+    if (!isAdmin) return;
+
     if (showingTimeChart) {
       setTimeChartVisibility(false);
     } else {
@@ -91,13 +93,15 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setCourseAveragesVisibility(false);
       setTimeChartVisibility(true);
     }
-  }, [showingTimeChart]);
+  }, [isAdmin, showingTimeChart]);
 
   const hideCourseAverages = useCallback(() => {
     setCourseAveragesVisibility(false);
   }, [setCourseAveragesVisibility]);
 
   const toggleCourseAverages = useCallback(() => {
+    if (!isAdmin) return;
+
     if (showingCourseAverages) {
       setCourseAveragesVisibility(false);
     } else {
@@ -106,21 +110,26 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setTimeChartVisibility(false);
       setCourseAveragesVisibility(true);
     }
-  }, [showingCourseAverages]);
+  }, [isAdmin, showingCourseAverages]);
 
   const toggleAdminStatus = useCallback(() => {
+    if (!isAdmin) return;
+
     toggleAdminAsLA();
     hideSettings();
     hideChangelog();
     hideTimeChart();
     hideCourseAverages();
   }, [
+    isAdmin,
     toggleAdminAsLA,
     hideSettings,
     hideChangelog,
     hideTimeChart,
     hideCourseAverages,
   ]);
+
+  if (loading) return null;
 
   if (!changelog.changes[0].includes(packageJson.version)) {
     return (
@@ -137,7 +146,13 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
 
   return (
     <>
-      <Navbar fixed="top" expand="md" bg="dark" variant="dark">
+      <Navbar
+        fixed="top"
+        expand="md"
+        bg="dark"
+        variant="dark"
+        role="navigation"
+      >
         <Navbar.Brand style={{ marginBottom: 0 }}>
           {`LA Feedback${isAdmin ? ' Admin' : ''} `}
           <Button type="button" variant="dark" onClick={toggleChangelog}>
@@ -151,6 +166,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
             {isAdmin && (
               <Nav.Item>
                 <Button
+                  role="button"
                   variant="dark"
                   type="button"
                   onClick={toggleAdminStatus}
@@ -161,15 +177,21 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
             )}
             {(!isAdmin || adminAsLA) && (
               <Nav.Item>
-                <Button variant="dark" type="button" onClick={toggleSettings}>
+                <Button
+                  role="button"
+                  variant="dark"
+                  type="button"
+                  onClick={toggleSettings}
+                >
                   LA Settings
                 </Button>
               </Nav.Item>
             )}
-            {!loading && (
+            {isAdmin && (
               <>
                 <Nav.Item>
                   <Button
+                    role="button"
                     variant="dark"
                     type="button"
                     onClick={toggleTimeChart}
@@ -179,6 +201,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                 </Nav.Item>
                 <Nav.Item>
                   <Button
+                    role="button"
                     variant="dark"
                     type="button"
                     onClick={toggleCourseAverages}
@@ -190,6 +213,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
             )}
             <NavDropdown title="Resources" id="resourceDropdown">
               <NavDropdown.Item
+                role="link"
                 href="https://cse-apps.unl.edu/handin"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -197,6 +221,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                 CSE Handin
               </NavDropdown.Item>
               <NavDropdown.Item
+                role="link"
                 href="https://canvas.unl.edu/"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -204,6 +229,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                 Canvas
               </NavDropdown.Item>
               <NavDropdown.Item
+                role="link"
                 href="https://cse.unl.edu/faq"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -212,6 +238,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               </NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item
+                role="link"
                 href="https://cse.unl.edu/"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -220,7 +247,12 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               </NavDropdown.Item>
             </NavDropdown>
             <Nav.Item>
-              <Button variant="dark" type="button" onClick={logout}>
+              <Button
+                role="button"
+                variant="dark"
+                type="button"
+                onClick={logout}
+              >
                 Logout
               </Button>
             </Nav.Item>

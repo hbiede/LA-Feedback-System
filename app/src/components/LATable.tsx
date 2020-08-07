@@ -67,6 +67,7 @@ const LATable = () => {
     (event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => {
       const { id: clickedHeader } = event.currentTarget;
       const { column, order } = sortConfig;
+      setActivePage(1);
 
       if (column === clickedHeader) {
         setSortConfig({
@@ -78,7 +79,6 @@ const LATable = () => {
           column: clickedHeader,
           order: 1,
         });
-        setActivePage(1);
       }
     },
     [sortConfig, setSortConfig]

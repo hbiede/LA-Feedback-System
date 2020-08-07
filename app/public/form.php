@@ -87,6 +87,7 @@ if (!can_give_feedback(get_id())) {
 
             const comment = $('#comment')[0];
             comment.required = commentRequired;
+            comment.ariaRequired = commentRequired;
             comment.minLength = commentRequired ? 5 : -1;
 
             $('#commentRequirement')[0].innerText = commentRequired ? '*' : '';
@@ -316,10 +317,10 @@ if (!can_give_feedback(get_id())) {
         <p>You recently had an interaction with a learning
             assistant for <?php echo get_course_from_interaction(get_id()) ?>. Please help us to know
             how <?php echo get_name_from_interaction(get_id()) ?> did.
-            Your response will be kept confidential (not shared with any LAs or course personel) and will
+            Your response will be kept confidential (not shared with any LAs or course personnel) and will
             help us to improve the LA program for everyone.</p>
         <label for="rating">Rating<span>*</span></label>
-        <select id="rating" class="custom-select" onchange="adjustRequirement();" required>
+        <select role="combobox" id="rating" class="custom-select" onchange="adjustRequirement();" required aria-required>
             <option value="0">(choose)</option>
             <option value="1">1 (non-helpful)</option>
             <option value="2">2</option>

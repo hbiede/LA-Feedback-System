@@ -219,6 +219,8 @@ function received_email_today($student_cse) {
 }
 
 function get_username_id($username) {
+    if ($username === null || strlen(trim($username)) === 0) return null;
+
     $conn = get_connection();
     if ($conn !== null) {
         $ps = $conn->prepare("SELECT username_key FROM cse_usernames WHERE username = ?;");

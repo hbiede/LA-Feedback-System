@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.4.0\n- Fix LAs being able to login as Admins\n- Fix Admins\n- Allow LA settings page to reflect name/course requests\n- Fix 'Invalid Course' bug\n- Fix admin page search bar when on an alternate page\n- Fix updating of active page when modifying the sort\n- Correct what is available to non-admins\n- Allow LA form changes to be reflected in backend calls\n- Send LA name in email to students\n- Error based on invalid LA username\n- Added accessibility features to main forms",
     "## 1.3.3\n- Make pagination row responsive to the length of the table\n- Limit longer decimal point values\n- Correct importing of numbers",
     "## 1.3.2\n- Convert Bootstrap to npm module\n- Search admin table => case-insensitive\n- Fix modal close buttons\n- Paginate long tables",
     "## 1.3.1\n- Prevent self-interacting",

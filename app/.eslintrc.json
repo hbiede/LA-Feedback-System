@@ -5,6 +5,7 @@
     "node": true
   },
   "extends": [
+    "plugin:jsx-a11y/strict",
     "plugin:react/recommended",
     "airbnb",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -30,6 +31,7 @@
   "plugins": [
     "button-label-required",
     "flowtype",
+    "jsx-a11y",
     "react",
     "react-hooks",
     "@typescript-eslint",
@@ -47,10 +49,6 @@
         "useTabs": false,
         "tabWidth": 2
       }
-    ],
-    "quotes": [
-      "error",
-      "single"
     ],
     "import/no-unresolved": "error",
     "no-nested-ternary": "off",

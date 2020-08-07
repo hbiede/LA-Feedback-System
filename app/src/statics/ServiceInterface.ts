@@ -19,7 +19,11 @@ class ServiceInterface {
         class: 'danger',
         content: 'No self-interaction',
       });
-    } else if (laCSE !== null && laCSE !== 'INVALID') {
+    } else if (
+      laCSE !== null &&
+      laCSE.trim().length > 0 &&
+      laCSE !== 'INVALID'
+    ) {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -32,6 +36,11 @@ class ServiceInterface {
           status = body.message;
         });
       return status;
+    } else {
+      setResponse({
+        class: 'danger',
+        content: 'Must set a username',
+      });
     }
     return null;
   };

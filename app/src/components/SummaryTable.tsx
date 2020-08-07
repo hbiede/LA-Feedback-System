@@ -46,9 +46,13 @@ const SummaryTable = ({ showLA }: Props) => {
         .slice()
         .filter((rating) => {
           const trimmedTerm = searchTerm.trim().toLowerCase();
+          const regexCompilation = new RegExp(trimmedTerm, 'i');
+          const { username, name } = rating;
           return (
-            rating.username.toLowerCase().includes(trimmedTerm) ||
-            (rating.name && rating.name.toLowerCase().includes(trimmedTerm))
+            username.toLowerCase().includes(trimmedTerm) ||
+            (name && name.toLowerCase().includes(trimmedTerm)) ||
+            regexCompilation.test(username) ||
+            (name && regexCompilation.test(name))
           );
         })
         .sort((a, b) => {
@@ -86,6 +90,7 @@ const SummaryTable = ({ showLA }: Props) => {
 
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      setActivePage(0);
       setSearchTerm(event.currentTarget.value);
     },
     [setSearchTerm]
@@ -99,6 +104,7 @@ const SummaryTable = ({ showLA }: Props) => {
 
   const handleSortClick = useCallback(
     (event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => {
+      setActivePage(1);
       const clickedHeader = event.currentTarget.id;
       const { column, order } = sortConfig;
 
@@ -108,7 +114,6 @@ const SummaryTable = ({ showLA }: Props) => {
           order: order * -1,
         });
       } else {
-        setActivePage(1);
         setSortConfig({
           column: clickedHeader,
           order: 1,
@@ -147,21 +152,21 @@ const SummaryTable = ({ showLA }: Props) => {
           }
         </InputGroup.Append>
       </InputGroup>
-      <Table hover style={{ width: '100%', cursor: 'default' }}>
+      <Table hover style={{ width: '100%', cursor: 'default' }} role="table">
         <thead className="thead-dark">
           <tr>
-            <th id="la" onClick={handleSortClick}>
+            <th role="columnheader" id="la" onClick={handleSortClick}>
               {`LA ${column === 'la' ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th id="course" onClick={handleSortClick}>
+            <th role="columnheader" id="course" onClick={handleSortClick}>
               {`Course ${column === 'course' ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th id="int_count" onClick={handleSortClick}>
+            <th role="columnheader" id="int_count" onClick={handleSortClick}>
               {`Interactions ${
                 column === 'int_count' ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
-            <th id="avg_rating" onClick={handleSortClick}>
+            <th role="columnheader" id="avg_rating" onClick={handleSortClick}>
               {`Average Rating ${
                 column === 'avg_rating' ? SORT_CHARS.get(order) : ' '
               }`}

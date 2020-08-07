@@ -82,10 +82,10 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   getInteractions: () => {
     GetInteractions(get).then((ints) => {
       const isAdmin =
-        ints.ratings.length > 0 ||
-        (ints.time !== null &&
-          !Number.isNaN(ints.time) &&
-          Number.isFinite(ints.time));
+        ints.ratings.length > 0 &&
+        ints.time !== null &&
+        !Number.isNaN(ints.time) &&
+        Number.isFinite(ints.time);
       const { name, course } = api.getState();
       set(() => ({
         interactions: ints,
