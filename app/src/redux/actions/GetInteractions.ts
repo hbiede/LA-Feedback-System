@@ -51,12 +51,14 @@ const getInteractions = async (
           if (intHolder.time === null) {
             interactions.time = 0;
           }
-          interactions.ratings = intHolder.ratings.map((rating) => ({
-            ...rating,
-            avg: Number.parseFloat(rating.avg),
-            count: Number.parseInt(rating.count, 10),
-            fCount: Number.parseInt(rating.fCount, 10),
-          }));
+          interactions.ratings = intHolder.ratings
+            .map((rating) => ({
+              ...rating,
+              avg: Number.parseFloat(rating.avg),
+              count: Number.parseInt(rating.count, 10),
+              fCount: Number.parseInt(rating.fCount, 10),
+            }))
+            .filter((int) => int.count > 0);
         }
       })
       .catch((error) => setResponse(error));
