@@ -154,15 +154,17 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
         role="navigation"
       >
         <Navbar.Brand style={{ marginBottom: 0 }}>
-          {`LA Feedback${isAdmin ? ' Admin' : ''} `}
-          <Button type="button" variant="dark" onClick={toggleChangelog}>
-            <small>{`v${packageJson.version}`}</small>
-          </Button>
+          {`LA Feedback${isAdmin ? ' Admin' : ''}`}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls={NAVBAR_ID} />
 
         <Navbar.Collapse id={NAVBAR_ID}>
           <Nav variant="pills">
+            <Nav.Item>
+              <Button type="button" variant="dark" onClick={toggleChangelog}>
+                <small>{`v${packageJson.version}`}</small>
+              </Button>
+            </Nav.Item>
             {isAdmin && (
               <Nav.Item>
                 <Button
@@ -211,7 +213,11 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                 </Nav.Item>
               </>
             )}
-            <NavDropdown title="Resources" id="resourceDropdown">
+            <NavDropdown
+              title="Resources"
+              id="resourceDropdown"
+              style={{ color: '#ffffff' }}
+            >
               <NavDropdown.Item
                 role="link"
                 href="https://cse-apps.unl.edu/handin"
