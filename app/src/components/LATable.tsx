@@ -29,7 +29,7 @@ const LATable = () => {
   );
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    column: 'la',
+    column: 'rating',
     order: 1,
   });
   const [activePage, setActivePage] = useState(1);
@@ -84,6 +84,8 @@ const LATable = () => {
     [sortConfig, setSortConfig]
   );
 
+  if (ratings.length === 0) return null;
+
   const avg =
     ratings.length === 0
       ? 0
@@ -92,7 +94,8 @@ const LATable = () => {
   const { column, order } = sortConfig;
   const [course, ...rest] = ratings;
   const firstCourse = course.course ?? null;
-  const isMultiCourseLA = !rest.every((r) => r.course === firstCourse);
+  const isMultiCourseLA =
+    rest.length > 0 && !rest.every((r) => r.course === firstCourse);
 
   return (
     <>
