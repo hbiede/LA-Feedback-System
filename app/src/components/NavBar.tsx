@@ -21,7 +21,6 @@ import SettingsForm from 'components/SettingsForm';
 import packageJson from '../../package.json';
 import changelog from '../CHANGELOG.json';
 import AveragesTable from './AveragesTable';
-import TimeChart from './TimeChart';
 
 type Props = {
   adminAsLA: boolean;
@@ -35,17 +34,20 @@ const MODAL_STYLE = {
 const NAVBAR_ID = 'laNavBar';
 
 const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
-  const { loading, isAdmin, logout } = Redux(
+  const { isAdmin, loading, logout, name, username } = Redux(
     (state) => ({
       loading: state.loading,
       isAdmin: state.isAdmin,
       logout: state.logout,
+      name: state.name,
+      username: state.username,
     }),
     shallow
   );
-  const [showingSettings, setSettingsVisibility] = useState(false);
+  const [showingSettings, setSettingsVisibility] = useState(
+    !isAdmin && (username === name || name === null || name.trim().length === 0)
+  );
   const [showingChangelog, setChangelogVisibility] = useState(false);
-  const [showingTimeChart, setTimeChartVisibility] = useState(false);
   const [showingCourseAverages, setCourseAveragesVisibility] = useState(false);
 
   const hideSettings = useCallback(() => {
@@ -57,7 +59,6 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setSettingsVisibility(false);
     } else {
       setChangelogVisibility(false);
-      setTimeChartVisibility(false);
       setCourseAveragesVisibility(false);
       setSettingsVisibility(true);
     }
@@ -72,28 +73,10 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setChangelogVisibility(false);
     } else {
       setSettingsVisibility(false);
-      setTimeChartVisibility(false);
       setCourseAveragesVisibility(false);
       setChangelogVisibility(true);
     }
   }, [showingChangelog, setChangelogVisibility, setSettingsVisibility]);
-
-  const hideTimeChart = useCallback(() => {
-    setTimeChartVisibility(false);
-  }, [setTimeChartVisibility]);
-
-  const toggleTimeChart = useCallback(() => {
-    if (!isAdmin) return;
-
-    if (showingTimeChart) {
-      setTimeChartVisibility(false);
-    } else {
-      setSettingsVisibility(false);
-      setChangelogVisibility(false);
-      setCourseAveragesVisibility(false);
-      setTimeChartVisibility(true);
-    }
-  }, [isAdmin, showingTimeChart]);
 
   const hideCourseAverages = useCallback(() => {
     setCourseAveragesVisibility(false);
@@ -107,7 +90,6 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     } else {
       setSettingsVisibility(false);
       setChangelogVisibility(false);
-      setTimeChartVisibility(false);
       setCourseAveragesVisibility(true);
     }
   }, [isAdmin, showingCourseAverages]);
@@ -118,14 +100,12 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     toggleAdminAsLA();
     hideSettings();
     hideChangelog();
-    hideTimeChart();
     hideCourseAverages();
   }, [
     isAdmin,
     toggleAdminAsLA,
     hideSettings,
     hideChangelog,
-    hideTimeChart,
     hideCourseAverages,
   ]);
 
@@ -190,28 +170,16 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               </Nav.Item>
             )}
             {isAdmin && (
-              <>
-                <Nav.Item>
-                  <Button
-                    role="button"
-                    variant="dark"
-                    type="button"
-                    onClick={toggleTimeChart}
-                  >
-                    Interaction Chart
-                  </Button>
-                </Nav.Item>
-                <Nav.Item>
-                  <Button
-                    role="button"
-                    variant="dark"
-                    type="button"
-                    onClick={toggleCourseAverages}
-                  >
-                    Course Avgs
-                  </Button>
-                </Nav.Item>
-              </>
+              <Nav.Item>
+                <Button
+                  role="button"
+                  variant="dark"
+                  type="button"
+                  onClick={toggleCourseAverages}
+                >
+                  Course Avgs
+                </Button>
+              </Nav.Item>
             )}
             <NavDropdown
               title="Resources"
@@ -303,25 +271,6 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
           {changelog.changes.map((change) => (
             <ReactMarkdown source={change} />
           ))}
-        </div>
-      </Modal>
-      <Modal
-        isOpen={showingTimeChart}
-        onRequestClose={hideTimeChart}
-        contentLabel="Times of LA Interactions"
-        style={MODAL_STYLE}
-      >
-        <button
-          type="button"
-          className="close"
-          data-dismiss="modal"
-          aria-label="Close"
-          onClick={hideTimeChart}
-        >
-          <span aria-hidden="true">×</span>
-        </button>
-        <div style={{ marginTop: 30 }}>
-          <TimeChart />
         </div>
       </Modal>
       <Modal

@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable no-alert */
-import React, { ChangeEvent, useCallback, useState } from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
@@ -14,7 +14,7 @@ import Row from 'react-bootstrap/Row';
 
 import shallow from 'zustand/shallow';
 
-import Redux from 'redux/modules';
+import Redux, { api } from 'redux/modules';
 
 import { COURSES } from 'statics/Types';
 
@@ -25,7 +25,6 @@ const STUDENT_CSE_ID = 'student_cse_login';
 const FeedbackForm = () => {
   const {
     username,
-    name,
     selectedUsername,
     setSelectedUsername,
     course,
@@ -35,7 +34,6 @@ const FeedbackForm = () => {
   } = Redux(
     (state) => ({
       username: state.username,
-      name: state.username,
       selectedUsername: state.selectedUsername,
       setSelectedUsername: state.setSelectedUsername,
       course: state.course,
@@ -47,17 +45,30 @@ const FeedbackForm = () => {
   );
 
   const [validated, setValidated] = useState(false);
-  const [disabled, setDisabled] = useState(true);
   const [usernameRecord, setUsernameRecord] = useState<string>(
     isAdmin ? selectedUsername : username
   );
-  const [studentCSE, setStudentCSE] = useState('');
+  const [studentCSE, setStudentCSE] = useState<string | null>('');
   const [courseRecord, setCourseRecord] = useState<string | null>(course);
+
+  useEffect(() => {
+    api.subscribe(
+      (newCourse) => {
+        if (
+          newCourse !== null &&
+          typeof newCourse === 'string' &&
+          newCourse !== courseRecord
+        ) {
+          setCourseRecord(newCourse);
+        }
+      },
+      (state) => state.course
+    );
+  });
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       setValidated(false);
-      setDisabled(false);
       const { id, value } = event.target;
       switch (id) {
         case LA_USERNAME_ID:
@@ -81,16 +92,7 @@ const FeedbackForm = () => {
 
   const handleSubmit = useCallback(() => {
     setValidated(true);
-    if (!isAdmin && (name === null || name.trim().length === 0)) {
-      setResponse({
-        class: 'danger',
-        content:
-          'Please set your name before submitting feedback (See the LA Settings)',
-      });
-      return;
-    }
     setResponse(null);
-    setDisabled(true);
 
     if (
       studentCSE &&
@@ -106,10 +108,10 @@ const FeedbackForm = () => {
         setSelectedUsername({ username: usernameRecord });
       }
       sendEmail(studentCSE);
+      setStudentCSE(null);
     }
   }, [
     isAdmin,
-    name,
     studentCSE,
     courseRecord,
     usernameRecord,
@@ -237,8 +239,6 @@ const FeedbackForm = () => {
               variant="primary"
               value="Submit"
               onClick={handleSubmit}
-              disabled={disabled}
-              aria-disabled={disabled}
             >
               Submit
             </Button>

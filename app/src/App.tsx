@@ -4,7 +4,7 @@
  * File created by Hundter Biede for the UNL CSE Learning Assistant Program
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import Alert from 'react-bootstrap/Alert';
 import Collapse from 'react-bootstrap/Collapse';
@@ -14,7 +14,7 @@ import Spinner from 'react-bootstrap/Spinner';
 
 import shallow from 'zustand/shallow';
 
-import Redux, { api } from 'redux/modules';
+import Redux from 'redux/modules';
 
 import AdminTable from 'screens/AdminTable';
 
@@ -39,11 +39,6 @@ function App() {
     setAdminAsLA,
     adminAsLA,
   ]);
-
-  useEffect(() => {
-    api.getState().getUsername();
-    // No Deps == componentDidMount
-  }, []);
 
   return (
     <div className="App">

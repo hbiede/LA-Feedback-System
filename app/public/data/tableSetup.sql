@@ -21,8 +21,8 @@ create table learningassistants.cse_usernames
 create table learningassistants.interactions
 (
     interaction_key       int auto_increment unique primary key,
-    student_username_key  int                  not null,
     la_username_key       int                  not null,
+    student_username_key  int                  not null,
     course                varchar(10),
     seeking_feedback      tinyint(1) default 0 not null,
     has_received_feedback tinyint(1) default 0 null,

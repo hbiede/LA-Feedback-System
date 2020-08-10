@@ -117,10 +117,14 @@ const SettingsForm = ({ closeModal }: Props) => {
     setValidated(true);
     if (hasSelectedUsername) {
       const trimmedName = nameRecord.trim();
-      if (trimmedName.length > 0) {
+      if (trimmedName.length > 0 && name !== trimmedName) {
         setName({ name: trimmedName });
       }
-      if (courseRecord !== null && courseRecord !== 'choose') {
+      if (
+        courseRecord !== null &&
+        courseRecord !== 'choose' &&
+        course !== courseRecord
+      ) {
         setCourse({ course: courseRecord });
       }
       if (!isAdmin && trimmedName.length > 0) {
@@ -135,8 +139,10 @@ const SettingsForm = ({ closeModal }: Props) => {
     hasSelectedUsername,
     isAdmin,
     nameRecord,
-    setName,
+    name,
     courseRecord,
+    course,
+    setName,
     setCourse,
     closeModal,
     selectedUsernameRecord,

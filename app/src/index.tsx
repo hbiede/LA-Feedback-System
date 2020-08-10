@@ -8,7 +8,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import { api } from 'redux/modules';
+
 import App from './App';
+
+api.getState().getUsername();
 
 ReactDOM.render(
   <React.StrictMode>

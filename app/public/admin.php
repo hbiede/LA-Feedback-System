@@ -43,9 +43,9 @@ function get_interactions() {
 
 function get_ratings($la_username) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT rating, comment, course, time_of_interaction AS time FROM feedback LEFT JOIN ' .
-        'interactions i on feedback.interaction_key = i.interaction_key WHERE feedback.interaction_key IN ' .
-        '(SELECT interaction_key FROM interactions WHERE la_username_key = ' .
+    $ps = $conn->prepare('SELECT rating, comment, course, DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") ' .
+        'AS time FROM feedback LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key WHERE ' .
+        'feedback.interaction_key IN (SELECT interaction_key FROM interactions WHERE la_username_key = ' .
         '(SELECT username_key FROM cse_usernames WHERE username = ?)) ORDER BY rating DESC;');
     $ps->bind_param('s', $la_username);
     $ps->execute();

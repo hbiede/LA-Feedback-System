@@ -30,9 +30,7 @@ const getRatings = async (
       const ratingsResponse: RatingResponse[] = json;
       ratings = ratingsResponse.map((rating) => ({
         ...rating,
-        time: new Date(
-          Date.parse(rating.time.replace(new RegExp(String.raw`\s`), 'T'))
-        ),
+        time: new Date(rating.time),
         rating: Number.parseFloat(rating.rating),
       }));
     })

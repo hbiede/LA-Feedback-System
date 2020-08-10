@@ -46,16 +46,17 @@ function set_course($username, $course) {
 }
 
 $obj = json_decode(file_get_contents('php://input'));
+$response = new stdClass();
 if (isset($obj) && isset($obj->{'updateVal'}) && $obj->{'updateVal'}) {
     if (isset($obj->{'username'}) && $obj->{'username'}) {
         set_course($obj->{'username'}, $obj->{'updateVal'});
+        $response->{'course'} = $obj->{'updateVal'};
     }
 } else {
-    $response = new stdClass();
     if (isset($obj) && isset($obj->{'username'}) && $obj->{'username'}) {
         $response->{'course'} = get_course($obj->{'username'});
     } else {
         $response->{'course'} = '';
     }
-    echo json_encode($response);
 }
+echo json_encode($response);

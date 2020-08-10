@@ -90,7 +90,7 @@ const SummaryTable = ({ showLA }: Props) => {
 
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      setActivePage(0);
+      setActivePage(1);
       setSearchTerm(event.currentTarget.value);
     },
     [setSearchTerm]
@@ -99,6 +99,7 @@ const SummaryTable = ({ showLA }: Props) => {
   const clearSearch = useCallback(() => {
     if (searchTerm.length > 0) {
       setSearchTerm('');
+      setActivePage(1);
     }
   }, [searchTerm, setSearchTerm]);
 

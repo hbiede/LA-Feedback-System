@@ -60,22 +60,25 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   username: '',
   getUsername: () => {
     GetUsername(set).then(() => {
-      const { getCourse, getInteractions: getInts, getName } = api.getState();
-      getCourse();
-      getInts();
-      getName();
+      get().getName();
+      get().getCourse();
+      get().getInteractions();
     });
   },
   name: '',
   getName: () => NameRest().then((result) => set(() => ({ name: result }))),
   setName: (args: SetNameArgs) => {
-    NameRest(args.name).then((result) => set(() => ({ name: result })));
+    if (get().name !== args.name) {
+      NameRest(args.name).then(() => set(() => ({ name: args.name })));
+    }
   },
   course: '',
   getCourse: () =>
     CourseRest().then((result) => set(() => ({ course: result }))),
   setCourse: (args: SetCourseArgs) => {
-    CourseRest(args.course).then((result) => set(() => ({ course: result })));
+    if (get().course !== args.course) {
+      CourseRest(args.course).then(() => set(() => ({ course: args.course })));
+    }
   },
   isAdmin: false,
   interactions: { ratings: [], time: -1 },

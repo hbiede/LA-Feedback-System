@@ -11,6 +11,6 @@ export const nameREST = async (name: string | null = null): Promise<string> =>
     'https://cse.unl.edu/~learningassistants/LA-Feedback/name.php',
     ServiceInterface.getActiveUser(),
     name
-  ).then((json) => (json.name ? json.name : ''));
+  ).then((json) => json.name ?? '');
 
 export default nameREST;

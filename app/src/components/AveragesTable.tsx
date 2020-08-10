@@ -22,7 +22,7 @@ const AveragesTable = () => {
     }),
     shallow
   );
-  const [averages, setAverages] = useState<CourseAverages[]>([]);
+  const [averages, setAverages] = useState<CourseAverages[] | null>(null);
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     column: 'course',
@@ -39,26 +39,28 @@ const AveragesTable = () => {
 
   const getData = useMemo(
     () =>
-      averages.slice().sort((a, b) => {
-        let cmp = 0;
-        const { column, order } = sortConfig;
-        switch (column) {
-          case 'avg':
-            if (a.avg < b.avg) {
-              cmp = -1;
-            } else if (a.avg > b.avg) {
-              cmp = 1;
+      averages === null
+        ? []
+        : averages.slice().sort((a, b) => {
+            let cmp = 0;
+            const { column, order } = sortConfig;
+            switch (column) {
+              case 'avg':
+                if (a.avg < b.avg) {
+                  cmp = -1;
+                } else if (a.avg > b.avg) {
+                  cmp = 1;
+                }
+                return order * cmp;
+              default:
+                if (a.course < b.course) {
+                  cmp = -1;
+                } else if (a.course > b.course) {
+                  cmp = 1;
+                }
+                return order * cmp;
             }
-            return order * cmp;
-          default:
-            if (a.course < b.course) {
-              cmp = -1;
-            } else if (a.course > b.course) {
-              cmp = 1;
-            }
-            return order * cmp;
-        }
-      }),
+          }),
     [sortConfig, averages]
   );
 
@@ -82,7 +84,11 @@ const AveragesTable = () => {
     [sortConfig, setSortConfig]
   );
 
-  if (averages === null || averages.length === 0) {
+  if (averages?.length === 0) {
+    return <h4>No interactions</h4>;
+  }
+
+  if (averages === null) {
     return <h4>Loading</h4>;
   }
 

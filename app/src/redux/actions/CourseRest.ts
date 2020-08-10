@@ -11,6 +11,6 @@ const courseREST = async (course: string | null = null): Promise<string> =>
     'https://cse.unl.edu/~learningassistants/LA-Feedback/course.php',
     ServiceInterface.getActiveUser(),
     course
-  ).then((json) => (json.course ? json.course : ''));
+  ).then((json) => json.course ?? '');
 
 export default courseREST;

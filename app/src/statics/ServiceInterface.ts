@@ -76,11 +76,13 @@ class ServiceInterface {
         }
       })
       .catch((error: Error) => {
-        if (!error.message.includes('cancelled')) {
-          api
-            .getState()
-            .setResponse({ class: 'danger', content: error.message });
+        if (
+          error.message.includes('cancelled') ||
+          (updateVal === null && error.message.includes('match'))
+        ) {
+          return;
         }
+        api.getState().setResponse({ class: 'danger', content: error.message });
       });
     return returnVal;
   };

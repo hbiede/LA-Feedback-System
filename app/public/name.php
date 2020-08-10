@@ -46,16 +46,17 @@ function set_name($username, $name) {
 }
 
 $obj = json_decode(file_get_contents('php://input'));
+$response = new stdClass();
 if (isset($obj) && $obj->{'updateVal'}) {
     if (isset($obj->{'username'}) && $obj->{'username'}) {
         set_name($obj->{'username'}, $obj->{'updateVal'});
+        $response->{'name'} = $obj->{'updateVal'};
     }
 } else {
-    $response = new stdClass();
     if (isset($obj) && isset($obj->{'username'})) {
         $response->{'name'} = get_name($obj->{'username'});
     } else {
         $response->{'name'} = '';
     }
-    echo json_encode($response);
 }
+echo json_encode($response);
