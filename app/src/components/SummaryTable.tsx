@@ -59,6 +59,10 @@ const SummaryTable = ({ showLA }: Props) => {
           let cmp = 0;
           switch (sortConfig.column) {
             case 'course':
+              if (!a.course && !b.course) return 0;
+              if (!a.course) return 1;
+              if (!b.course) return -1;
+
               return sortConfig.order * a.course.localeCompare(b.course);
             case 'int_count':
               if (a.count < b.count) {
@@ -68,13 +72,18 @@ const SummaryTable = ({ showLA }: Props) => {
               }
               return sortConfig.order * cmp;
             case 'avg_rating':
-              if (a.count === 0 && b.count === 0) return 0;
-              if (a.count === 0) return 1;
-              if (b.count === 0) return -1;
+              const aDoesntExist = !a.avg || a.avg === 0;
+              const bDoesntExist = !b.avg || b.avg === 0;
+              if (aDoesntExist && bDoesntExist) return 0;
+              if (aDoesntExist) return 1;
+              if (bDoesntExist) return -1;
 
-              if (a.avg < b.avg) {
+              // Stupid TS
+              const aAvg = a.avg ?? 0;
+              const bAvg = b.avg ?? 0;
+              if (aAvg < bAvg) {
                 cmp = -1;
-              } else if (a.avg > b.avg) {
+              } else if (aAvg > bAvg) {
                 cmp = 1;
               }
               return sortConfig.order * cmp;
@@ -186,7 +195,7 @@ const SummaryTable = ({ showLA }: Props) => {
                 row.username.trim().length > 0 &&
                 !Number.isNaN(row.count) && (
                   <tr
-                    className={getRowClass(row.avg)}
+                    className={getRowClass(row.avg ?? 0)}
                     onClick={() => showLA(row)}
                   >
                     <td>{row.name ? row.name : row.username}</td>

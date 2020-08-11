@@ -1,11 +1,18 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 ini_set('error_log', './log/ticket.log');
+
+// Call with a POST call with a JSON body as follows:
+//{
+//  ticket: string
+//}
+
+// Returns a string of the username
 
 $casService = 'https://cse-apps.unl.edu/cas';
 $thisService = 'https://cse.unl.edu/~learningassistants/LA-Feedback';

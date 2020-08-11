@@ -1,9 +1,11 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
+
+// Front end for students responding to requests for feedback
 
 include_once 'sqlManager.php';
 ini_set('error_log', './log/form.log');

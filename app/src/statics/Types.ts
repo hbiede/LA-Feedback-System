@@ -9,10 +9,10 @@ import React from 'react';
 export type InteractionRecord = {
   username: string;
   name?: string;
-  course: string;
+  course?: string;
   count: number;
   fCount: number;
-  avg: number;
+  avg: number | null;
 };
 
 export type InteractionSummary = {

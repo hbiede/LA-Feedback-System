@@ -1,13 +1,26 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 include_once 'sqlManager.php';
 ini_set('error_log', './log/email.log');
 date_default_timezone_set("America/Chicago");
+
+// Call with a POST call with a JSON body as follows:
+//{
+//  studentCSE: string,
+//  laCSE: string,
+//  course: string
+//}
+
+// Returns a JSON encoded message as follows:
+//{
+//  status: number (HTML response code),
+//  message?: string
+//}
 
 function send_email($obj, $interaction_id) {
     $headers = "MIME-Version: 1.0" . "\r\n";

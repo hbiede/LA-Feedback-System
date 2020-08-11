@@ -1,12 +1,30 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 include_once 'sqlManager.php';
 ini_set('error_log', './log/course.log');
+
+// To get the default course associated with a username:
+// Call with a POST call with a JSON body as follows:
+//{
+//  username: string
+//}
+
+// Returns the current default course
+
+
+// To update the default course associated with a username:
+// Call with a POST call with a JSON body as follows:
+//{
+//  username: string,
+//  updateVal: string
+//}
+
+// Returns the new default course (potential for error checking)
 
 function get_course($username) {
     $conn = get_connection();

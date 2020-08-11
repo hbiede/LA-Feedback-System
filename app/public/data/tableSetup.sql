@@ -1,12 +1,14 @@
+----------------------------------------------------------------------------
 -- Copyright (c) 2020.
 --
 -- File created by Hundter Biede for the UNL CSE Learning Assistant Program
+----------------------------------------------------------------------------
 
-drop table if exists learningassistants.feedback;
-drop table if exists learningassistants.interactions;
-drop table if exists learningassistants.cse_usernames;
+drop table if exists feedback;
+drop table if exists interactions;
+drop table if exists cse_usernames;
 
-create table learningassistants.cse_usernames
+create table cse_usernames
 (
     username_key int auto_increment unique primary key,
     username     varchar(20) not null,
@@ -18,7 +20,7 @@ create table learningassistants.cse_usernames
         unique (username)
 );
 
-create table learningassistants.interactions
+create table interactions
 (
     interaction_key       int auto_increment unique primary key,
     la_username_key       int                  not null,
@@ -30,14 +32,14 @@ create table learningassistants.interactions
     constraint interactions_interaction_key_uindex
         unique (interaction_key),
     constraint interactions_la_fk
-        foreign key (la_username_key) references learningassistants.cse_usernames (username_key)
+        foreign key (la_username_key) references cse_usernames (username_key)
             on delete cascade,
     constraint interactions_student_fk
-        foreign key (student_username_key) references learningassistants.cse_usernames (username_key)
+        foreign key (student_username_key) references cse_usernames (username_key)
             on delete cascade
 );
 
-create table learningassistants.feedback
+create table feedback
 (
     feedback_key     int auto_increment unique primary key,
     interaction_key  int                  not null,
@@ -48,7 +50,7 @@ create table learningassistants.feedback
     constraint interaction_key
         unique (interaction_key),
     constraint feedback_interaction_fk
-        foreign key (interaction_key) references learningassistants.interactions (interaction_key)
+        foreign key (interaction_key) references interactions (interaction_key)
             on delete cascade
 );
 

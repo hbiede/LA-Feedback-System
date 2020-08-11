@@ -1,9 +1,56 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
+
+// To get list of interaction counts per LA:
+// Call with a POST call with a JSON body as follows:
+//{
+//  username: string (username of the Admin running the check),
+//}
+
+// Returns a JSON encoded object formatted as follows:
+//{
+//  time: int (average time to complete the feedback form),
+//  ratings: InteractionRecord[]
+//}
+// If the username in the POST call is not an admin, this script returns an empty array
+
+// Where InteractionRecord is an object summarizing a single LA formatted as follows:
+//{
+//  username: string,
+//  name?: string (if the LA has a name set),
+//  course?: string (if the LA has a default course set),
+//  count: int (number of interactions),
+//  fCount: int (number of pieces of feedback submitted),
+//  avg: double|null (avg rating from feedback)
+//}
+
+
+// To get list of ratings for a single LA:
+// Call with a POST call with a JSON body as follows:
+//{
+//  username: string (username of the Admin running the check),
+//  la: string (the LA whose ratings you are seeking)
+//}
+
+// Returns a JSON encoded object formatted as follows:
+//{
+//  time: int (average time to complete the feedback form),
+//  ratings: InteractionRecord[]
+//}
+
+// Where InteractionRecord is an object summarizing a single LA formatted as follows:
+//{
+//  username: string,
+//  name?: string (if the LA has a name set),
+//  course?: string (if the LA has a default course set),
+//  count: int (number of interactions),
+//  fCount: int (number of pieces of feedback submitted),
+//  avg: double|null (avg rating from feedback)
+//}
 
 include_once 'sqlManager.php';
 

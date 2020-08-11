@@ -1,8 +1,21 @@
 <?php
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 include_once 'sqlManager.php';
 
 ini_set('error_log', './log/times.log');
+
+// Call with GET call with no query tags
+
+// Returns a JSON encoded array of objects formatted as follows:
+//{
+//  avg: double,
+//  course: string
+//}
 
 function get_averages() {
     $conn = get_connection();

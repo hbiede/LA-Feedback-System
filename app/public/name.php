@@ -1,12 +1,30 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 include_once 'sqlManager.php';
 ini_set('error_log', './log/name.log');
+
+// To get the name associated with a username:
+// Call with a POST call with a JSON body as follows:
+//{
+//  username: string
+//}
+
+// Returns the current name
+
+
+// To update the name associated with a username:
+// Call with a POST call with a JSON body as follows:
+//{
+//  username: string,
+//  updateVal: string
+//}
+
+// Returns the new name (potential for error checking)
 
 function get_name($username) {
     $conn = get_connection();

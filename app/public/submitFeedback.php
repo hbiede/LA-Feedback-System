@@ -1,12 +1,27 @@
 <?php
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 include_once 'sqlManager.php';
 ini_set('error_log', './log/feedback.log');
+
+// Call with a POST call with a JSON body as follows:
+//{
+//  id: number,
+//  rating: int,
+//  comment?: string,
+//  contact: boolean,
+//  time: int
+//}
+
+// Returns a JSON encoded message as follows:
+//{
+//  status: number (HTML response code),
+//  message?: string
+//}
 
 /**
  * LAs will receive a summary of their last X pieces of feedback
@@ -145,7 +160,9 @@ if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POS
 
                 $subject = 'Low Feedback';
 
-                $body = shell_exec('cat ./data/lowFeedback.txt | sed "s/LA_USERNAME/' . $la_username
+                $la_name = get_name_from_interaction($_POST['id']);
+
+                $body = shell_exec('cat ./data/lowFeedback.txt | sed "s/LA_USERNAME/' . $la_name
                     . '/gi" | sed "s/STUDENT_RATING/' . $_POST['rating'] . '/gi" | sed "s/RATING_COMMENT/'
                     . $_POST['comment'] . '/gi"');
 
