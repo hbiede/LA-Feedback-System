@@ -1,10 +1,9 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
-// @flow
 import { create } from 'zustand';
 
 import {
@@ -49,7 +48,11 @@ export type AppReduxState = {
   getRatings: () => void;
   response: Response | null;
   setResponse: (res: Response | null) => void;
-  sendEmail: (studentCSE: string) => void;
+  sendEmail: (
+    studentCSE: string | null,
+    course?: string | null,
+    multiples?: boolean
+  ) => void;
   logout: () => void;
   getTimes: () => Promise<Time[]>;
   getAverages: () => Promise<CourseAverages[]>;
@@ -125,14 +128,26 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     set(() => ({ response: res }));
     setTimeout(() => set(() => ({ response: null })), 10000); // timeout after 10 seconds
   },
-  sendEmail: (studentCSE: string) => {
+  sendEmail: (
+    studentCSE: string | null,
+    course: string | null = null,
+    multiples = false
+  ) => {
+    if (studentCSE === null) {
+      get().setResponse({
+        class: 'danger',
+        content: 'Must set a username',
+      });
+      return;
+    }
+
     const { setResponse } = api.getState();
-    ServiceInterface.sendEmail(studentCSE)
+    ServiceInterface.sendEmail(studentCSE, course)
       .then((response) => {
         if (response === '0' || response === 0) {
           setResponse({
             class: 'success',
-            content: 'Interaction recorded',
+            content: `Interaction${multiples ? 's' : ''} recorded`,
           });
         } else {
           setResponse({

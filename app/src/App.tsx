@@ -1,8 +1,8 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 import React, { useCallback, useState } from 'react';
 
@@ -22,6 +22,8 @@ import FeedbackForm from 'screens/FeedbackForm';
 
 import NavBar from 'components/NavBar';
 import FeedbackHeader from 'components/FeedbackHeader';
+
+import styles from './App.styles';
 
 function App() {
   const { loading, isAdmin, response, setResponse } = Redux(
@@ -45,9 +47,9 @@ function App() {
       {loading ? (
         <main role="main">
           <Jumbotron fluid>
-            <Container>
+            <Container style={styles.loadingContainer}>
               <Spinner animation="border" variant="primary" />
-              <h4 style={{ marginLeft: 0, marginTop: 45 }}>Loading</h4>
+              <h4 style={styles.loadingSpinner}>Loading</h4>
             </Container>
           </Jumbotron>
         </main>
@@ -59,7 +61,7 @@ function App() {
               <Container>
                 {isAdmin && !adminAsLA ? (
                   <>
-                    <h4 style={{ marginLeft: 0, marginTop: 45 }}>
+                    <h4 style={styles.appHeading}>
                       LA Feedback Admin Interface
                     </h4>
                     <Collapse in={response !== null}>
@@ -72,11 +74,11 @@ function App() {
                         {response?.content}
                       </Alert>
                     </Collapse>
-                    <AdminTable style={{ marginTop: '25px' }} />
+                    <AdminTable style={styles.tableContainer} />
                   </>
                 ) : (
                   <>
-                    <FeedbackHeader />
+                    <FeedbackHeader style={styles.appHeading} />
                     <Collapse in={response !== null}>
                       <Alert
                         variant={response?.class}
@@ -87,7 +89,7 @@ function App() {
                         {response?.content}
                       </Alert>
                     </Collapse>
-                    <FeedbackForm />
+                    <FeedbackForm style={styles.tableContainer} />
                   </>
                 )}
               </Container>

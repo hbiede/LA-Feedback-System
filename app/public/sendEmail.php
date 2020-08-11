@@ -9,6 +9,33 @@ include_once 'sqlManager.php';
 ini_set('error_log', './log/email.log');
 date_default_timezone_set("America/Chicago");
 
+function send_email($obj, $interaction_id) {
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
+    $name = get_name_from_interaction($interaction_id);
+
+    $subject = shell_exec('grep "<title>" form.php | sed "s/\s*<\/*title>//gi"');
+    $body = shell_exec('cat ./data/emailBody.html | sed "s/INTERACTION_ID/' . $interaction_id .
+        '/gi" | sed "s/LA_NAME/' . $name . '/gi"');
+    if (mail($obj->{'studentCSE'} . '@cse.unl.edu', $subject, $body, $headers)) {
+        update_interaction_for_feedback($interaction_id);
+
+        header('Status: 200 OK');
+        echo json_encode([
+            'status' => 200,
+            'message' => 0
+        ]);
+    } else {
+        error_log('Failed to send email');
+        header('Status: 503');
+        echo json_encode([
+            'status' => 503,
+            'message' => 1
+        ]);
+    }
+}
+
 /**
  * The percent of students that should receive a feedback email [0,1]
  */
@@ -21,30 +48,7 @@ if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isse
 
     if ($interaction_id !== null && $interaction_id > 0 && mt_rand() / mt_getrandmax() < FEEDBACK_RATE &&
         !received_email_today($obj->{'studentCSE'})) {
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
-        $name = get_name_from_interaction($interaction_id);
-
-        $subject = shell_exec('grep "<title>" form.php | sed "s/\s*<\/*title>//gi"');
-        $body = shell_exec('cat ./data/emailBody.html | sed "s/INTERACTION_ID/' . $interaction_id .
-            '/gi" | sed "s/LA_NAME/' . $name . '/gi"');
-        if (mail($obj->{'studentCSE'} . '@cse.unl.edu', $subject, $body, $headers)) {
-            update_interaction_for_feedback($interaction_id);
-
-            header('Status: 200 OK');
-            echo json_encode([
-                'status' => 200,
-                'message' => 0
-            ]);
-        } else {
-            error_log('Failed to send email');
-            header('Status: 503');
-            echo json_encode([
-                'status' => 503,
-                'message' => 1
-            ]);
-        }
+        send_email($obj, $interaction_id);
     } else {
         echo json_encode([
             'status' => 200,

@@ -1,10 +1,11 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
-// @flow
+import React from 'react';
+
 export type InteractionRecord = {
   username: string;
   name?: string;
@@ -42,6 +43,15 @@ export type RESTResponse = {
   name?: string;
   course?: string;
 };
+
+type StyleTypes = React.CSSProperties;
+export type NamedStyles<T> = {
+  [P in keyof T]: StyleTypes;
+};
+export type StyleDef<T extends string | number | symbol> = Record<
+  T,
+  StyleTypes
+>;
 
 export const COURSES = ['101', '155E', '155N', '156'];
 

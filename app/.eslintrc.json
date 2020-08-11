@@ -50,6 +50,7 @@
         "tabWidth": 2
       }
     ],
+    "react/jsx-wrap-multilines": "off",
     "import/no-unresolved": "error",
     "no-nested-ternary": "off",
     "key-spacing": "off",

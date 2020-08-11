@@ -1,8 +1,8 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -10,9 +10,9 @@ import Table from 'react-bootstrap/Table';
 
 import shallow from 'zustand/shallow';
 
-import PaginationButton, {
+import PaginationButtons, {
   RATINGS_PER_PAGE,
-} from 'components/PaginationButton';
+} from 'components/PaginationButtons';
 
 import getRowClass from 'components/TableRowColors';
 
@@ -136,7 +136,7 @@ const LATable = () => {
             ))}
         </tbody>
       </Table>
-      <PaginationButton
+      <PaginationButtons
         activePage={activePage}
         itemCount={getData.length}
         setActivePage={setActivePage}

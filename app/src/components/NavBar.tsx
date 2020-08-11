@@ -1,8 +1,8 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 import React, { useCallback, useState } from 'react';
 
@@ -124,6 +124,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     );
   }
 
+  const buttonStyle = { color: '#FFFFFF80' };
+
   return (
     <>
       <Navbar
@@ -141,46 +143,15 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
         <Navbar.Collapse id={NAVBAR_ID}>
           <Nav variant="pills">
             <Nav.Item>
-              <Button type="button" variant="dark" onClick={toggleChangelog}>
+              <Button
+                style={buttonStyle}
+                type="button"
+                variant="dark"
+                onClick={toggleChangelog}
+              >
                 <small>{`v${packageJson.version}`}</small>
               </Button>
             </Nav.Item>
-            {isAdmin && (
-              <Nav.Item>
-                <Button
-                  role="button"
-                  variant="dark"
-                  type="button"
-                  onClick={toggleAdminStatus}
-                >
-                  {adminAsLA ? 'Admin Panel' : 'LA Page'}
-                </Button>
-              </Nav.Item>
-            )}
-            {(!isAdmin || adminAsLA) && (
-              <Nav.Item>
-                <Button
-                  role="button"
-                  variant="dark"
-                  type="button"
-                  onClick={toggleSettings}
-                >
-                  LA Settings
-                </Button>
-              </Nav.Item>
-            )}
-            {isAdmin && (
-              <Nav.Item>
-                <Button
-                  role="button"
-                  variant="dark"
-                  type="button"
-                  onClick={toggleCourseAverages}
-                >
-                  Course Avgs
-                </Button>
-              </Nav.Item>
-            )}
             <NavDropdown
               title="Resources"
               id="resourceDropdown"
@@ -194,14 +165,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               >
                 CSE Handin
               </NavDropdown.Item>
-              <NavDropdown.Item
-                role="link"
-                href="https://canvas.unl.edu/"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                Canvas
-              </NavDropdown.Item>
+
               <NavDropdown.Item
                 role="link"
                 href="https://cse.unl.edu/faq"
@@ -210,7 +174,6 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               >
                 CSE FAQ
               </NavDropdown.Item>
-              <NavDropdown.Divider />
               <NavDropdown.Item
                 role="link"
                 href="https://cse.unl.edu/"
@@ -219,9 +182,58 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               >
                 Department Home
               </NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item
+                role="link"
+                href="https://canvas.unl.edu/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                Canvas
+              </NavDropdown.Item>
             </NavDropdown>
+            {isAdmin && (
+              <Nav.Item>
+                <Button
+                  style={buttonStyle}
+                  role="button"
+                  variant="dark"
+                  type="button"
+                  onClick={toggleAdminStatus}
+                >
+                  {adminAsLA ? 'Admin Panel' : 'LA Page'}
+                </Button>
+              </Nav.Item>
+            )}
+            {(!isAdmin || adminAsLA) && (
+              <Nav.Item>
+                <Button
+                  style={buttonStyle}
+                  role="button"
+                  variant="dark"
+                  type="button"
+                  onClick={toggleSettings}
+                >
+                  LA Settings
+                </Button>
+              </Nav.Item>
+            )}
+            {isAdmin && (
+              <Nav.Item>
+                <Button
+                  style={buttonStyle}
+                  role="button"
+                  variant="dark"
+                  type="button"
+                  onClick={toggleCourseAverages}
+                >
+                  Course Avgs
+                </Button>
+              </Nav.Item>
+            )}
             <Nav.Item>
               <Button
+                style={buttonStyle}
                 role="button"
                 variant="dark"
                 type="button"

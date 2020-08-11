@@ -1,17 +1,21 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import shallow from 'zustand/shallow';
 
 import Badge from 'react-bootstrap/Badge';
 
 import Redux from 'redux/modules';
 
-const FeedbackHeader = () => {
+type Props = {
+  style?: CSSProperties;
+};
+
+const FeedbackHeader = ({ style }: Props) => {
   const { isAdmin } = Redux(
     (state) => ({
       isAdmin: state.isAdmin,
@@ -20,10 +24,10 @@ const FeedbackHeader = () => {
   );
 
   return (
-    <header role="banner">
+    <header role="banner" style={style}>
       {isAdmin ? (
         <>
-          <h4 style={{ marginLeft: 0, marginTop: 45 }}>
+          <h4>
             LA Feedback Interface
             <Badge variant="secondary" style={{ marginLeft: 10 }}>
               Admin
@@ -35,9 +39,7 @@ const FeedbackHeader = () => {
         </>
       ) : (
         <>
-          <h4 style={{ marginLeft: 0, marginTop: 45 }}>
-            LA Feedback Interface
-          </h4>
+          <h4>LA Feedback Interface</h4>
           <p style={{ marginLeft: 0 }}>
             This web interface allows LAs to receive anonymous feedback on their
             performance from students. Select the course you worked with and

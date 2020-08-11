@@ -1,8 +1,8 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 import { api } from 'redux/modules';
 
@@ -10,9 +10,10 @@ import { RESTResponse } from 'statics/Types';
 
 class ServiceInterface {
   static sendEmail = async (
-    studentCSE: string
+    studentCSE: string,
+    course: string | null = null
   ): Promise<string | number | null> => {
-    const { course, setResponse } = api.getState();
+    const { course: defaultCourse, setResponse } = api.getState();
     const laCSE = ServiceInterface.getActiveUser();
     if (laCSE === studentCSE) {
       setResponse({
@@ -27,7 +28,14 @@ class ServiceInterface {
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentCSE, laCSE, course }),
+        body: JSON.stringify({
+          studentCSE,
+          laCSE,
+          course:
+            course === null || course.trim().length === 0
+              ? defaultCourse
+              : course,
+        }),
       };
       let status = null;
       await fetch(`${process.env.PUBLIC_URL}/sendEmail.php`, requestOptions)

@@ -1,14 +1,16 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 
 import Form from 'react-bootstrap/Form';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Row from 'react-bootstrap/Row';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import shallow from 'zustand/shallow';
 
@@ -113,41 +115,48 @@ const SettingsForm = ({ closeModal }: Props) => {
     [setResponse]
   );
 
-  const handleSubmit = useCallback(() => {
-    setValidated(true);
-    if (hasSelectedUsername) {
-      const trimmedName = nameRecord.trim();
-      if (trimmedName.length > 0 && name !== trimmedName) {
-        setName({ name: trimmedName });
+  const handleSubmit = useCallback(
+    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+      setValidated(true);
+      if (hasSelectedUsername) {
+        const trimmedName = nameRecord.trim();
+        if (trimmedName.length > 0 && name !== trimmedName) {
+          setName({ name: trimmedName });
+        }
+        if (
+          courseRecord !== null &&
+          courseRecord !== 'choose' &&
+          course !== courseRecord
+        ) {
+          setCourse({ course: courseRecord });
+        }
+        if (!isAdmin && trimmedName.length > 0) {
+          closeModal();
+        }
+      } else if (isAdmin) {
+        setSelectedUsernameRecord(selectedUsernameRecord);
+        setSelectedUsername({ username: selectedUsernameRecord });
+        setHasSelectedUsername(true);
       }
-      if (
-        courseRecord !== null &&
-        courseRecord !== 'choose' &&
-        course !== courseRecord
-      ) {
-        setCourse({ course: courseRecord });
-      }
-      if (!isAdmin && trimmedName.length > 0) {
-        closeModal();
-      }
-    } else if (isAdmin) {
-      setSelectedUsernameRecord(selectedUsernameRecord);
-      setSelectedUsername({ username: selectedUsernameRecord });
-      setHasSelectedUsername(true);
-    }
-  }, [
-    hasSelectedUsername,
-    isAdmin,
-    nameRecord,
-    name,
-    courseRecord,
-    course,
-    setName,
-    setCourse,
-    closeModal,
-    selectedUsernameRecord,
-    setSelectedUsername,
-  ]);
+
+      // Never reload
+      event.preventDefault();
+      return false;
+    },
+    [
+      hasSelectedUsername,
+      isAdmin,
+      nameRecord,
+      name,
+      courseRecord,
+      course,
+      setName,
+      setCourse,
+      closeModal,
+      selectedUsernameRecord,
+      setSelectedUsername,
+    ]
+  );
 
   const changeLA = useCallback(() => {
     setSelectedUsername({ username: '' });
@@ -169,7 +178,7 @@ const SettingsForm = ({ closeModal }: Props) => {
             : ''
         }`}
       </h2>
-      <Form noValidate>
+      <Form noValidate onSubmit={handleSubmit}>
         {hasSelectedUsername ? (
           <>
             <Form.Group as={Row} controlId={LA_NAME_ID} className="col-sm-8">
@@ -192,19 +201,27 @@ const SettingsForm = ({ closeModal }: Props) => {
             </Form.Group>
             <Form.Group as={Row} controlId={COURSE_ID} className="col-sm-8">
               <Form.Label>Default Course</Form.Label>
-              <Form.Control
-                as="select"
-                onChange={handleChange}
-                defaultValue={course}
-                custom
+              <OverlayTrigger
+                overlay={
+                  <Tooltip id="selection-tooltip">
+                    The default-selected class when you log in
+                  </Tooltip>
+                }
               >
-                <option value="choose">(choose)</option>
-                {COURSES.map((c) => (
-                  <option value={c} selected={course === c}>
-                    {c}
-                  </option>
-                ))}
-              </Form.Control>
+                <Form.Control
+                  as="select"
+                  onChange={handleChange}
+                  defaultValue={course}
+                  custom
+                >
+                  <option value="choose">(choose)</option>
+                  {COURSES.map((c) => (
+                    <option value={c} selected={course === c}>
+                      {c}
+                    </option>
+                  ))}
+                </Form.Control>
+              </OverlayTrigger>
             </Form.Group>
             {isAdmin && (
               <Form.Group as={Row} className="col-sm-8">
@@ -246,7 +263,6 @@ const SettingsForm = ({ closeModal }: Props) => {
             type="submit"
             variant="primary"
             value="Submit"
-            onClick={handleSubmit}
             disabled={disabled}
             aria-disabled={disabled}
           >

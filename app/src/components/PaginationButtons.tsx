@@ -1,8 +1,9 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
+
 import React, { useCallback, useMemo } from 'react';
 import Pagination from 'react-bootstrap/Pagination';
 
@@ -16,7 +17,7 @@ type Props = {
 
 const MAX_PAGE_COUNT = 5;
 
-const PaginationButton = ({ itemCount, activePage, setActivePage }: Props) => {
+const PaginationButtons = ({ itemCount, activePage, setActivePage }: Props) => {
   const handlePageClick = useCallback(
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       const page = Number.parseInt(event.currentTarget.innerText, 10);
@@ -82,4 +83,4 @@ const PaginationButton = ({ itemCount, activePage, setActivePage }: Props) => {
   );
 };
 
-export default PaginationButton;
+export default PaginationButtons;

@@ -1,6 +1,6 @@
 {
   "name": "la-feedback-system",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": true,
   "license": "Apache-2.0",
   "description": "A website to gather feedback from students after interactions with LAs",
@@ -54,7 +54,7 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "test": "react-scripts test",
-    "eslint": "eslint --fix . --ext .ts,.tsx",
+    "eslint": "eslint --fix . --ext .js,.jsx,.ts,.tsx",
     "prettify": "npx prettier --write .",
     "lc": "git ls-files | egrep \".*\\.(tsx?)|(html)|(php)\" | xargs wc -l"
   },

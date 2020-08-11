@@ -1,8 +1,8 @@
-/*
- * Copyright (c) 2020.
- *
- * File created by Hundter Biede for the UNL CSE Learning Assistant Program
- */
+/*------------------------------------------------------------------------------
+ - Copyright (c) 2020.
+ -
+ - File created by Hundter Biede for the UNL CSE Learning Assistant Program
+ -----------------------------------------------------------------------------*/
 
 import React, { useCallback, useMemo, useState } from 'react';
 
@@ -17,9 +17,9 @@ import { InteractionRecord, SORT_CHARS, SortConfig } from 'statics/Types';
 
 import getRowClass from 'components/TableRowColors';
 import Redux from 'redux/modules';
-import PaginationButton, {
+import PaginationButtons, {
   RATINGS_PER_PAGE,
-} from 'components/PaginationButton';
+} from 'components/PaginationButtons';
 
 type Props = {
   showLA: (la: InteractionRecord) => void;
@@ -204,7 +204,7 @@ const SummaryTable = ({ showLA }: Props) => {
             )}
         </tbody>
       </Table>
-      <PaginationButton
+      <PaginationButtons
         activePage={activePage}
         itemCount={getData.length}
         setActivePage={setActivePage}
