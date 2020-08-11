@@ -31,7 +31,7 @@ function send_email($obj, $interaction_id) {
     $subject = shell_exec('grep "<title>" form.php | sed "s/\s*<\/*title>//gi"');
     $body = shell_exec('cat ./data/emailBody.html | sed "s/INTERACTION_ID/' . $interaction_id .
         '/gi" | sed "s/LA_NAME/' . $name . '/gi"');
-    if (mail($obj->{'studentCSE'} . '@cse.unl.edu', $subject, $body, $headers)) {
+    if ($body && mail($obj->{'studentCSE'} . '@cse.unl.edu', $subject, $body, $headers)) {
         update_interaction_for_feedback($interaction_id);
 
         header('Status: 200 OK');
