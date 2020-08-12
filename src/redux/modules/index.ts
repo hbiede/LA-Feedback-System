@@ -4,7 +4,7 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
-import { create } from 'zustand';
+import create from 'zustand';
 
 import {
   CourseRest,

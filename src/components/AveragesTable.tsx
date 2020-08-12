@@ -7,7 +7,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 
-import { shallow } from 'zustand/shallow';
+import shallow from 'zustand/shallow';
 
 import Redux from 'redux/modules';
 
