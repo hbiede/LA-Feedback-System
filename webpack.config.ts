@@ -3,20 +3,20 @@
  -
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
-let webpack = require('webpack');
-const path = require('path');
+import webpack from 'webpack';
+import path from 'path';
 
-module.exports = {
+const config: webpack.Configuration = {
   entry: './src/index.tsx',
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        'NODE_ENV': JSON.stringify('production')
-      }
+        NODE_ENV: JSON.stringify('production'),
+      },
     }),
-    new webpack.optimize.AggressiveMergingPlugin()
+    new webpack.optimize.AggressiveMergingPlugin(),
   ],
-  devtool: '',
+  devtool: false,
   module: {
     rules: [
       {
@@ -35,12 +35,14 @@ module.exports = {
       components: path.resolve(__dirname, 'src/components/'),
       redux: path.resolve(__dirname, 'src/redux/'),
       screens: path.resolve(__dirname, 'src/screens/'),
-      statics: path.resolve(__dirname, 'src/statics/')
+      statics: path.resolve(__dirname, 'src/statics/'),
     },
-    extensions: [ '.tsx', '.ts', '.js', 'jsx' ],
+    extensions: ['.tsx', '.ts', '.js', 'jsx'],
   },
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'build'),
   },
 };
+
+export default config;

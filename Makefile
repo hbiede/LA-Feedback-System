@@ -3,7 +3,7 @@ default: clean local_build upload
 local_build:
 	yarn eslint
 	cp -r public build
-	yarn webpack --mode production --config webpack.config.js
+	yarn webpack --mode production --config webpack.config.ts
 	rm -rf ./build/.idea
 
 upload:
