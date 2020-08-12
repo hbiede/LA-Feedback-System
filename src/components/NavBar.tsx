@@ -18,7 +18,6 @@ import shallow from 'zustand/shallow';
 import Redux from 'redux/modules';
 import SettingsForm from 'components/SettingsForm';
 
-import packageJson from '../../package.json';
 import changelog from '../CHANGELOG.json';
 import AveragesTable from './AveragesTable';
 
@@ -32,6 +31,8 @@ const MODAL_STYLE = {
 };
 
 const NAVBAR_ID = 'laNavBar';
+
+const VERSION = changelog.changes[0].split('\n')[0].replace(/[\s#]+/, '');
 
 const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   const { isAdmin, loading, logout, name, username } = Redux(
@@ -111,19 +112,6 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
 
   if (loading) return null;
 
-  if (!changelog.changes[0].includes(packageJson.version)) {
-    return (
-      <Modal
-        isOpen
-        onRequestClose={() => {}}
-        contentLabel="Changelog"
-        style={{ overlay: { marginTop: 50 } }}
-      >
-        <div>Someone forgot to update the changelog and/or version number</div>
-      </Modal>
-    );
-  }
-
   const buttonStyle = { color: '#FFFFFF80' };
 
   return (
@@ -149,7 +137,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                 variant="dark"
                 onClick={toggleChangelog}
               >
-                <small>{`v${packageJson.version}`}</small>
+                <small>{`v${VERSION}`}</small>
               </Button>
             </Nav.Item>
             <NavDropdown
