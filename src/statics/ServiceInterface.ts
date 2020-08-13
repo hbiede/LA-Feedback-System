@@ -38,7 +38,10 @@ class ServiceInterface {
         }),
       };
       let status = null;
-      await fetch(`${process.env.PUBLIC_URL}/sendEmail.php`, requestOptions)
+      await fetch(
+        'https://cse.unl.edu/~learningassistants/LA-Feedback/sendEmail.php',
+        requestOptions
+      )
         .then((response) => response.json())
         .then((body) => {
           status = body.message;
