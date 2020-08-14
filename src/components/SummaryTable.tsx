@@ -199,7 +199,7 @@ const SummaryTable = ({ showLA }: Props) => {
                     onClick={() => showLA(row)}
                   >
                     <td>{row.name ? row.name : row.username}</td>
-                    <td>{row.course ?? '---'}</td>
+                    <td>{row.course}</td>
                     <td>{row.count}</td>
                     <td>
                       {row.avg !== null &&

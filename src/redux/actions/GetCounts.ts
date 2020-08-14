@@ -5,15 +5,15 @@
  -----------------------------------------------------------------------------*/
 
 import { api } from 'redux/modules';
-import { CourseAverages } from 'redux/modules/Types';
+import { CourseCount } from 'redux/modules/Types';
 
-type AvgResponse = {
+type CountResponse = {
   course: string;
-  avg: string;
+  count: string;
 };
 
-const getAverages = async (): Promise<CourseAverages[]> => {
-  let avgs: AvgResponse[] = [];
+const getCounts = async (): Promise<CourseCount[]> => {
+  let courses: CountResponse[] = [];
 
   const requestOptions = {
     method: 'GET',
@@ -21,18 +21,18 @@ const getAverages = async (): Promise<CourseAverages[]> => {
   };
 
   await fetch(
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/averages.php',
+    'https://cse.unl.edu/~learningassistants/LA-Feedback/counts.php',
     requestOptions
   )
     .then((response) => response.json())
     .then((json) => {
-      avgs = json;
+      courses = json;
     })
     .catch((error) => api.getState().setResponse(error));
-  return avgs.map((avg) => ({
+  return courses.map((avg) => ({
     ...avg,
-    avg: Number.parseFloat(avg.avg),
+    count: Number.parseFloat(avg.count),
   }));
 };
 
-export default getAverages;
+export default getCounts;

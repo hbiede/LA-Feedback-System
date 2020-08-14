@@ -7,21 +7,24 @@
 
 include_once 'sqlManager.php';
 
-ini_set('error_log', './log/times.log');
+ini_set('error_log', './log/breakdown.log');
 
 // Call with GET call with no query tags
 
 // Returns a JSON encoded array of objects formatted as follows:
 //{
-//  avg: double,
-//  course: string
+//  username: string,
+//  name?: string,
+//  course: string,
+//  count: number, (Number of interactions total)
+//  wcount: number (Number of interactions in the last 7 days)
 //}
 
-function get_averages() {
+function get_interaction_counts() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT course, AVG(rating) AS avg FROM feedback LEFT JOIN interactions i on ' .
-        'feedback.interaction_key = i.interaction_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL 7 DAY) ' .
-        'GROUP BY course;');
+    $ps = $conn->prepare('SELECT username, name, c.course, COUNT(i.interaction_key) AS count, ' .
+        'SUM(IF(i.time_of_interaction >= (CURRENT_DATE() - INTERVAL 7 DAY), 1, 0)) AS wcount FROM interactions i ' .
+        'LEFT JOIN cse_usernames c on c.username_key = i.la_username_key GROUP BY username');
     $returnVal = [];
     if ($ps) {
         $ps->execute();
@@ -35,4 +38,4 @@ function get_averages() {
     return $returnVal;
 }
 
-echo json_encode(get_averages());
+echo json_encode(get_interaction_counts());

@@ -30,6 +30,7 @@ const getRatings = async (
       const ratingsResponse: RatingResponse[] = json;
       ratings = ratingsResponse.map((rating) => ({
         ...rating,
+        course: rating.course ?? '---',
         time: new Date(rating.time),
         rating: Number.parseFloat(rating.rating),
       }));

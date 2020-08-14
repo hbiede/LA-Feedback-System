@@ -11,27 +11,30 @@ import shallow from 'zustand/shallow';
 
 import Redux from 'redux/modules';
 
-import { CourseAverages } from 'redux/modules/Types';
+import { CourseCount } from 'redux/modules/Types';
 
 import { SORT_CHARS, SortConfig } from 'statics/Types';
 
-const AveragesTable = () => {
-  const { getAverages } = Redux(
+const COURSE_ID = 'course_title';
+const COUNT_ID = 'course_count';
+
+const CountsTable = () => {
+  const { getCounts } = Redux(
     (state) => ({
-      getAverages: state.getAverages,
+      getCounts: state.getCounts,
     }),
     shallow
   );
-  const [averages, setAverages] = useState<CourseAverages[] | null>(null);
+  const [counts, setCounts] = useState<CourseCount[] | null>(null);
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    column: 'course',
+    column: COURSE_ID,
     order: 1,
   });
 
   useEffect(() => {
-    getAverages().then((avgs) => {
-      setAverages(avgs);
+    getCounts().then((count) => {
+      setCounts(count);
     });
     // No Deps == componentDidMount
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -39,29 +42,24 @@ const AveragesTable = () => {
 
   const getData = useMemo(
     () =>
-      averages === null
+      counts === null
         ? []
-        : averages.slice().sort((a, b) => {
+        : counts.slice().sort((a, b) => {
             let cmp = 0;
             const { column, order } = sortConfig;
             switch (column) {
-              case 'avg':
-                if (a.avg < b.avg) {
+              case COUNT_ID:
+                if (a.count < b.count) {
                   cmp = -1;
-                } else if (a.avg > b.avg) {
+                } else if (a.count > b.count) {
                   cmp = 1;
                 }
                 return order * cmp;
               default:
-                if (a.course < b.course) {
-                  cmp = -1;
-                } else if (a.course > b.course) {
-                  cmp = 1;
-                }
-                return order * cmp;
+                return order * a.course.localeCompare(b.course);
             }
           }),
-    [sortConfig, averages]
+    [sortConfig, counts]
   );
 
   const handleSortClick = useCallback(
@@ -84,27 +82,27 @@ const AveragesTable = () => {
     [sortConfig, setSortConfig]
   );
 
-  if (averages?.length === 0) {
-    return <h4>No interactions</h4>;
+  if (counts === null) {
+    return <h4>Loading</h4>;
   }
 
-  if (averages === null) {
-    return <h4>Loading</h4>;
+  if (counts?.length === 0) {
+    return <h4>No interactions</h4>;
   }
 
   const { column, order } = sortConfig;
   return (
     <>
-      <h4>Average Feedback By Course</h4>
+      <h4>Interactions Per Course (Last 7 Days)</h4>
       <Table hover style={{ width: '100%', cursor: 'default' }}>
         <thead className="thead-dark">
           <tr>
-            <th id="course" onClick={handleSortClick}>
-              {`Course ${column === 'course' ? SORT_CHARS.get(order) : ' '}`}
+            <th id={COURSE_ID} onClick={handleSortClick}>
+              {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th id="avg" onClick={handleSortClick}>
-              {`Average Rating ${
-                column === 'avg' ? SORT_CHARS.get(order) : ' '
+            <th id={COUNT_ID} onClick={handleSortClick}>
+              {`Interactions ${
+                column === COUNT_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
           </tr>
@@ -113,11 +111,11 @@ const AveragesTable = () => {
           {getData.map(
             (row) =>
               row &&
-              row.avg &&
-              !Number.isNaN(row.avg) && (
+              row.count &&
+              !Number.isNaN(row.count) && (
                 <tr>
                   <td>{row.course}</td>
-                  <td>{row.avg.toFixed(2)}</td>
+                  <td>{row.count.toFixed(0)}</td>
                 </tr>
               )
           )}
@@ -127,4 +125,4 @@ const AveragesTable = () => {
   );
 };
 
-export default AveragesTable;
+export default CountsTable;

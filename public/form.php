@@ -319,8 +319,7 @@ if (!can_give_feedback(get_id())) {
         <p>You recently had an interaction with a learning
             assistant for <?php echo get_course_from_interaction(get_id()) ?>. Please help us to know
             how <?php echo get_name_from_interaction(get_id()) ?> did.
-            Your response will be kept confidential (not shared with any LAs or course personnel) and will
-            help us to improve the LA program for everyone.</p>
+            Your feedback will be shared with the LA without a name attached.</p>
         <label for="rating">Rating<span>*</span></label>
         <select role="combobox" id="rating" class="custom-select" onchange="adjustRequirement();" required aria-required>
             <option value="0">(choose)</option>

@@ -15,11 +15,14 @@ import Modal from 'react-modal';
 
 import shallow from 'zustand/shallow';
 
+import BreakdownTable from 'components/BreakdownTable';
+
 import Redux from 'redux/modules';
 import SettingsForm from 'components/SettingsForm';
 
+import CountsTable from 'components/CountsTable';
+
 import changelog from '../CHANGELOG.json';
-import AveragesTable from './AveragesTable';
 
 type Props = {
   adminAsLA: boolean;
@@ -49,7 +52,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     !isAdmin && (username === name || name === null || name.trim().length === 0)
   );
   const [showingChangelog, setChangelogVisibility] = useState(false);
-  const [showingCourseAverages, setCourseAveragesVisibility] = useState(false);
+  const [showingStats, setStatsVisibility] = useState(false);
 
   const hideSettings = useCallback(() => {
     setSettingsVisibility(false);
@@ -60,7 +63,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setSettingsVisibility(false);
     } else {
       setChangelogVisibility(false);
-      setCourseAveragesVisibility(false);
+      setStatsVisibility(false);
       setSettingsVisibility(true);
     }
   }, [showingSettings, setSettingsVisibility, setChangelogVisibility]);
@@ -74,26 +77,26 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setChangelogVisibility(false);
     } else {
       setSettingsVisibility(false);
-      setCourseAveragesVisibility(false);
+      setStatsVisibility(false);
       setChangelogVisibility(true);
     }
   }, [showingChangelog, setChangelogVisibility, setSettingsVisibility]);
 
-  const hideCourseAverages = useCallback(() => {
-    setCourseAveragesVisibility(false);
-  }, [setCourseAveragesVisibility]);
+  const hideStats = useCallback(() => {
+    setStatsVisibility(false);
+  }, [setStatsVisibility]);
 
-  const toggleCourseAverages = useCallback(() => {
+  const toggleStats = useCallback(() => {
     if (!isAdmin) return;
 
-    if (showingCourseAverages) {
-      setCourseAveragesVisibility(false);
+    if (showingStats) {
+      setStatsVisibility(false);
     } else {
       setSettingsVisibility(false);
       setChangelogVisibility(false);
-      setCourseAveragesVisibility(true);
+      setStatsVisibility(true);
     }
-  }, [isAdmin, showingCourseAverages]);
+  }, [isAdmin, showingStats]);
 
   const toggleAdminStatus = useCallback(() => {
     if (!isAdmin) return;
@@ -101,14 +104,8 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     toggleAdminAsLA();
     hideSettings();
     hideChangelog();
-    hideCourseAverages();
-  }, [
-    isAdmin,
-    toggleAdminAsLA,
-    hideSettings,
-    hideChangelog,
-    hideCourseAverages,
-  ]);
+    hideStats();
+  }, [isAdmin, toggleAdminAsLA, hideSettings, hideChangelog, hideStats]);
 
   if (loading) return null;
 
@@ -206,19 +203,17 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
                 </Button>
               </Nav.Item>
             )}
-            {isAdmin && (
-              <Nav.Item>
-                <Button
-                  style={buttonStyle}
-                  role="button"
-                  variant="dark"
-                  type="button"
-                  onClick={toggleCourseAverages}
-                >
-                  Course Avgs
-                </Button>
-              </Nav.Item>
-            )}
+            <Nav.Item>
+              <Button
+                style={buttonStyle}
+                role="button"
+                variant="dark"
+                type="button"
+                onClick={toggleStats}
+              >
+                Stats
+              </Button>
+            </Nav.Item>
             <Nav.Item>
               <Button
                 style={buttonStyle}
@@ -274,9 +269,9 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
         </div>
       </Modal>
       <Modal
-        isOpen={showingCourseAverages}
-        onRequestClose={hideCourseAverages}
-        contentLabel="Course Averages"
+        isOpen={showingStats}
+        onRequestClose={hideStats}
+        contentLabel="Course Interactions"
         style={MODAL_STYLE}
       >
         <button
@@ -284,11 +279,12 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
           className="close"
           data-dismiss="modal"
           aria-label="Close"
-          onClick={hideCourseAverages}
+          onClick={hideStats}
         >
           <span aria-hidden="true">×</span>
         </button>
-        <AveragesTable />
+        <CountsTable />
+        <BreakdownTable style={{ marginTop: 20 }} />
       </Modal>
     </>
   );

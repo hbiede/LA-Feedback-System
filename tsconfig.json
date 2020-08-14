@@ -19,7 +19,8 @@
     "strictNullChecks": true,
     "jsx": "react",
     "baseUrl": "src",
-    "rootDir": "."
+    "rootDir": ".",
+    "removeComments": false
   },
   "include": [
     "webpack.config.ts",

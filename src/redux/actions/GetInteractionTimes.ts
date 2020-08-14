@@ -5,15 +5,15 @@
  -----------------------------------------------------------------------------*/
 
 import { api } from 'redux/modules';
-import { Time } from 'redux/modules/Types';
+import { InteractionTime } from 'redux/modules/Types';
 
 type TimeResponse = {
   time_of_interaction: string;
   course: string;
 };
 
-const getTimes = async (): Promise<Time[]> => {
-  let times: Time[] = [];
+const getInteractionTimes = async (): Promise<InteractionTime[]> => {
+  let times: InteractionTime[] = [];
   const requestOptions = {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
@@ -37,4 +37,4 @@ const getTimes = async (): Promise<Time[]> => {
   return times;
 };
 
-export default getTimes;
+export default getInteractionTimes;

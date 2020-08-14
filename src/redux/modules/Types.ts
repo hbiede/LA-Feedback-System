@@ -16,12 +16,12 @@ export type SetNameArgs = {
   name: string;
 };
 
-export type CourseAverages = {
+export type CourseCount = {
   course: string;
-  avg: number;
+  count: number;
 };
 
-export type Response = {
+export type ResponseMessage = {
   class:
     | 'primary'
     | 'secondary'
@@ -34,7 +34,14 @@ export type Response = {
   content: string | Element;
 };
 
-export type Time = {
+export type InteractionTime = {
   time: number;
   course: string;
+};
+
+export type InteractionBreakdown = {
+  name: string;
+  course: string;
+  count: number;
+  wcount: number;
 };

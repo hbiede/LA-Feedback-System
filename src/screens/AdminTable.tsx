@@ -38,7 +38,7 @@ type LA = {
   course?: string | null;
 };
 
-export default function AdminTable(props: Props) {
+export default function AdminTable({ style }: Props) {
   const {
     interactions,
     getInteractions,
@@ -70,8 +70,6 @@ export default function AdminTable(props: Props) {
   const [editingName, setEditingName] = useState<boolean>(false);
   const [newName, setNewName] = useState<string | null>(name);
   const [courseRecord, setCourseRecord] = useState<string | null>(course);
-
-  const { style } = props;
 
   const showLA = useCallback(
     (la: LA) => {

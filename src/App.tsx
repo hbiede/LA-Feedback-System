@@ -16,8 +16,6 @@ import shallow from 'zustand/shallow';
 
 import Redux from 'redux/modules';
 
-import AdminTable from 'screens/AdminTable';
-
 import FeedbackForm from 'screens/FeedbackForm';
 
 import NavBar from 'components/NavBar';
@@ -42,6 +40,9 @@ function App() {
     adminAsLA,
   ]);
 
+  const AdminTable = React.lazy(() => import('screens/AdminTable'));
+  const loadingLabel = <h4 style={styles.loadingSpinner}>Loading</h4>;
+
   return (
     <div className="App">
       {loading ? (
@@ -49,7 +50,7 @@ function App() {
           <Jumbotron fluid>
             <Container style={styles.loadingContainer}>
               <Spinner animation="border" variant="primary" />
-              <h4 style={styles.loadingSpinner}>Loading</h4>
+              {loadingLabel}
             </Container>
           </Jumbotron>
         </main>
@@ -74,7 +75,9 @@ function App() {
                         {response?.content}
                       </Alert>
                     </Collapse>
-                    <AdminTable style={styles.tableContainer} />
+                    <React.Suspense fallback={loadingLabel}>
+                      <AdminTable style={styles.tableContainer} />
+                    </React.Suspense>
                   </>
                 ) : (
                   <>

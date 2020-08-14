@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.4.4\n- Add interaction count table",
     "## 1.4.3\n- Compress bundled JavaScript to increase load times",
     "## 1.4.2\n- Allow multiple students at once\n- Don't reload on form submit\n- Modify NavBar styles\n- Clear student CSE on submit (prevents double submits)",
     "## 1.4.1\n- Format date-times on the backend\n- Reduce package size\n- Fix LA name requirement checker\n- Update name locally when backend changes\n- Fix default course loading\n- Fix searching on paginated tables",

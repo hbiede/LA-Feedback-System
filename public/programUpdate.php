@@ -8,7 +8,7 @@ ini_set('error_log', './log/programUpdate.log');
 
 function get_update_string($days = DAYS) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time,  ' .
+    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, ' .
         'IFNULL(name, username) AS LA, rating, comment FROM feedback LEFT JOIN interactions i on ' .
         'feedback.interaction_key = i.interaction_key LEFT JOIN cse_usernames cu on ' .
         "i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);");

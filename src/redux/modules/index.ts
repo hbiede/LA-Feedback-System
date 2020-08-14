@@ -8,21 +8,23 @@ import create from 'zustand';
 
 import {
   CourseRest,
-  GetAverages,
+  GetCounts,
+  GetInteractionBreakdowns,
+  GetInteractionTimes,
   GetInteractions,
   GetRatings,
-  GetTimes,
   GetUsername,
   NameRest,
 } from 'redux/actions';
 
 import {
-  CourseAverages,
-  Response,
+  CourseCount,
+  InteractionBreakdown,
+  ResponseMessage,
   SetCourseArgs,
   SetNameArgs,
   SetSelectedUsernameArgs,
-  Time,
+  InteractionTime,
 } from 'redux/modules/Types';
 
 import ServiceInterface from 'statics/ServiceInterface';
@@ -46,16 +48,17 @@ export type AppReduxState = {
   setSelectedUsername: (args: SetSelectedUsernameArgs) => void;
   ratings: RatingRecord[];
   getRatings: () => void;
-  response: Response | null;
-  setResponse: (res: Response | null) => void;
+  response: ResponseMessage | null;
+  setResponse: (res: ResponseMessage | null) => void;
   sendEmail: (
     studentCSE: string | null,
     course?: string | null,
     multiples?: boolean
   ) => void;
   logout: () => void;
-  getTimes: () => Promise<Time[]>;
-  getAverages: () => Promise<CourseAverages[]>;
+  getTimes: () => Promise<InteractionTime[]>;
+  getCounts: () => Promise<CourseCount[]>;
+  getInteractionBreakdowns: () => Promise<InteractionBreakdown[]>;
 };
 
 export const [useStore, api] = create<AppReduxState>((set, get) => ({
@@ -124,7 +127,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     GetRatings(get).then((result) => set(() => ({ ratings: result })));
   },
   response: null,
-  setResponse: (res: Response | null) => {
+  setResponse: (res: ResponseMessage | null) => {
     set(() => ({ response: res }));
     setTimeout(() => set(() => ({ response: null })), 10000); // timeout after 10 seconds
   },
@@ -164,8 +167,9 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
       });
   },
   logout: () => ServiceInterface.logout(),
-  getTimes: GetTimes,
-  getAverages: GetAverages,
+  getTimes: GetInteractionTimes,
+  getCounts: GetCounts,
+  getInteractionBreakdowns: GetInteractionBreakdowns,
 }));
 
 export default useStore;

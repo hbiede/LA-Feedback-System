@@ -55,6 +55,7 @@ const getInteractions = async (
             .map((rating) => ({
               ...rating,
               avg: Number.parseFloat(rating.avg),
+              course: rating.course ?? '---',
               count: Number.parseInt(rating.count, 10),
               fCount: Number.parseInt(rating.fCount, 10),
             }))
