@@ -319,7 +319,7 @@ if (!can_give_feedback(get_id())) {
         <p>You recently had an interaction with a learning
             assistant for <?php echo get_course_from_interaction(get_id()) ?>. Please help us to know
             how <?php echo get_name_from_interaction(get_id()) ?> did.
-            Your feedback will be shared with the LA without a name attached.</p>
+            Your feedback will be shared with the LA in a summary of responses with no attached names.</p>
         <label for="rating">Rating<span>*</span></label>
         <select role="combobox" id="rating" class="custom-select" onchange="adjustRequirement();" required aria-required>
             <option value="0">(choose)</option>
@@ -341,7 +341,7 @@ if (!can_give_feedback(get_id())) {
         </div>
         <div class="custom-control custom-checkbox">
             <input class="custom-control-input" id="contact" type="checkbox">
-            <label class="custom-control-label" for="contact">Would you like to be contacted?</label>
+            <label class="custom-control-label" for="contact">Would you like to be contacted by the program?</label>
         </div>
         <div class="btn-block">
             <button type="submit" onclick="validateSubmit();">Send Feedback</button>
