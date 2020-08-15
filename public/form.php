@@ -54,10 +54,7 @@ if (!can_give_feedback(get_id())) {
                 alert('Invalid Rating');
                 return false;
             } else if (rating < COMMENT_REQUIREMENT_BAR && (comment === null || comment === undefined || comment.length < 4)) {
-                alert(comment === null || comment === undefined || comment.length === 0
-                    ? 'Please include a comment on below average ratings'
-                    : 'Please include a comment that explains the situation'
-                );
+                alert('Please include a comment that explains the situation');
                 return false;
             } else {
                 const id = "<?php echo get_id(); ?>";
@@ -321,7 +318,7 @@ if (!can_give_feedback(get_id())) {
             how <?php echo get_name_from_interaction(get_id()) ?> did.
             Your feedback will be shared with the LA in a summary of responses with no attached names.</p>
         <label for="rating">Rating<span>*</span></label>
-        <select role="combobox" id="rating" class="custom-select" onchange="adjustRequirement();" required aria-required>
+        <select id="rating" class="custom-select" onchange="adjustRequirement();" required aria-required="true">
             <option value="0">(choose)</option>
             <option value="1">1 (non-helpful)</option>
             <option value="2">2</option>

@@ -183,8 +183,10 @@ const FeedbackForm = ({ style }: Props) => {
               aria-placeholder={LA_LABEL}
               onChange={handleChange}
               disabled={!isAdmin}
+              readOnly={!isAdmin}
               required
               aria-required
+              autoComplete="false"
             />
           </div>
         </FormGroup>
@@ -235,6 +237,7 @@ const FeedbackForm = ({ style }: Props) => {
               onChange={handleChange}
               required
               aria-required
+              autoComplete="false"
             />
           </div>
         </FormGroup>

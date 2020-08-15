@@ -194,6 +194,7 @@ const SettingsForm = ({ closeModal }: Props) => {
                   nameRecord !== null &&
                   nameRecord.trim().length > 0
                 }
+                autoComplete="false"
               />
               <Form.Control.Feedback type="invalid">
                 Must enter a name
@@ -246,6 +247,7 @@ const SettingsForm = ({ closeModal }: Props) => {
             <Form.Label>Username to Modify</Form.Label>
             <Form.Control
               type="text"
+              placeholder="Username to Modify"
               className="form-control"
               name="selected_username"
               value={
@@ -254,6 +256,7 @@ const SettingsForm = ({ closeModal }: Props) => {
                   : undefined
               }
               onChange={handleChange}
+              autoComplete="false"
             />
           </Form.Group>
         )}
