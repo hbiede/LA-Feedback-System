@@ -22,10 +22,11 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import shallow from 'zustand/shallow';
 
 import Redux from 'redux/modules';
+import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
 import { COURSES } from 'statics/Types';
 import SummaryTable from 'components/SummaryTable';
-import LATable from 'components/LATable';
+import LAAdminTable from 'components/LAAdminTable';
 import FeedbackTimeText from 'components/FeedbackTimeText';
 
 type Props = {
@@ -69,7 +70,11 @@ export default function AdminTable({ style }: Props) {
   const [selectedLA, setSelectedLA] = useState<LA | null>(null);
   const [editingName, setEditingName] = useState<boolean>(false);
   const [newName, setNewName] = useState<string | null>(name);
-  const [courseRecord, setCourseRecord] = useState<string | null>(course);
+  const [courseRecord, setCourseRecord] = useState<string | null>(
+    course === DEFAULT_COURSE_NAME ? null : course
+  );
+
+  console.log(courseRecord);
 
   const showLA = useCallback(
     (la: LA) => {
@@ -119,6 +124,7 @@ export default function AdminTable({ style }: Props) {
       newLAEntry = {
         ...newLAEntry,
         name: trimmedName,
+        course: courseRecord ?? newLAEntry.course,
       };
       setInteractions({
         ...interactions,
@@ -149,13 +155,6 @@ export default function AdminTable({ style }: Props) {
       setNewName(event.target.value);
     },
     [setNewName]
-  );
-
-  const handleCourseSelect = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      setCourseRecord(event.currentTarget.value);
-    },
-    [setCourseRecord]
   );
 
   if (interactions.ratings.length === 0) {
@@ -203,7 +202,7 @@ export default function AdminTable({ style }: Props) {
                   <Dropdown.Item
                     type="button"
                     value={c}
-                    onClick={handleCourseSelect}
+                    onClick={() => setCourseRecord(c)}
                   >
                     {c}
                   </Dropdown.Item>
@@ -231,7 +230,7 @@ export default function AdminTable({ style }: Props) {
           )}
         </InputGroup>
       </Form.Row>
-      <LATable />
+      <LAAdminTable />
     </div>
   );
 }

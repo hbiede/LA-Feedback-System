@@ -20,7 +20,7 @@ import Redux from 'redux/modules';
 
 import { SORT_CHARS, SortConfig } from 'statics/Types';
 
-const LATable = () => {
+const LAAdminTable = () => {
   const { ratings } = Redux(
     (state) => ({
       ratings: state.ratings,
@@ -145,4 +145,4 @@ const LATable = () => {
   );
 };
 
-export default LATable;
+export default LAAdminTable;

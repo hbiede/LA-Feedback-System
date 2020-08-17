@@ -7,6 +7,7 @@
 import { GetState } from 'zustand';
 
 import { AppReduxState } from 'redux/modules';
+import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
 import { RatingRecord, RatingResponse } from 'statics/Types';
 
@@ -30,7 +31,7 @@ const getRatings = async (
       const ratingsResponse: RatingResponse[] = json;
       ratings = ratingsResponse.map((rating) => ({
         ...rating,
-        course: rating.course ?? '---',
+        course: rating.course ?? DEFAULT_COURSE_NAME,
         time: new Date(rating.time),
         rating: Number.parseFloat(rating.rating),
       }));

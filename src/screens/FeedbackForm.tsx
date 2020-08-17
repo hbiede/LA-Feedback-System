@@ -65,12 +65,8 @@ const FeedbackForm = ({ style }: Props) => {
 
   useEffect(() => {
     api.subscribe(
-      (newCourse) => {
-        if (
-          newCourse !== null &&
-          typeof newCourse === 'string' &&
-          newCourse !== courseRecord
-        ) {
+      (newCourse: string | null) => {
+        if (newCourse !== null && newCourse !== courseRecord) {
           setCourseRecord(newCourse);
         }
       },

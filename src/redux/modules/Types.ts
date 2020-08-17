@@ -45,3 +45,5 @@ export type InteractionBreakdown = {
   count: number;
   wcount: number;
 };
+
+export const DEFAULT_COURSE_NAME = '---';
