@@ -1,8 +1,8 @@
-----------------------------------------------------------------------------
--- Copyright (c) 2020.
---
--- File created by Hundter Biede for the UNL CSE Learning Assistant Program
-----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+#-- Copyright (c) 2020.
+#--
+#-- File created by Hundter Biede for the UNL CSE Learning Assistant Program
+#----------------------------------------------------------------------------
 
 drop table if exists feedback;
 drop table if exists interactions;
@@ -23,11 +23,11 @@ create table cse_usernames
 create table interactions
 (
     interaction_key       int auto_increment unique primary key,
-    la_username_key       int                  not null,
-    student_username_key  int                  not null,
+    la_username_key       int                                    not null,
+    student_username_key  int                                    not null,
     course                varchar(10),
-    seeking_feedback      tinyint(1) default 0 not null,
-    has_received_feedback tinyint(1) default 0 null,
+    seeking_feedback      tinyint(1) default 0                   not null,
+    has_received_feedback tinyint(1) default 0                   null,
     time_of_interaction   timestamp  default current_timestamp() not null,
     constraint interactions_interaction_key_uindex
         unique (interaction_key),
@@ -54,3 +54,14 @@ create table feedback
             on delete cascade
 );
 
+CREATE VIEW interactions_readable AS
+SELECT time_of_interaction,
+       IFNULL(cul.name, cul.username) AS 'la',
+       IFNULL(cus.name, cus.username) AS 'student',
+       i.course,
+       seeking_feedback,
+       has_received_feedback
+FROM interactions i
+         LEFT JOIN cse_usernames cul on i.la_username_key = cul.username_key
+         LEFT JOIN cse_usernames cus on i.student_username_key = cus.username_key
+ORDER BY time_of_interaction
