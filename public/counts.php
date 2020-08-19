@@ -19,8 +19,8 @@ ini_set('error_log', './log/counts.log');
 
 function get_averages() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT course, COUNT(i.interaction_key) AS count FROM feedback LEFT JOIN interactions ' .
-        'i on feedback.interaction_key = i.interaction_key WHERE time_of_interaction >= (CURRENT_DATE() - ' .
+    $ps = $conn->prepare('SELECT course, COUNT(i.interaction_key) AS count FROM interactions i LEFT JOIN ' .
+        'feedback f on f.interaction_key = i.interaction_key WHERE time_of_interaction >= (CURRENT_DATE() - ' .
         'INTERVAL 7 DAY) GROUP BY course;');
     $returnVal = [];
     if ($ps) {
