@@ -30,7 +30,7 @@ type Props = {
 };
 
 const MODAL_STYLE = {
-  overlay: { marginTop: 50, zIndex: 2 },
+  overlay: { marginTop: 50, zIndex: 10 },
 };
 
 const NAVBAR_ID = 'laNavBar';
