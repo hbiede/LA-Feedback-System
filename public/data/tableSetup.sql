@@ -72,3 +72,9 @@ FROM feedback
          LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key
          LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key
 ORDER BY username, time_of_interaction;
+
+CREATE VIEW outstanding_feedback_req AS
+SELECT COUNT(*) AS 'outstanding feedback requests'
+from interactions
+WHERE seeking_feedback = 1
+  AND has_received_feedback = 0;;
