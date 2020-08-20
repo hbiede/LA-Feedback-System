@@ -64,4 +64,11 @@ SELECT time_of_interaction,
 FROM interactions i
          LEFT JOIN cse_usernames cul on i.la_username_key = cul.username_key
          LEFT JOIN cse_usernames cus on i.student_username_key = cus.username_key
-ORDER BY time_of_interaction
+ORDER BY time_of_interaction;
+
+CREATE VIEW feedback_readable AS
+SELECT IFNULL(name, username) AS 'la', rating, comment
+FROM feedback
+         LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key
+         LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key
+ORDER BY username, time_of_interaction;
