@@ -60,7 +60,7 @@ const PaginationButtons = ({ itemCount, activePage, setActivePage }: Props) => {
       return pagination;
     }
 
-    return Array.from([].keys())
+    return Array.from(new Array(pagesNeeded).keys())
       .map((i) => i + 1)
       .map((pageNumber) => (
         <Pagination.Item
@@ -72,15 +72,20 @@ const PaginationButtons = ({ itemCount, activePage, setActivePage }: Props) => {
       ));
   }, [itemCount, activePage, setActivePage, handlePageClick]);
 
-  return (
-    <>
-      {itemCount > RATINGS_PER_PAGE && (
-        <Pagination style={{ justifyContent: 'center' }}>
-          {paginationButtons}
-        </Pagination>
-      )}
-    </>
+  const paginationContainer = useMemo(
+    () => (
+      <>
+        {itemCount > RATINGS_PER_PAGE && (
+          <Pagination style={{ justifyContent: 'center' }}>
+            {paginationButtons}
+          </Pagination>
+        )}
+      </>
+    ),
+    [itemCount, paginationButtons]
   );
+
+  return <>{paginationContainer}</>;
 };
 
 export default PaginationButtons;
