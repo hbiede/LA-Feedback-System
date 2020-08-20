@@ -137,7 +137,7 @@ const SummaryTable = ({ showLA }: Props) => {
   const clearableSearch = searchTerm.length > 0;
   return (
     <>
-      <InputGroup className="mt-3 mb-2 col-7" style={{ paddingLeft: 0 }}>
+      <InputGroup className="mt-3 mb-4 col-7" style={{ paddingLeft: 0 }}>
         <FormControl
           placeholder=" Search"
           aria-label="Search"
