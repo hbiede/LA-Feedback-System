@@ -50,6 +50,7 @@
         "tabWidth": 2
       }
     ],
+    "react/jsx-one-expression-per-line": "off",
     "react/jsx-wrap-multilines": "off",
     "import/no-unresolved": "error",
     "no-nested-ternary": "off",

@@ -20,15 +20,20 @@ type InteractionResponseRecord = {
 };
 
 type InteractionResponseSummary = {
+  outstanding: string | null;
   ratings: InteractionResponseRecord[];
-  time: number | null;
+  time: string | null;
 };
 
 const getInteractions = async (
   state: GetState<AppReduxState>
 ): Promise<InteractionSummary> => {
   const { username, setResponse } = state();
-  let interactions: InteractionSummary = { ratings: [], time: -1 };
+  let interactions: InteractionSummary = {
+    outstanding: 0,
+    ratings: [],
+    time: -1,
+  };
   if (username !== 'INVALID_TICKET_KEY') {
     const requestOptions = {
       method: 'POST',
@@ -43,14 +48,18 @@ const getInteractions = async (
       .then((json) => {
         if (Array.isArray(json)) {
           interactions = {
+            outstanding: 0,
             ratings: json,
             time: -1,
           };
         } else {
           const intHolder: InteractionResponseSummary = json;
-          if (intHolder.time === null) {
-            interactions.time = 0;
-          }
+          interactions.time =
+            intHolder.time === null ? 0 : Number.parseFloat(intHolder.time);
+          interactions.outstanding =
+            intHolder.outstanding === null
+              ? 0
+              : Number.parseFloat(intHolder.outstanding);
           interactions.ratings = intHolder.ratings
             .map((rating) => ({
               ...rating,

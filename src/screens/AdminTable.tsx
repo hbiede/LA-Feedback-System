@@ -28,6 +28,7 @@ import { COURSES } from 'statics/Types';
 import SummaryTable from 'components/SummaryTable';
 import LAAdminTable from 'components/LAAdminTable';
 import FeedbackTimeText from 'components/FeedbackTimeText';
+import OutstandingFeedbackText from 'components/OutstandingFeedbackText';
 
 type Props = {
   style?: CSSProperties;
@@ -165,6 +166,7 @@ export default function AdminTable({ style }: Props) {
     return (
       <div style={style} className="col-md-10">
         <SummaryTable showLA={showLA} />
+        <OutstandingFeedbackText />
         <FeedbackTimeText />
       </div>
     );

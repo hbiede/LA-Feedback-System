@@ -39,7 +39,8 @@
 // Returns a JSON encoded object formatted as follows:
 //{
 //  time: int (average time to complete the feedback form),
-//  ratings: InteractionRecord[]
+//  ratings: InteractionRecord[],
+//  outstanding: int (number of unanswered feedback requests)
 //}
 
 // Where InteractionRecord is an object summarizing a single LA formatted as follows:
@@ -63,6 +64,20 @@ function get_time_to_complete() {
     if ($ps) {
         $ps->execute();
         $result = $ps->get_result()->fetch_assoc()['avg'];
+        $ps->close();
+    }
+    $conn->close();
+    return $result;
+}
+
+function get_outstanding_feedback() {
+    $result = -1;
+    $conn = get_connection();
+    $ps = $conn->prepare('SELECT COUNT(*) AS "req" from interactions ' .
+        'WHERE seeking_feedback=1 AND has_received_feedback=0;');
+    if ($ps) {
+        $ps->execute();
+        $result = $ps->get_result()->fetch_assoc()['req'];
         $ps->close();
     }
     $conn->close();
@@ -124,7 +139,8 @@ if ($isAdmin && $la !== null) {
 } else if ($isAdmin) {
     $response = [
         'ratings' => get_interactions(),
-        "time" => get_time_to_complete()
+        'time' => get_time_to_complete(),
+        'outstanding' => get_outstanding_feedback(),
     ];
     echo json_encode($response);
 } else {

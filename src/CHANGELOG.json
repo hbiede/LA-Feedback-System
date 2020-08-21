@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.4.6\n- Add stats to admin table",
     "## 1.4.5\n- Adjust student form wording\n- Fix LA adjustments for admins\n- Fix Z index for modals",
     "## 1.4.4\n- Add interaction count table",
     "## 1.4.3\n- Compress bundled JavaScript to increase load times",

@@ -87,7 +87,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     }
   },
   isAdmin: false,
-  interactions: { ratings: [], time: -1 },
+  interactions: { outstanding: 0, ratings: [], time: -1 },
   getInteractions: () => {
     GetInteractions(get).then((ints) => {
       const isAdmin =

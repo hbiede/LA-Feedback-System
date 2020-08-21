@@ -16,6 +16,7 @@ export type InteractionRecord = {
 };
 
 export type InteractionSummary = {
+  outstanding: number;
   ratings: InteractionRecord[];
   time: number | null;
 };
