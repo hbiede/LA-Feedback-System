@@ -5,7 +5,6 @@
     "node": true
   },
   "extends": [
-    "plugin:typescript-sort-keys/recommended",
     "plugin:jsx-a11y/strict",
     "plugin:react/recommended",
     "airbnb",
@@ -42,6 +41,11 @@
     "import"
   ],
   "rules": {
+    "typescript-sort-keys/interface": [
+      "error",
+      "asc",
+      { "caseSensitive": false, "natural": true, "requiredFirst": true }
+    ],
     "prettier/prettier": [
       "error",
       {

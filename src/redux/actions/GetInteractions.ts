@@ -15,8 +15,8 @@ type InteractionResponseRecord = {
   count: string;
   course: string;
   fCount: string;
-  name?: string;
   username: string;
+  name?: string;
 };
 
 type InteractionResponseSummary = {

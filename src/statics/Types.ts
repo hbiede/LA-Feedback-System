@@ -9,10 +9,10 @@ import React from 'react';
 export type InteractionRecord = {
   avg: number | null;
   count: number;
-  course?: string;
   fCount: number;
-  name?: string;
   username: string;
+  course?: string;
+  name?: string;
 };
 
 export type InteractionSummary = {
@@ -27,17 +27,17 @@ export type SortConfig = {
 };
 
 export type RatingRecord = {
-  comment?: string;
   course: string;
   rating: number;
   time: Date;
+  comment?: string;
 };
 
 export type RatingResponse = {
-  comment?: string;
   course: string;
   rating: string;
   time: string;
+  comment?: string;
 };
 
 export type RESTResponse = {

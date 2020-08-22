@@ -35,9 +35,9 @@ type Props = {
 };
 
 type LA = {
+  username: string;
   course?: string | null;
   name?: string;
-  username: string;
 };
 
 export default function AdminTable({ style }: Props) {

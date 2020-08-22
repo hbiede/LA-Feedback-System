@@ -10,9 +10,9 @@ import { InteractionBreakdown } from 'redux/modules/Types';
 export type InteractionBreakdownResponse = {
   count: string;
   course: string;
-  name?: string;
   username: string;
   wcount: string;
+  name?: string;
 };
 
 const getBreakdowns = async (): Promise<InteractionBreakdown[]> => {
