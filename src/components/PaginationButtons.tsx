@@ -10,8 +10,8 @@ import Pagination from 'react-bootstrap/Pagination';
 export const RATINGS_PER_PAGE = 10;
 
 type Props = {
-  itemCount: number;
   activePage: number;
+  itemCount: number;
   setActivePage: (page: number) => void;
 };
 

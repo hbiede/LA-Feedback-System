@@ -31,34 +31,34 @@ import ServiceInterface from 'statics/ServiceInterface';
 import { InteractionSummary, RatingRecord } from 'statics/Types';
 
 export type AppReduxState = {
-  loading: boolean;
-  username: string;
-  getUsername: () => void;
-  name: string;
-  getName: () => void;
-  setName: (args: SetNameArgs) => void;
   course: string;
+  getCounts: () => Promise<CourseCount[]>;
   getCourse: () => void;
-  setCourse: (args: SetCourseArgs) => void;
-  isAdmin: boolean;
-  interactions: InteractionSummary;
+  getInteractionBreakdowns: () => Promise<InteractionBreakdown[]>;
   getInteractions: () => void;
-  setInteractions: (ints: InteractionSummary) => void;
-  selectedUsername: string;
-  setSelectedUsername: (args: SetSelectedUsernameArgs) => void;
-  ratings: RatingRecord[];
+  getName: () => void;
   getRatings: () => void;
+  getTimes: () => Promise<InteractionTime[]>;
+  getUsername: () => void;
+  interactions: InteractionSummary;
+  isAdmin: boolean;
+  loading: boolean;
+  logout: () => void;
+  name: string;
+  ratings: RatingRecord[];
   response: ResponseMessage | null;
-  setResponse: (res: ResponseMessage | null) => void;
+  selectedUsername: string;
   sendEmail: (
     studentCSE: string | null,
     course?: string | null,
     multiples?: boolean
   ) => void;
-  logout: () => void;
-  getTimes: () => Promise<InteractionTime[]>;
-  getCounts: () => Promise<CourseCount[]>;
-  getInteractionBreakdowns: () => Promise<InteractionBreakdown[]>;
+  setCourse: (args: SetCourseArgs) => void;
+  setInteractions: (ints: InteractionSummary) => void;
+  setName: (args: SetNameArgs) => void;
+  setResponse: (res: ResponseMessage | null) => void;
+  setSelectedUsername: (args: SetSelectedUsernameArgs) => void;
+  username: string;
 };
 
 export const [useStore, api] = create<AppReduxState>((set, get) => ({

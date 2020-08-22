@@ -8,8 +8,8 @@ import { api } from 'redux/modules';
 import { CourseCount } from 'redux/modules/Types';
 
 type CountResponse = {
-  course: string;
   count: string;
+  course: string;
 };
 
 const getCounts = async (): Promise<CourseCount[]> => {

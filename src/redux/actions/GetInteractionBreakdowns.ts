@@ -8,10 +8,10 @@ import { api } from 'redux/modules';
 import { InteractionBreakdown } from 'redux/modules/Types';
 
 export type InteractionBreakdownResponse = {
-  username: string;
-  name?: string;
-  course: string;
   count: string;
+  course: string;
+  name?: string;
+  username: string;
   wcount: string;
 };
 

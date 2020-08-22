@@ -17,8 +17,8 @@ export type SetNameArgs = {
 };
 
 export type CourseCount = {
-  course: string;
   count: number;
+  course: string;
 };
 
 export type ResponseMessage = {
@@ -35,14 +35,14 @@ export type ResponseMessage = {
 };
 
 export type InteractionTime = {
-  time: number;
   course: string;
+  time: number;
 };
 
 export type InteractionBreakdown = {
-  name: string;
-  course: string;
   count: number;
+  course: string;
+  name: string;
   wcount: number;
 };
 

@@ -8,8 +8,8 @@ import { api } from 'redux/modules';
 import { InteractionTime } from 'redux/modules/Types';
 
 type TimeResponse = {
-  time_of_interaction: string;
   course: string;
+  time_of_interaction: string;
 };
 
 const getInteractionTimes = async (): Promise<InteractionTime[]> => {

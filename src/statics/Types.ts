@@ -7,12 +7,12 @@
 import React from 'react';
 
 export type InteractionRecord = {
-  username: string;
-  name?: string;
-  course?: string;
-  count: number;
-  fCount: number;
   avg: number | null;
+  count: number;
+  course?: string;
+  fCount: number;
+  name?: string;
+  username: string;
 };
 
 export type InteractionSummary = {
@@ -41,8 +41,8 @@ export type RatingResponse = {
 };
 
 export type RESTResponse = {
-  name?: string;
   course?: string;
+  name?: string;
 };
 
 type StyleTypes = React.CSSProperties;

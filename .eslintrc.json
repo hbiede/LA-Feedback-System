@@ -5,6 +5,7 @@
     "node": true
   },
   "extends": [
+    "plugin:typescript-sort-keys/recommended",
     "plugin:jsx-a11y/strict",
     "plugin:react/recommended",
     "airbnb",
@@ -29,6 +30,7 @@
     "sourceType": "module"
   },
   "plugins": [
+    "typescript-sort-keys",
     "button-label-required",
     "flowtype",
     "jsx-a11y",

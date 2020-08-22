@@ -11,12 +11,12 @@ import { AppReduxState } from 'redux/modules';
 import { InteractionSummary } from 'statics/Types';
 
 type InteractionResponseRecord = {
-  username: string;
-  name?: string;
-  course: string;
-  count: string;
-  fCount: string;
   avg: string;
+  count: string;
+  course: string;
+  fCount: string;
+  name?: string;
+  username: string;
 };
 
 type InteractionResponseSummary = {

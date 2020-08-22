@@ -35,9 +35,9 @@ type Props = {
 };
 
 type LA = {
-  username: string;
-  name?: string;
   course?: string | null;
+  name?: string;
+  username: string;
 };
 
 export default function AdminTable({ style }: Props) {
@@ -74,8 +74,6 @@ export default function AdminTable({ style }: Props) {
   const [courseRecord, setCourseRecord] = useState<string | null>(
     course === DEFAULT_COURSE_NAME ? null : course
   );
-
-  console.log(courseRecord);
 
   const showLA = useCallback(
     (la: LA) => {
