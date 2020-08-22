@@ -28,6 +28,7 @@
 //  avg: double|null (avg rating from feedback)
 //}
 
+// ---------------------
 
 // To get list of ratings for a single LA:
 // Call with a POST call with a JSON body as follows:

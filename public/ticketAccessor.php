@@ -31,8 +31,11 @@ function responseForTicket($ticket) {
     if (preg_match('/cas:authenticationSuccess/', $response)) {
         return $response;
     }
-    else {
+    else if (strlen(trim($response)) > 0){
         error_log($response);
+        return false;
+    } else {
+        error_log("Empty response");
         return false;
     }
 }
