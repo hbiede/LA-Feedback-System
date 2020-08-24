@@ -80,6 +80,9 @@ WHERE seeking_feedback = 1
   AND has_received_feedback = 0;
 
 CREATE VIEW course_interactions AS
-SELECT course, COUNT(*)
+SELECT course, COUNT(*) AS 'count'
 FROM interactions
-GROUP BY course;
+GROUP BY course
+UNION
+SELECT 'total', COUNT(*) AS 'count'
+FROM interactions;
