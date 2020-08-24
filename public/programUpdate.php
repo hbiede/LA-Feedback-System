@@ -6,28 +6,78 @@ include_once 'sqlManager.php';
 
 ini_set('error_log', './log/programUpdate.log');
 
-function get_update_string($days = DAYS) {
+function get_interaction_counts($days) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, ' .
-        'IFNULL(name, username) AS LA, rating, comment FROM feedback LEFT JOIN interactions i on ' .
-        'feedback.interaction_key = i.interaction_key LEFT JOIN cse_usernames cu on ' .
-        "i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);");
-    $returnVal = "";
+    $ps = $conn->prepare("SELECT course, COUNT(*) AS 'count' FROM interactions WHERE time_of_interaction >= " .
+        "(CURRENT_DATE() - INTERVAL ? DAY) GROUP BY course;");
+    $return_val = '<h4>Course Interactions:</h4><ul>';
     if ($ps) {
         $ps->bind_param('i', $days);
         $ps->execute();
         $result = $ps->get_result();
         while ($row = $result->fetch_assoc()) {
-            $comment = $row['comment'] ? " - " . str_replace(array("/", ";"), array("\/", "\;"), $row['comment']) : '';
-            $rowString = $row['LA'] . " (" . $row['time'] . ")<br><ul><li>" .
-                $row['rating'] . $comment . '<\/li><\/ul><br>';
+            $return_val .= "<li>" . $row['course'] . ' - ' . $row['count'] . "</li>";
+        }
+        $ps->close();
+        $return_val .= '</ul>';
+    }
+    $conn->close();
+    return $return_val;
+}
 
-            $returnVal .= $rowString;
+function get_course_averages($days) {
+    $conn = get_connection();
+    $ps = $conn->prepare("SELECT course, AVG(rating) AS 'avg' FROM feedback LEFT JOIN interactions i on " .
+        "feedback.interaction_key = i.interaction_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY) " .
+        "GROUP BY course ORDER BY course;");
+    $return_val = '<h4>Course Feedback Averages:</h4><ul>';
+    if ($ps) {
+        $ps->bind_param('i', $days);
+        $ps->execute();
+        $result = $ps->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $return_val .= "<li>" . $row['course'] . ' - ' . $row['avg'] . "</li>";
+        }
+        $ps->close();
+        $return_val .= '</ul>';
+    }
+    $conn->close();
+    return $return_val;
+}
+
+function get_update_string($days = DAYS) {
+    $course_counts = get_interaction_counts($days);
+    if (strlen($course_counts) === 0) {
+        return '';
+    }
+    $course_averages = get_course_averages($days);
+
+    $conn = get_connection();
+    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, ' .
+        'IFNULL(name, username) AS LA, rating, comment, cu.course AS "course" FROM feedback LEFT JOIN interactions i on ' .
+        'feedback.interaction_key = i.interaction_key LEFT JOIN cse_usernames cu on ' .
+        "i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);");
+    $la_feedback = [];
+    if ($ps) {
+        $ps->bind_param('i', $days);
+        $ps->execute();
+        $result = $ps->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $buildingComment = $la_feedback[$row['LA']] ? $la_feedback[$row['LA']] : ($row['LA'] . " - " . $row['course'] . "<br><ul>");
+
+            $comment = $row['comment'] ? " - " . str_replace(array("/", ";"), array("\/", "\;"), $row['comment']) : '';
+            $la_feedback[$row['LA']] = $buildingComment . '<li>' . $row['rating'] . $comment . ' (' . $row['time'] . ')</li>';
         }
         $ps->close();
     }
     $conn->close();
-    return trim($returnVal);
+
+    $return_string = $course_counts . $course_averages . "<br><br><h4>Individual LA Feedback:</h4>";
+    krsort($la_feedback);
+    foreach ($la_feedback as $key => $value) {
+        $return_string .= $value . "</ul><br>";
+    }
+     return $return_string;
 }
 
 function send_email($report) {
@@ -36,7 +86,7 @@ function send_email($report) {
     $headers .= 'From: LA Evals Update <learningassistants@cse.unl.edu>' . "\r\n";
 
     $subject = 'LA Feedback Update';
-    $body = shell_exec('cat ./data/programUpdate.txt | sed "s/REPORT_STRING/' . $report . '/g"');
+    $body = shell_exec('cat ./data/programUpdate.txt') . $report;
     if ($body && mail('learningassistants@cse.unl.edu', $subject, $body, $headers)) {
         header('Status: 200 OK');
         echo json_encode([
