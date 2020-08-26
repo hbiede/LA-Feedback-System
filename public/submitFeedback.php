@@ -148,7 +148,7 @@ if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POS
         $la_username = get_la_username_from_interaction($_POST['id']);
         send_feedback_to_la($la_username);
 
-        if ($_POST['rating'] < 5 || $desires_feedback) {
+        if ($_POST['rating'] < 5 || ($_POST['rating'] < 7 && $desires_feedback)) {
             $conn->close();
 
             if ($la_username === '') {
