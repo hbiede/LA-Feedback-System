@@ -77,29 +77,19 @@ function get_update_string($days = DAYS) {
     foreach ($la_feedback as $key => $value) {
         $return_string .= $value . "</ul><br>";
     }
-     return $return_string;
+    return $return_string;
 }
 
 function send_email($report) {
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: LA Evals Update <learningassistants@cse.unl.edu>' . "\r\n";
+    $headers .= 'From: LA Evals Update <cselearningassistant+lafeedback@gmail.com>' . "\r\n";
 
     $subject = 'LA Feedback Update';
     $body = shell_exec('cat ./data/programUpdate.txt') . $report;
-    if ($body && mail('learningassistants@cse.unl.edu', $subject, $body, $headers)) {
-        header('Status: 200 OK');
-        echo json_encode([
-            'status' => 200,
-            'message' => 0
-        ]);
-    } else {
+    if (!$body || !mail('learningassistants@cse.unl.edu', $subject, $body, $headers) ||
+        !mail('hbiede@cse.unl.edu', $subject, $body, $headers)) {
         error_log('Failed to send email');
-        header('Status: 503');
-        echo json_encode([
-            'status' => 503,
-            'message' => 1
-        ]);
     }
 }
 
