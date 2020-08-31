@@ -87,8 +87,6 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   }, [setStatsVisibility]);
 
   const toggleStats = useCallback(() => {
-    if (!isAdmin) return;
-
     if (showingStats) {
       setStatsVisibility(false);
     } else {
