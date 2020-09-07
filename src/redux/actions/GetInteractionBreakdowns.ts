@@ -6,6 +6,7 @@
 
 import { api } from 'redux/modules';
 import { InteractionBreakdown } from 'redux/modules/Types';
+import ServiceInterface from 'statics/ServiceInterface';
 
 export type InteractionBreakdownResponse = {
   count: string;
@@ -23,10 +24,7 @@ const getBreakdowns = async (): Promise<InteractionBreakdown[]> => {
     headers: { 'Content-Type': 'application/json' },
   };
 
-  await fetch(
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/breakdown.php',
-    requestOptions
-  )
+  await fetch(`${ServiceInterface.getPath()}/breakdown.php`, requestOptions)
     .then((response) => response.json())
     .then((json) => {
       breakdowns = json;

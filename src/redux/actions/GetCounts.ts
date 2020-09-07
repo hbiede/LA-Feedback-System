@@ -6,6 +6,7 @@
 
 import { api } from 'redux/modules';
 import { CourseCount } from 'redux/modules/Types';
+import ServiceInterface from 'statics/ServiceInterface';
 
 type CountResponse = {
   count: string;
@@ -20,10 +21,7 @@ const getCounts = async (): Promise<CourseCount[]> => {
     headers: { 'Content-Type': 'application/json' },
   };
 
-  await fetch(
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/counts.php',
-    requestOptions
-  )
+  await fetch(`${ServiceInterface.getPath()}/counts.php`, requestOptions)
     .then((response) => response.json())
     .then((json) => {
       courses = json;

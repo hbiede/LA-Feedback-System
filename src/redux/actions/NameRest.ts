@@ -8,7 +8,7 @@ import ServiceInterface from 'statics/ServiceInterface';
 
 export const nameREST = async (name: string | null = null): Promise<string> =>
   ServiceInterface.rest(
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/name.php',
+    `${ServiceInterface.getPath()}/name.php`,
     ServiceInterface.getActiveUser(),
     name
   ).then((json) => json.name ?? '');

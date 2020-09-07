@@ -51,7 +51,8 @@ export type AppReduxState = {
   sendEmail: (
     studentCSE: string | null,
     course?: string | null,
-    multiples?: boolean
+    multiples?: boolean,
+    interactionType?: string | null
   ) => void;
   setCourse: (args: SetCourseArgs) => void;
   setInteractions: (ints: InteractionSummary) => void;
@@ -109,7 +110,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     set(() => ({ interactions: ints })),
   selectedUsername: '',
   setSelectedUsername: (args: SetSelectedUsernameArgs) => {
-    set(() => ({ selectedUsername: args.username }));
+    set(() => ({ selectedUsername: args.username, ratings: [] }));
     const {
       getName,
       getCourse,
@@ -134,7 +135,8 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   sendEmail: (
     studentCSE: string | null,
     course: string | null = null,
-    multiples = false
+    multiples = false,
+    interactionType: string | null = null
   ) => {
     if (studentCSE === null) {
       get().setResponse({
@@ -145,12 +147,18 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     }
 
     const { setResponse } = api.getState();
-    ServiceInterface.sendEmail(studentCSE, course)
+    ServiceInterface.sendEmail(studentCSE, course, interactionType)
       .then((response) => {
         if (response === '0' || response === 0) {
           setResponse({
             class: 'success',
             content: `Interaction${multiples ? 's' : ''} recorded`,
+          });
+        } else if (response === '3' || response === 3) {
+          setResponse({
+            class: 'danger',
+            content:
+              'Must wait at least 30 seconds between interactions with the same person',
           });
         } else {
           setResponse({

@@ -53,22 +53,29 @@ function get_update_string($days = DAYS) {
     $course_averages = get_course_averages($days);
 
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, ' .
+    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, interaction_type, ' .
         'IFNULL(name, username) AS LA, rating, comment, cu.course AS "course" FROM feedback LEFT JOIN interactions i on ' .
         'feedback.interaction_key = i.interaction_key LEFT JOIN cse_usernames cu on ' .
-        "i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);");
+        'i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);');
     $la_feedback = [];
     if ($ps) {
         $ps->bind_param('i', $days);
         $ps->execute();
+        if ($ps->error) {
+            error_log($ps->error);
+        }
         $result = $ps->get_result();
         while ($row = $result->fetch_assoc()) {
-            $buildingComment = $la_feedback[$row['LA']] ? $la_feedback[$row['LA']] : ($row['LA'] . " - " . $row['course'] . "<br><ul>");
+            $buildingComment = $la_feedback[$row['LA']] ? $la_feedback[$row['LA']] : ($row['LA'] . " - " .
+                $row['course'] . "<br><ul>");
 
             $comment = $row['comment'] ? " - " . str_replace(array("/", ";"), array("\/", "\;"), $row['comment']) : '';
-            $la_feedback[$row['LA']] = $buildingComment . '<li>' . $row['rating'] . $comment . ' (' . $row['time'] . ')</li>';
+            $la_feedback[$row['LA']] = $buildingComment . '<li>' . ucwords($row['interaction_type']) . ': ' .
+                $row['rating'] . $comment . ' (' . $row['time'] . ')</li>';
         }
         $ps->close();
+    } else {
+        error_log('Failed create prepared statement');
     }
     $conn->close();
 
@@ -83,7 +90,7 @@ function get_update_string($days = DAYS) {
 function send_email($report) {
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: LA Evals Update <cselearningassistant+lafeedback@gmail.com>' . "\r\n";
+    $headers .= 'From: LA Evals Update <learningassistants@cse.unl.edu>' . "\r\n";
 
     $subject = 'LA Feedback Update';
     $body = shell_exec('cat ./data/programUpdate.txt') . $report;

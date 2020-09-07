@@ -11,8 +11,7 @@ import { api, AppReduxState } from 'redux/modules';
 import ServiceInterface from 'statics/ServiceInterface';
 
 const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
-  const ticketService =
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/ticketAccessor.php';
+  const ticketService = `${ServiceInterface.getPath()}/ticketAccessor.php`;
   const ticket = new URLSearchParams(window.location.search).get('ticket');
   if (ticket === null) {
     ServiceInterface.login();

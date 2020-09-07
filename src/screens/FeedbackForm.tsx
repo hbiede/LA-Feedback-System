@@ -26,10 +26,12 @@ import { COURSES } from 'statics/Types';
 const LA_USERNAME_ID = 'la_username';
 const COURSE_ID = 'course';
 const STUDENT_CSE_ID = 'student_cse_login';
+const INTERACTION_TYPE_ID = 'interaction_type';
 
 const LA_LABEL = 'LA CSE Username';
 const COURSE_LABEL = 'Course';
 const STUDENT_LABEL = 'Student CSE Username';
+const INTERACTION_TYPE_LABEL = 'Interaction Type';
 
 type Props = {
   style?: CSSProperties;
@@ -62,6 +64,10 @@ const FeedbackForm = ({ style }: Props) => {
   );
   const [studentCSE, setStudentCSE] = useState<string>('');
   const [courseRecord, setCourseRecord] = useState<string | null>(course);
+  const [interactionTypeRecord, setInteractionTypeRecord] = useState<
+    string | null
+  >(course);
+  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     api.subscribe(
@@ -76,6 +82,7 @@ const FeedbackForm = ({ style }: Props) => {
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      setDisabled(false);
       const { id, value } = event.target;
       switch (id) {
         case LA_USERNAME_ID:
@@ -89,6 +96,9 @@ const FeedbackForm = ({ style }: Props) => {
         case STUDENT_CSE_ID:
           setStudentCSE(value);
           break;
+        case INTERACTION_TYPE_ID:
+          setInteractionTypeRecord(value);
+          break;
         default:
           setResponse({ content: `${id} is an invalid ID`, class: 'danger' });
           break;
@@ -100,18 +110,23 @@ const FeedbackForm = ({ style }: Props) => {
   const handleSubmit = useCallback(
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
       setResponse(null);
+      setDisabled(true);
 
       const studentUserValid = studentCSE && studentCSE.trim().length > 0;
       const courseIsValid =
         courseRecord &&
         courseRecord.trim().length > 0 &&
         courseRecord !== 'choose';
+      const intTypeIsValid =
+        interactionTypeRecord &&
+        interactionTypeRecord.trim().length > 0 &&
+        interactionTypeRecord !== 'choose';
       const laUserValid =
         usernameRecord &&
         usernameRecord.trim().length > 0 &&
         usernameRecord !== studentCSE;
 
-      if (studentUserValid && courseIsValid && laUserValid) {
+      if (studentUserValid && courseIsValid && intTypeIsValid && laUserValid) {
         if (isAdmin) {
           setSelectedUsername({ username: usernameRecord });
         }
@@ -124,7 +139,12 @@ const FeedbackForm = ({ style }: Props) => {
           .filter((student) => student.length > 0);
 
         students.forEach((student: string) =>
-          sendEmail(student, courseRecord, students.length > 1)
+          sendEmail(
+            student,
+            courseRecord,
+            students.length > 1,
+            interactionTypeRecord
+          )
         );
 
         setStudentCSE('');
@@ -139,6 +159,8 @@ const FeedbackForm = ({ style }: Props) => {
             usernameRecord === studentCSE
               ? 'You cannot Self-interact'
               : "The LA's username";
+        } else if (!intTypeIsValid) {
+          issue = 'The interaction type';
         }
         setResponse({
           class: 'danger',
@@ -151,13 +173,14 @@ const FeedbackForm = ({ style }: Props) => {
       return false;
     },
     [
-      isAdmin,
+      setResponse,
       studentCSE,
       courseRecord,
+      interactionTypeRecord,
       usernameRecord,
-      setResponse,
-      sendEmail,
+      isAdmin,
       setSelectedUsername,
+      sendEmail,
     ]
   );
 
@@ -202,6 +225,8 @@ const FeedbackForm = ({ style }: Props) => {
             >
               <option
                 value="choose"
+                hidden
+                aria-hidden
                 selected={
                   courseRecord !== null && !COURSES.includes(courseRecord)
                 }
@@ -238,6 +263,29 @@ const FeedbackForm = ({ style }: Props) => {
           </div>
         </FormGroup>
 
+        <FormGroup as={Row} controlId={INTERACTION_TYPE_ID}>
+          <Form.Label className="col-sm-5">{INTERACTION_TYPE_LABEL}</Form.Label>
+          <div className="col-sm-7">
+            <Form.Control
+              as="select"
+              role="combobox"
+              placeholder={INTERACTION_TYPE_LABEL}
+              onChange={handleChange}
+              required
+              aria-required
+              custom
+            >
+              <option value="choose" hidden aria-hidden>
+                (choose)
+              </option>
+              <option value="cohort meeting">Cohort</option>
+              <option value="hack">Hack</option>
+              <option value="lab">Lab</option>
+              <option value="office hour">Office Hour</option>
+            </Form.Control>
+          </div>
+        </FormGroup>
+
         <FormGroup>
           <div className="col-sm-9">
             <Button
@@ -247,6 +295,8 @@ const FeedbackForm = ({ style }: Props) => {
               variant="primary"
               value="Submit"
               onClick={handleSubmit}
+              disabled={disabled}
+              aria-disabled={disabled}
             >
               Submit
             </Button>

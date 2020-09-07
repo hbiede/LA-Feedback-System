@@ -6,6 +6,8 @@
 
 import { GetState } from 'zustand';
 
+import ServiceInterface from 'statics/ServiceInterface';
+
 import { AppReduxState } from 'redux/modules';
 import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
@@ -22,10 +24,7 @@ const getRatings = async (
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user: username, la: selectedUsername }),
   };
-  await fetch(
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
-    requestOptions
-  )
+  await fetch(`${ServiceInterface.getPath()}/admin.php`, requestOptions)
     .then((response) => response.json())
     .then((json) => {
       const ratingsResponse: RatingResponse[] = json;

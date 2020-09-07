@@ -6,6 +6,8 @@
 
 import { GetState } from 'zustand';
 
+import ServiceInterface from 'statics/ServiceInterface';
+
 import { AppReduxState } from 'redux/modules';
 
 import { InteractionSummary } from 'statics/Types';
@@ -40,10 +42,7 @@ const getInteractions = async (
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user: username }),
     };
-    await fetch(
-      'https://cse.unl.edu/~learningassistants/LA-Feedback/admin.php',
-      requestOptions
-    )
+    await fetch(`${ServiceInterface.getPath()}/admin.php`, requestOptions)
       .then((response) => response.json())
       .then((json) => {
         if (Array.isArray(json)) {

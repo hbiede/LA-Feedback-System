@@ -11,7 +11,8 @@ import { RESTResponse } from 'statics/Types';
 class ServiceInterface {
   static sendEmail = async (
     studentCSE: string,
-    course: string | null = null
+    course: string | null = null,
+    interactionType: string | null = null
   ): Promise<string | number | null> => {
     const { course: defaultCourse, setResponse } = api.getState();
     const laCSE = ServiceInterface.getActiveUser();
@@ -35,13 +36,11 @@ class ServiceInterface {
             course === null || course.trim().length === 0
               ? defaultCourse
               : course,
+          interactionType,
         }),
       };
       let status = null;
-      await fetch(
-        'https://cse.unl.edu/~learningassistants/LA-Feedback/sendEmail.php',
-        requestOptions
-      )
+      await fetch(`${ServiceInterface.getPath()}/sendEmail.php`, requestOptions)
         .then((response) => response.json())
         .then((body) => {
           status = body.message;
@@ -56,7 +55,7 @@ class ServiceInterface {
     return null;
   };
 
-  static getPath = () => window.location.href.split('?')[0];
+  static getPath = () => window.location.href.split('?')[0].replace(/\/$/, '');
 
   static login = () => {
     const casService = 'https://cse-apps.unl.edu/cas';

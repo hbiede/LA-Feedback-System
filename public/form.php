@@ -314,7 +314,8 @@ if (!can_give_feedback(get_id())) {
         <h1>Learning Assistant Feedback</h1>
         <p style="margin-bottom:0">Hi,</p>
         <p>You recently had an interaction with a learning
-            assistant for <?php echo get_course_from_interaction(get_id()) ?>. Please help us to know
+            assistant for <?php echo get_course_from_interaction(get_id()) ?> during their
+            <?php echo get_interaction_type_from_interaction(get_id()) ?>. Please help us to know
             how <?php echo get_name_from_interaction(get_id()) ?> did.
             Your feedback will be shared with the LA in a summary of responses with no attached names.</p>
         <label for="rating">Rating<span>*</span></label>

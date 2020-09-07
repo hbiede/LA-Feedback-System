@@ -6,6 +6,7 @@
 
 import { api } from 'redux/modules';
 import { InteractionTime } from 'redux/modules/Types';
+import ServiceInterface from 'statics/ServiceInterface';
 
 type TimeResponse = {
   course: string;
@@ -18,10 +19,7 @@ const getInteractionTimes = async (): Promise<InteractionTime[]> => {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   };
-  await fetch(
-    'https://cse.unl.edu/~learningassistants/LA-Feedback/times.php',
-    requestOptions
-  )
+  await fetch(`${ServiceInterface.getPath()}/times.php`, requestOptions)
     .then((response) => response.json())
     .then((json: TimeResponse[]) => {
       times = json.map((time) => ({

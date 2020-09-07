@@ -63,12 +63,8 @@ const SettingsForm = ({ closeModal }: Props) => {
 
   useEffect(() => {
     api.subscribe(
-      (newCourse) => {
-        if (
-          newCourse !== null &&
-          typeof newCourse === 'string' &&
-          newCourse !== courseRecord
-        ) {
+      (newCourse: string | null) => {
+        if (newCourse !== null && newCourse !== courseRecord) {
           setCourseRecord(newCourse);
         }
       },
@@ -76,12 +72,8 @@ const SettingsForm = ({ closeModal }: Props) => {
     );
 
     api.subscribe(
-      (newName) => {
-        if (
-          newName !== null &&
-          typeof newName === 'string' &&
-          newName !== nameRecord
-        ) {
+      (newName: string | null) => {
+        if (newName !== null && newName !== nameRecord) {
           setNameRecord(newName);
         }
       },

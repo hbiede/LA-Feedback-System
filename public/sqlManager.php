@@ -61,6 +61,25 @@ function get_course_from_interaction($interaction_id) {
     return $result;
 }
 
+function get_interaction_type_from_interaction($interaction_id) {
+    $conn = get_connection();
+    $ps = $conn->prepare('SELECT interaction_type FROM interactions WHERE interaction_key = ?;');
+    if (!$ps) {
+        error_log('Failed to build prepped statement');
+        $conn->close();
+        return 'ERROR1';
+    }
+    $ps->bind_param('i', $interaction_id);
+    $ps->execute();
+    if ($ps->error) {
+        error_log($ps->error);
+    }
+    $result = $ps->get_result()->fetch_assoc()['interaction_type'];
+    $ps->close();
+    $conn->close();
+    return $result;
+}
+
 function get_la_username_from_interaction($interaction_id) {
     return get_username_from_interaction(
         'SELECT username FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);',
@@ -138,15 +157,17 @@ function add_cse($username) {
     return null;
 }
 
-function add_interaction($la_cse, $student_cse, $course) {
+function add_interaction($la_cse, $student_cse, $course, $interaction_type) {
     $la_id = get_username_id($la_cse);
     $student_id = get_username_id($student_cse);
     $conn = get_connection();
     if ($conn !== null && is_int($la_id) && is_int($student_id)) {
         $conn->begin_transaction();
-        $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key, course) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?), (SELECT username_key FROM cse_usernames WHERE username=?), ?);");
+        $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key, course, " .
+            "interaction_type) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?), " .
+            "(SELECT username_key FROM cse_usernames WHERE username=?), ?, ?);");
         if ($ps) {
-            $ps->bind_param("sss", $la_cse, $student_cse, $course);
+            $ps->bind_param("ssss", $la_cse, $student_cse, $course, $interaction_type);
             $ps->execute();
             $conn->commit();
             $returnVal = $ps->insert_id;
@@ -188,7 +209,9 @@ function update_interaction_for_feedback($interaction_id) {
 function received_email_today($student_cse) {
     $conn = get_connection();
     if ($conn !== null && $student_cse !== null) {
-        $ps = $conn->prepare("SELECT time_of_interaction AS time FROM interactions WHERE seeking_feedback = 1 AND student_username_key = (SELECT username_key FROM cse_usernames WHERE username=?) ORDER BY time_of_interaction DESC LIMIT 1;");
+        $ps = $conn->prepare("SELECT time_of_interaction AS time FROM interactions WHERE seeking_feedback = 1 " .
+            "AND student_username_key = (SELECT username_key FROM cse_usernames WHERE username=?) " .
+            "ORDER BY time_of_interaction DESC LIMIT 1;");
         if ($ps) {
             $ps->bind_param("s", $student_cse);
             $ps->execute();

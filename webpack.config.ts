@@ -40,7 +40,7 @@ const config: webpack.Configuration = {
     extensions: ['.tsx', '.ts', '.js', 'jsx'],
   },
   output: {
-    filename: 'main.js',
+    filename: 'feedback.js',
     path: path.resolve(__dirname, 'build'),
   },
 };

@@ -13,19 +13,20 @@ date_default_timezone_set("America/Chicago");
 //{
 //  studentCSE: string,
 //  laCSE: string,
-//  course: string
+//  course: string,
+//  interactionType: string | null
 //}
 
 // Returns a JSON encoded message as follows:
 //{
 //  status: number (HTML response code),
-//  message?: string
+//  message?: string | int
 //}
 
 function send_email($obj, $interaction_id) {
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+    $headers .= "From: Learning Assistant Program <cselearningassistant+noreply@gmail.com>\r\n";
     $name = get_name_from_interaction($interaction_id);
 
     $subject = shell_exec('grep "<title>" form.php | sed "s/\s*<\/*title>//gi"');
@@ -57,7 +58,7 @@ const FEEDBACK_RATE = 0.5;
 $obj = json_decode(file_get_contents('php://input'));
 if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isset($obj->{'course'})
     && $obj->{'studentCSE'} !== $obj->{'laCSE'}) {
-    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentCSE'}, $obj->{'course'});
+    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentCSE'}, $obj->{'course'}, $obj->{'interactionType'});
 
     if ($interaction_id !== null && $interaction_id > 0 && mt_rand() / mt_getrandmax() < FEEDBACK_RATE &&
         !received_email_today($obj->{'studentCSE'})) {
