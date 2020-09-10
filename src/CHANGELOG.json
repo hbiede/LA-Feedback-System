@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.4.9\n- Display feedback count on admin table",
     "## 1.4.8\n- Add interaction type tracking\n- Prevent duplicate interaction tracking",
     "## 1.4.7\n- Allow viewing stats as a non-admin",
     "## 1.4.6\n- Add stats to admin table",

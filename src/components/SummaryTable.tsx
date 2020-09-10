@@ -205,7 +205,7 @@ const SummaryTable = ({ showLA }: Props) => {
                       {row.avg !== null &&
                       !Number.isNaN(row.avg) &&
                       row.avg.toFixed
-                        ? row.avg.toFixed(2)
+                        ? `${row.avg.toFixed(2)} (${row.fCount})`
                         : 'No Reviews'}
                     </td>
                   </tr>
