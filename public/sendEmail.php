@@ -9,6 +9,11 @@ include_once 'sqlManager.php';
 ini_set('error_log', './log/email.log');
 date_default_timezone_set("America/Chicago");
 
+/**
+ * The percent of students that should receive a feedback email [0,1]
+ */
+const FEEDBACK_RATE = 0.6;
+
 // Call with a POST call with a JSON body as follows:
 //{
 //  studentCSE: string,
@@ -49,11 +54,6 @@ function send_email($obj, $interaction_id) {
         ]);
     }
 }
-
-/**
- * The percent of students that should receive a feedback email [0,1]
- */
-const FEEDBACK_RATE = 0.5;
 
 $obj = json_decode(file_get_contents('php://input'));
 if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isset($obj->{'course'})
