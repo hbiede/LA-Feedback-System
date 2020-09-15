@@ -53,7 +53,10 @@ function get_update_string($days = DAYS) {
     $course_averages = get_course_averages($days);
 
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, interaction_type, ' .
+    $ps = $conn->prepare('DELETE FROM cse_usernames WHERE username_key NOT IN ' .
+        '(SELECT la_username_key FROM interactions) AND username_key NOT IN ' .
+        '(SELECT student_username_key FROM interactions) AND name IS NULL;' .
+        'SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, interaction_type, ' .
         'IFNULL(name, username) AS LA, rating, comment, cu.course AS "course" FROM feedback LEFT JOIN interactions i on ' .
         'feedback.interaction_key = i.interaction_key LEFT JOIN cse_usernames cu on ' .
         'i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);');
