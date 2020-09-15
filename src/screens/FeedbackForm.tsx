@@ -16,6 +16,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Row from 'react-bootstrap/Row';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import shallow from 'zustand/shallow';
 
@@ -32,6 +34,8 @@ const LA_LABEL = 'LA CSE Username';
 const COURSE_LABEL = 'Course';
 const STUDENT_LABEL = 'Student CSE Username';
 const INTERACTION_TYPE_LABEL = 'Interaction Type';
+
+const BANNED_USERNAMES = [...COURSES, '155h', '156h', 'i', "don't", 'know'];
 
 type Props = {
   style?: CSSProperties;
@@ -132,22 +136,32 @@ const FeedbackForm = ({ style }: Props) => {
         }
 
         // Send to all students listed (Based on regex expression /[,\s|&+;]/)
-        const students = Array.from(
-          new Set(studentCSE?.split(/[,\s|&+;]/) ?? [])
-        )
+        const students = Array.from(new Set(studentCSE?.split(/[,|&+;]/) ?? []))
           .map((student) => student.trim())
           .filter((student) => student.length > 0);
 
-        students.forEach((student: string) =>
-          sendEmail(
-            student,
-            courseRecord,
-            students.length > 1,
-            interactionTypeRecord
+        if (
+          students.some(
+            (student) =>
+              BANNED_USERNAMES.includes(student.toLowerCase()) ||
+              student.includes('(') ||
+              student.includes(')') ||
+              student.includes(' ')
           )
-        );
+        ) {
+          setResponse({ class: 'danger', content: 'Invalid username(s)' });
+        } else {
+          students.forEach((student: string) =>
+            sendEmail(
+              student,
+              courseRecord,
+              students.length > 1,
+              interactionTypeRecord
+            )
+          );
 
-        setStudentCSE('');
+          setStudentCSE('');
+        }
       } else {
         let issue = 'A field';
         if (!studentUserValid) {
@@ -168,7 +182,7 @@ const FeedbackForm = ({ style }: Props) => {
         });
       }
 
-      // Never reload
+      // Prevent reload
       event.preventDefault();
       return false;
     },
@@ -248,19 +262,28 @@ const FeedbackForm = ({ style }: Props) => {
 
         <FormGroup as={Row} controlId={STUDENT_CSE_ID}>
           <Form.Label className="col-sm-5">{STUDENT_LABEL}</Form.Label>
-          <div className="col-sm-7">
-            <Form.Control
-              type="text"
-              role="textbox"
-              placeholder={STUDENT_LABEL}
-              aria-placeholder={STUDENT_LABEL}
-              value={studentCSE ?? undefined}
-              onChange={handleChange}
-              required
-              aria-required
-              autoComplete="false"
-            />
-          </div>
+          <OverlayTrigger
+            placement="right"
+            overlay={
+              <Tooltip id="username-tooltip">
+                Submit multiple usernames with a comma separated list
+              </Tooltip>
+            }
+          >
+            <div className="col-sm-7">
+              <Form.Control
+                type="text"
+                role="textbox"
+                placeholder={STUDENT_LABEL}
+                aria-placeholder={STUDENT_LABEL}
+                value={studentCSE ?? undefined}
+                onChange={handleChange}
+                required
+                aria-required
+                autoComplete="false"
+              />
+            </div>
+          </OverlayTrigger>
         </FormGroup>
 
         <FormGroup as={Row} controlId={INTERACTION_TYPE_ID}>
