@@ -46,6 +46,7 @@ create table feedback
     interaction_key  int                  not null,
     rating           tinyint(2) default 0 null,
     comment          varchar(500)         null,
+    sentiment        int                  null,
     desires_feedback tinyint(1)           null,
     time_to_complete int                  null,
     constraint interaction_key
@@ -69,7 +70,8 @@ FROM interactions i
 ORDER BY time_of_interaction;
 
 CREATE VIEW feedback_readable AS
-SELECT IFNULL(name, username) AS 'la', rating, comment, time_of_interaction
+SELECT IFNULL(name, username) AS 'la', rating, comment,
+       IFNULL(CONCAT(sentiment, '%'), null) AS sentiment, time_of_interaction
 FROM feedback
          LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key
          LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key

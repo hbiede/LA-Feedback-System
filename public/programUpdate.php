@@ -27,16 +27,17 @@ function get_interaction_counts($days) {
 
 function get_course_averages($days) {
     $conn = get_connection();
-    $ps = $conn->prepare("SELECT course, AVG(rating) AS 'avg' FROM feedback LEFT JOIN interactions i on " .
-        "feedback.interaction_key = i.interaction_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY) " .
-        "GROUP BY course ORDER BY course;");
+    $ps = $conn->prepare("SELECT course, AVG(rating) AS 'avg', AVG(sentiment) AS 'sentiment' FROM feedback " .
+        "LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key WHERE " .
+        "time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY) GROUP BY course ORDER BY course;");
     $return_val = '<h4>Course Feedback Averages:</h4><ul>';
     if ($ps) {
         $ps->bind_param('i', $days);
         $ps->execute();
         $result = $ps->get_result();
         while ($row = $result->fetch_assoc()) {
-            $return_val .= "<li>" . $row['course'] . ' - ' . $row['avg'] . "</li>";
+            $return_val .= "<li>" . $row['course'] . ' - ' . round($row['avg'], 2) .
+                ' (Avg Comment Sentiment: ' . round($row['sentiment'], 2) . "%)</li>";
         }
         $ps->close();
         $return_val .= '</ul>';
@@ -53,13 +54,12 @@ function get_update_string($days = DAYS) {
     $course_averages = get_course_averages($days);
 
     $conn = get_connection();
-    $ps = $conn->prepare('DELETE FROM cse_usernames WHERE username_key NOT IN ' .
-        '(SELECT la_username_key FROM interactions) AND username_key NOT IN ' .
-        '(SELECT student_username_key FROM interactions) AND name IS NULL;' .
-        'SELECT DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time, interaction_type, ' .
-        'IFNULL(name, username) AS LA, rating, comment, cu.course AS "course" FROM feedback LEFT JOIN interactions i on ' .
-        'feedback.interaction_key = i.interaction_key LEFT JOIN cse_usernames cu on ' .
-        'i.la_username_key = cu.username_key WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);');
+    $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, \'%Y-%m-%dT%TZ\') AS time, ' .
+        'interaction_type, sentiment, IFNULL(name, username) AS LA, rating, ' .
+        'comment, cu.course AS "course" FROM feedback LEFT JOIN interactions i ' .
+        'on feedback.interaction_key = i.interaction_key ' .
+        'LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key ' .
+        'WHERE time_of_interaction >= (CURRENT_DATE() - INTERVAL ? DAY);');
     $la_feedback = [];
     if ($ps) {
         $ps->bind_param('i', $days);
@@ -69,20 +69,25 @@ function get_update_string($days = DAYS) {
         }
         $result = $ps->get_result();
         while ($row = $result->fetch_assoc()) {
-            $buildingComment = $la_feedback[$row['LA']] ? $la_feedback[$row['LA']] : ($row['LA'] . " - " .
-                $row['course'] . "<br><ul>");
+            $buildingComment = isset($la_feedback[$row['LA']])
+                ? $la_feedback[$row['LA']]
+                : ($row['LA'] . " - " . $row['course'] . "<br><ul>");
 
-            $comment = $row['comment'] ? " - " . str_replace(array("/", ";"), array("\/", "\;"), $row['comment']) : '';
+            $comment = $row['comment']
+                ? " - " . str_replace(array("/", ";"), array("\/", "\;"), $row['comment'])
+                    . ' (Sentiment: ' . $row['sentiment'] . '%)'
+                : '';
             $la_feedback[$row['LA']] = $buildingComment . '<li>' . ucwords($row['interaction_type']) . ': ' .
                 $row['rating'] . $comment . ' (' . $row['time'] . ')</li>';
         }
         $ps->close();
     } else {
         error_log('Failed create prepared statement');
+        error_log($conn->error);
     }
     $conn->close();
 
-    $return_string = $course_counts . $course_averages . "<br><br><h4>Individual LA Feedback:</h4>";
+    $return_string = $course_counts . $course_averages . "<br><br><h4>Individual LA Feedback:</h4><br>";
     krsort($la_feedback);
     foreach ($la_feedback as $key => $value) {
         $return_string .= $value . "</ul><br>";
@@ -97,7 +102,7 @@ function send_email($report) {
 
     $subject = 'LA Feedback Update';
     $body = shell_exec('cat ./data/programUpdate.txt') . $report;
-    if (!$body || !mail('learningassistants@cse.unl.edu', $subject, $body, $headers) ||
+    if (!$body || !mail('learningassistants@cse.unl.edu', $subject, $body, $headers) |
         !mail('hbiede@cse.unl.edu', $subject, $body, $headers)) {
         error_log('Failed to send email');
     }

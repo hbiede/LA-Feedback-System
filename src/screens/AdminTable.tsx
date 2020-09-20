@@ -21,6 +21,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 import shallow from 'zustand/shallow';
 
+import SentimentText from 'components/SentimentText';
+
 import Redux from 'redux/modules';
 import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
@@ -164,6 +166,7 @@ export default function AdminTable({ style }: Props) {
     return (
       <div style={style} className="col-md-10">
         <SummaryTable showLA={showLA} />
+        <SentimentText />
         <OutstandingFeedbackText />
         <FeedbackTimeText />
       </div>

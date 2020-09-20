@@ -24,6 +24,7 @@ type InteractionResponseRecord = {
 type InteractionResponseSummary = {
   outstanding: string | null;
   ratings: InteractionResponseRecord[];
+  sentiment: string | null;
   time: string | null;
 };
 
@@ -34,6 +35,7 @@ const getInteractions = async (
   let interactions: InteractionSummary = {
     outstanding: 0,
     ratings: [],
+    sentiment: -1,
     time: -1,
   };
   if (username !== 'INVALID_TICKET_KEY') {
@@ -49,6 +51,7 @@ const getInteractions = async (
           interactions = {
             outstanding: 0,
             ratings: json,
+            sentiment: -1,
             time: -1,
           };
         } else {
@@ -59,6 +62,10 @@ const getInteractions = async (
             intHolder.outstanding === null
               ? 0
               : Number.parseFloat(intHolder.outstanding);
+          interactions.sentiment =
+            intHolder.sentiment === null
+              ? 0
+              : Number.parseFloat(intHolder.sentiment);
           interactions.ratings = intHolder.ratings
             .map((rating) => ({
               ...rating,

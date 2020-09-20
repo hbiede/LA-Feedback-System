@@ -18,6 +18,7 @@ export type InteractionRecord = {
 export type InteractionSummary = {
   outstanding: number;
   ratings: InteractionRecord[];
+  sentiment: number | null;
   time: number | null;
 };
 
@@ -30,7 +31,8 @@ export type RatingRecord = {
   course: string;
   rating: number;
   time: Date;
-  comment?: string;
+  comment?: string | null;
+  sentiment?: number | null;
 };
 
 export type RatingResponse = {

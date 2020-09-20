@@ -28,6 +28,20 @@ ini_set('error_log', './log/feedback.log');
  */
 const FEEDBACK_RATE = 5;
 
+/**
+ * @param $comment string The comment to be parsed
+ * @return int The percent of the comment that has positive sentiment ([0,100] inclusive)
+ */
+function get_sentiment($comment) {
+    if ($comment === null) {
+        return 0;
+    }
+
+    require_once __DIR__ . '/data/lib/PHPInsight/autoload.php';
+    $sentiment = new \PHPInsight\Sentiment();
+    return intval(floor($sentiment->score($comment)['pos'] * 100));
+}
+
 function get_feedback_count($la_username) {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT COUNT(*) AS count FROM feedback WHERE interaction_key IN ' .
@@ -49,7 +63,7 @@ function get_feedback_count($la_username) {
 
 function get_latest($la_username) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT rating, comment FROM feedback LEFT JOIN ' .
+    $ps = $conn->prepare('SELECT rating, comment, sentiment FROM feedback LEFT JOIN ' .
         'interactions ON feedback.interaction_key = interactions.interaction_key WHERE la_username_key = ' .
         '(SELECT username_key FROM cse_usernames WHERE username=?) ORDER BY time_of_interaction DESC LIMIT ?;');
     $feedback_count = FEEDBACK_RATE;
@@ -83,19 +97,20 @@ function send_feedback_to_la($la_username) {
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
         $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
 
-        $subject = 'LA Feedback Summary';
+        $subject = 'LA Feedback Summary for ' . $la_username;
         $ratings = '';
         foreach ($feedback as $index=>$item) {
             $feedback_string = $item['rating'];
             if ($item['comment'] !== null) {
-                $feedback_string .= ' - ' . $item['comment'];
+                $feedback_string .= ' - ' . $item['comment'] . ' (Sentiment: ' . $item['sentiment'] . '%)';
             }
 
-            $ratings .= "<li class=\"list-group-item list-group-item-dark\">$feedback_string</li>\n";
+            $ratings .= "<li class=\"list-group-item list-group-item-dark\">$feedback_string</li><br>";
         }
         $body = str_replace('RATINGS_LISTING', $ratings, shell_exec('cat ./data/feedbackSummary.html'));
         $body = str_replace('LATEST_FEEDBACK_COUNT', FEEDBACK_RATE, $body);
         mail("$la_username@cse.unl.edu", $subject, $body, $headers);
+        mail("hbiede@cse.unl.edu", $subject, $body, $headers);
     }
 }
 
@@ -119,7 +134,7 @@ if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POS
         $ps->close();
 
         $ps = $conn->prepare("INSERT INTO feedback (interaction_key, rating, comment, desires_feedback, "
-            . "time_to_complete) VALUE (?, ?, ?, ?, ?);");
+            . "time_to_complete, sentiment) VALUE (?, ?, ?, ?, ?, ?);");
         if (!$ps) {
             error_log('Failed to build prepped statement');
             $conn->close();
@@ -133,15 +148,20 @@ if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POS
         $desires_feedback = $_POST['contact'] === true || $_POST['contact'] === 'true';
         $feedback_int = $desires_feedback ? 1 : 0;
         $feedback_time = (isset($_POST['time']) && !is_nan($_POST['time'])) ? $_POST['time'] : -1;
-        $comment = (isset($_POST['comment']) && $_POST['comment'] !== null && strlen(trim($_POST['comment'])) > 0)
-            ? $_POST['comment']
-            : null;
-        $ps->bind_param("issii",
+        if (isset($_POST['comment']) && $_POST['comment'] !== null && strlen(trim($_POST['comment'])) > 0) {
+            $comment = $_POST['comment'];
+            $sentiment = get_sentiment($_POST['comment']);
+        } else {
+            $comment = null;
+            $sentiment = null;
+        }
+        $ps->bind_param("issiii",
             $_POST['id'],
             $_POST['rating'],
             $comment,
             $feedback_int,
-            $feedback_time);
+            $feedback_time,
+            $sentiment);
         $ps->execute();
         $ps->close();
         $conn->commit();

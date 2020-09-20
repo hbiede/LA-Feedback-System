@@ -10,18 +10,22 @@ import shallow from 'zustand/shallow';
 
 import Redux, { AppReduxState } from 'redux/modules';
 
-const OutstandingFeedbackText = () => {
+const SentimentText = () => {
   const { interactions } = Redux(
     (state: AppReduxState) => ({
       interactions: state.interactions,
     }),
     shallow
   );
-  const { outstanding } = interactions;
+  const { sentiment } = interactions;
 
   return (
-    <>{outstanding > 0 && <p>{outstanding} unanswered feedback requests</p>}</>
+    <>
+      {sentiment && sentiment > 0 && (
+        <p>{sentiment.toFixed(2)}% average sentiment</p>
+      )}
+    </>
   );
 };
 
-export default OutstandingFeedbackText;
+export default SentimentText;

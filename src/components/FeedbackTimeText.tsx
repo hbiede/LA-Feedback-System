@@ -8,13 +8,13 @@ import React from 'react';
 
 import shallow from 'zustand/shallow';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 
 import { InteractionRecord } from 'statics/Types';
 
 const FeedbackTimeText = () => {
   const { interactions } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       interactions: state.interactions,
     }),
     shallow
