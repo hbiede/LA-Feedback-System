@@ -37,9 +37,9 @@ function get_sentiment($comment) {
         return 0;
     }
 
-    require_once __DIR__ . '/data/lib/PHPInsight/autoload.php';
-    $sentiment = new \PHPInsight\Sentiment();
-    return intval(floor($sentiment->score($comment)['pos'] * 100));
+    require_once __DIR__ . '/data/lib/vader/vadersentiment.php';
+    $sentiment = new SentimentIntensityAnalyzer();
+    return intval(floor($sentiment->getSentiment($comment)['compound'] * 100));
 }
 
 function get_feedback_count($la_username) {

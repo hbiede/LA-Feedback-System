@@ -14,7 +14,7 @@
 // Returns a JSON encoded object formatted as follows:
 //{
 //  time: int (average time to complete the feedback form),
-//  sentiment: int (sentiment of a all comments ([0,100] inclusive)),
+//  sentiment: int (sentiment of a all comments ([-100,100] inclusive)),
 //  ratings: InteractionRecord[]
 //}
 // If the username in the POST call is not an admin, this script returns an empty array

@@ -70,18 +70,32 @@ FROM interactions i
 ORDER BY time_of_interaction;
 
 CREATE VIEW feedback_readable AS
-SELECT IFNULL(name, username) AS 'la', rating, comment,
-       IFNULL(CONCAT(sentiment, '%'), null) AS sentiment, time_of_interaction
+SELECT IFNULL(name, username)               AS 'la',
+       rating,
+       comment,
+       IFNULL(CONCAT(sentiment, '%'), null) AS sentiment,
+       time_of_interaction
 FROM feedback
          LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key
          LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key
 ORDER BY username, time_of_interaction;
 
 CREATE VIEW outstanding_feedback_req AS
-SELECT COUNT(*) AS 'outstanding feedback requests'
-from interactions
+SELECT 'outstanding feedback requests' AS 'category', COUNT(*) AS 'count'
+FROM interactions
 WHERE seeking_feedback = 1
-  AND has_received_feedback = 0;
+  AND has_received_feedback = 0
+UNION
+SELECT 'completed feedback requests' AS 'category', COUNT(*) AS 'count'
+FROM interactions
+WHERE seeking_feedback = 1
+  AND has_received_feedback = 1
+UNION
+SELECT '---', '---'
+UNION
+SELECT 'total feedback requests' AS 'category', COUNT(*) AS 'count'
+FROM interactions
+WHERE seeking_feedback = 1;
 
 CREATE VIEW course_interactions AS
 SELECT course, COUNT(*) AS 'count'
