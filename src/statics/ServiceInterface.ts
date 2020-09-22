@@ -8,6 +8,8 @@ import { api } from 'redux/modules';
 
 import { RESTResponse } from 'statics/Types';
 
+const CSE_CAS_SERVICE = 'https://cse-apps.unl.edu/cas';
+
 class ServiceInterface {
   static sendEmail = async (
     studentCSE: string,
@@ -28,7 +30,9 @@ class ServiceInterface {
     ) {
       const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           studentCSE,
           laCSE,
@@ -58,13 +62,11 @@ class ServiceInterface {
   static getPath = () => window.location.href.split('?')[0].replace(/\/$/, '');
 
   static login = () => {
-    const casService = 'https://cse-apps.unl.edu/cas';
-    window.location.href = `${casService}/login?service=${ServiceInterface.getPath()}`;
+    window.location.href = `${CSE_CAS_SERVICE}/login?service=${ServiceInterface.getPath()}`;
   };
 
   static logout = () => {
-    const casService = 'https://cse-apps.unl.edu/cas';
-    window.location.href = `${casService}/logout?service=${ServiceInterface.getPath()}`;
+    window.location.href = `${CSE_CAS_SERVICE}/logout?service=${ServiceInterface.getPath()}`;
   };
 
   static rest = async (
@@ -72,10 +74,15 @@ class ServiceInterface {
     username: string,
     updateVal: string | null = null
   ): Promise<RESTResponse> => {
-    let returnVal: RESTResponse = { name: '', course: '' };
+    let returnVal: RESTResponse = {
+      name: '',
+      course: '',
+    };
     const requestConfig = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ username, updateVal }),
     };
     await fetch(service, requestConfig)
@@ -92,7 +99,10 @@ class ServiceInterface {
         ) {
           return;
         }
-        api.getState().setResponse({ class: 'danger', content: error.message });
+        api.getState().setResponse({
+          class: 'danger',
+          content: error.message,
+        });
       });
     return returnVal;
   };

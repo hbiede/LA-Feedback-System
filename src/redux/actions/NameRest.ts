@@ -5,12 +5,13 @@
  -----------------------------------------------------------------------------*/
 
 import ServiceInterface from 'statics/ServiceInterface';
+import { RESTResponse } from 'statics/Types';
 
 export const nameREST = async (name: string | null = null): Promise<string> =>
   ServiceInterface.rest(
     `${ServiceInterface.getPath()}/name.php`,
     ServiceInterface.getActiveUser(),
     name
-  ).then((json) => json.name ?? '');
+  ).then((json: RESTResponse) => json.name ?? '');
 
 export default nameREST;

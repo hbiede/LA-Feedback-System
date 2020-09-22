@@ -6,6 +6,8 @@
 
 import create from 'zustand';
 
+import SendEmail from 'redux/actions/SendEmail';
+
 import {
   CourseRest,
   GetCounts,
@@ -132,48 +134,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     set(() => ({ response: res }));
     setTimeout(() => set(() => ({ response: null })), 10000); // timeout after 10 seconds
   },
-  sendEmail: (
-    studentCSE: string | null,
-    course: string | null = null,
-    multiples = false,
-    interactionType: string | null = null
-  ) => {
-    if (studentCSE === null) {
-      get().setResponse({
-        class: 'danger',
-        content: 'Must set a username',
-      });
-      return;
-    }
-
-    const { setResponse } = api.getState();
-    ServiceInterface.sendEmail(studentCSE, course, interactionType)
-      .then((response) => {
-        if (response === '0' || response === 0) {
-          setResponse({
-            class: 'success',
-            content: `Interaction${multiples ? 's' : ''} recorded`,
-          });
-        } else if (response === '3' || response === 3) {
-          setResponse({
-            class: 'danger',
-            content:
-              'Must wait at least 30 seconds between interactions with the same person',
-          });
-        } else {
-          setResponse({
-            class: 'danger',
-            content: `Failed to Send Message. Please Try Again. (Error Code ${response})`,
-          });
-        }
-      })
-      .catch((error) => {
-        setResponse({
-          class: 'danger',
-          content: `Failed to Send Message. Please Try Again. (Error: ${error})`,
-        });
-      });
-  },
+  sendEmail: SendEmail,
   logout: () => ServiceInterface.logout(),
   getTimes: GetInteractionTimes,
   getCounts: GetCounts,

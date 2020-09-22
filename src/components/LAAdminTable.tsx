@@ -16,7 +16,7 @@ import PaginationButtons, {
 
 import getRowClass from 'components/TableRowColors';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 
 import { SORT_CHARS, SortConfig } from 'statics/Types';
 
@@ -27,7 +27,7 @@ const COURSE_ID = 'course_col_header';
 
 const LAAdminTable = () => {
   const { ratings } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       ratings: state.ratings,
     }),
     shallow

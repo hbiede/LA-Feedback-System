@@ -17,7 +17,7 @@ import shallow from 'zustand/shallow';
 
 import BreakdownTable from 'components/BreakdownTable';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 import SettingsForm from 'components/SettingsForm';
 
 import CountsTable from 'components/CountsTable';
@@ -39,7 +39,7 @@ const VERSION = changelog.changes[0].split('\n')[0].replace(/[\s#]+/, '');
 
 const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   const { isAdmin, loading, logout, name, username } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       loading: state.loading,
       isAdmin: state.isAdmin,
       logout: state.logout,

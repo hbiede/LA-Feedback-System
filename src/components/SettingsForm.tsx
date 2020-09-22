@@ -14,7 +14,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import shallow from 'zustand/shallow';
 
-import Redux, { api } from 'redux/modules';
+import Redux, { api, AppReduxState } from 'redux/modules';
 
 import { COURSES } from 'statics/Types';
 
@@ -37,7 +37,7 @@ const SettingsForm = ({ closeModal }: Props) => {
     isAdmin,
     setResponse,
   } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       selectedUsername: state.selectedUsername,
       setSelectedUsername: state.setSelectedUsername,
       name: state.name,

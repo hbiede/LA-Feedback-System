@@ -13,7 +13,7 @@ import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
 import { RatingRecord, RatingResponse } from 'statics/Types';
 
-const getRatings = async (
+const GetRatings = async (
   get: GetState<AppReduxState>
 ): Promise<RatingRecord[]> => {
   const { username, selectedUsername, setResponse } = get();
@@ -21,11 +21,13 @@ const getRatings = async (
   let ratings: RatingRecord[] = [];
   const requestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ user: username, la: selectedUsername }),
   };
   await fetch(`${ServiceInterface.getPath()}/admin.php`, requestOptions)
-    .then((response) => response.json())
+    .then((response: Response) => response.json())
     .then((json) => {
       const ratingsResponse: RatingResponse[] = json;
       ratings = ratingsResponse.map((rating) => ({
@@ -39,4 +41,4 @@ const getRatings = async (
   return ratings;
 };
 
-export default getRatings;
+export default GetRatings;

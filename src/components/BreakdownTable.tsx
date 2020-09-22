@@ -15,7 +15,7 @@ import Table from 'react-bootstrap/Table';
 
 import shallow from 'zustand/shallow';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 
 import { InteractionBreakdown } from 'redux/modules/Types';
 
@@ -32,7 +32,7 @@ type Props = {
 
 const BreakdownTable = ({ style }: Props) => {
   const { getInteractionBreakdowns } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       getInteractionBreakdowns: state.getInteractionBreakdowns,
     }),
     shallow

@@ -19,12 +19,17 @@ const OutstandingFeedbackText = () => {
   );
   const { outstanding } = interactions;
   const ratingCount = interactions.ratings.length;
+  const percentComplete = (ratingCount > 0
+    ? outstanding / ratingCount
+    : 0
+  ).toFixed(2);
 
   return (
     <>
       {outstanding > 0 && (
         <p>
-          {outstanding} unanswered feedback requests ({ratingCount} requested)
+          {outstanding} unanswered feedback requests out of {ratingCount}{' '}
+          requested ({percentComplete}% completed)
         </p>
       )}
     </>

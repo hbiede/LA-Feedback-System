@@ -41,11 +41,13 @@ const getInteractions = async (
   if (username !== 'INVALID_TICKET_KEY') {
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ user: username }),
     };
     await fetch(`${ServiceInterface.getPath()}/admin.php`, requestOptions)
-      .then((response) => response.json())
+      .then((response: Response) => response.json())
       .then((json) => {
         if (Array.isArray(json)) {
           interactions = {

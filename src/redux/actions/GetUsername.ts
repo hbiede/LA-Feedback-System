@@ -18,12 +18,14 @@ const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
   }
   const requestConfig = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ ticket }),
   };
   await fetch(ticketService, requestConfig)
-    .then((response) => response.text())
-    .then((text) => {
+    .then((response: Response) => response.text())
+    .then((text: string) => {
       if (text && text.includes('INVALID_TICKET_KEY')) {
         ServiceInterface.login();
       } else {

@@ -21,12 +21,14 @@ const getBreakdowns = async (): Promise<InteractionBreakdown[]> => {
 
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
   };
 
   await fetch(`${ServiceInterface.getPath()}/breakdown.php`, requestOptions)
-    .then((response) => response.json())
-    .then((json) => {
+    .then((response: Response) => response.json())
+    .then((json: InteractionBreakdownResponse[]) => {
       breakdowns = json;
     })
     .catch((error) => api.getState().setResponse(error));

@@ -17,10 +17,12 @@ const getInteractionTimes = async (): Promise<InteractionTime[]> => {
   let times: InteractionTime[] = [];
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
   };
   await fetch(`${ServiceInterface.getPath()}/times.php`, requestOptions)
-    .then((response) => response.json())
+    .then((response: Response) => response.json())
     .then((json: TimeResponse[]) => {
       times = json.map((time) => ({
         time: new Date(

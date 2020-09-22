@@ -21,7 +21,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import shallow from 'zustand/shallow';
 
-import Redux, { api } from 'redux/modules';
+import Redux, { api, AppReduxState } from 'redux/modules';
 
 import { COURSES } from 'statics/Types';
 
@@ -51,7 +51,7 @@ const FeedbackForm = ({ style }: Props) => {
     setResponse,
     sendEmail,
   } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       username: state.username,
       selectedUsername: state.selectedUsername,
       setSelectedUsername: state.setSelectedUsername,
@@ -280,6 +280,7 @@ const FeedbackForm = ({ style }: Props) => {
                 onChange={handleChange}
                 required
                 aria-required
+                aria-haspopup
                 autoComplete="false"
               />
             </div>

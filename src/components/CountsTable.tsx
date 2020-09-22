@@ -9,7 +9,7 @@ import Table from 'react-bootstrap/Table';
 
 import shallow from 'zustand/shallow';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 
 import { CourseCount } from 'redux/modules/Types';
 
@@ -20,7 +20,7 @@ const COUNT_ID = 'course_count';
 
 const CountsTable = () => {
   const { getCounts } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       getCounts: state.getCounts,
     }),
     shallow

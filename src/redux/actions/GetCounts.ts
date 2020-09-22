@@ -18,16 +18,18 @@ const getCounts = async (): Promise<CourseCount[]> => {
 
   const requestOptions = {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
   };
 
   await fetch(`${ServiceInterface.getPath()}/counts.php`, requestOptions)
-    .then((response) => response.json())
-    .then((json) => {
+    .then((response: Response) => response.json())
+    .then((json: CountResponse[]) => {
       courses = json;
     })
     .catch((error) => api.getState().setResponse(error));
-  return courses.map((avg) => ({
+  return courses.map((avg: CountResponse) => ({
     ...avg,
     count: Number.parseFloat(avg.count),
   }));

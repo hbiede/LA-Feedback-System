@@ -9,7 +9,7 @@ import shallow from 'zustand/shallow';
 
 import Badge from 'react-bootstrap/Badge';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 
 type Props = {
   style?: CSSProperties;
@@ -17,7 +17,7 @@ type Props = {
 
 const FeedbackHeader = ({ style }: Props) => {
   const { isAdmin } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       isAdmin: state.isAdmin,
     }),
     shallow

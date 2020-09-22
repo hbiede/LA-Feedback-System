@@ -16,7 +16,7 @@ import shallow from 'zustand/shallow';
 import { InteractionRecord, SORT_CHARS, SortConfig } from 'statics/Types';
 
 import getRowClass from 'components/TableRowColors';
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 import PaginationButtons, {
   RATINGS_PER_PAGE,
 } from 'components/PaginationButtons';
@@ -27,7 +27,7 @@ type Props = {
 
 const SummaryTable = ({ showLA }: Props) => {
   const { interactions } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       interactions: state.interactions,
     }),
     shallow

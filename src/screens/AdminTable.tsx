@@ -23,7 +23,7 @@ import shallow from 'zustand/shallow';
 
 import SentimentText from 'components/SentimentText';
 
-import Redux from 'redux/modules';
+import Redux, { AppReduxState } from 'redux/modules';
 import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
 import { COURSES } from 'statics/Types';
@@ -55,7 +55,7 @@ export default function AdminTable({ style }: Props) {
     course,
     setCourse,
   } = Redux(
-    (state) => ({
+    (state: AppReduxState) => ({
       interactions: state.interactions,
       getInteractions: state.getInteractions,
       setInteractions: state.setInteractions,
