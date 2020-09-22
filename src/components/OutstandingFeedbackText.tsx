@@ -18,9 +18,16 @@ const OutstandingFeedbackText = () => {
     shallow
   );
   const { outstanding } = interactions;
+  const ratingCount = interactions.ratings.length;
 
   return (
-    <>{outstanding > 0 && <p>{outstanding} unanswered feedback requests</p>}</>
+    <>
+      {outstanding > 0 && (
+        <p>
+          {outstanding} unanswered feedback requests ({ratingCount} requested)
+        </p>
+      )}
+    </>
   );
 };
 
