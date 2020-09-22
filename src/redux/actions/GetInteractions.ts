@@ -64,7 +64,7 @@ const getInteractions = async (
               : Number.parseFloat(intHolder.outstanding);
           interactions.sentiment =
             intHolder.sentiment === null
-              ? 0
+              ? null
               : Number.parseFloat(intHolder.sentiment);
           interactions.ratings = intHolder.ratings
             .map((rating) => ({

@@ -159,7 +159,7 @@ const LAAdminTable = () => {
               <tr className={getRowClass(row.rating)}>
                 <td>{row.rating.toFixed(2)}</td>
                 <td>{row.time.toLocaleString()}</td>
-                <td>{`${row.sentiment}%`}</td>
+                <td>{row.sentiment ? `${row.sentiment}%` : '---'}</td>
                 {isMultiCourseLA && <td>{row.course}</td>}
                 <td>{row.comment}</td>
               </tr>
