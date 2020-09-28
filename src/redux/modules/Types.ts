@@ -21,17 +21,21 @@ export type CourseCount = {
   course: string;
 };
 
+export const ALERT_CLASSES = [
+  'primary',
+  'secondary',
+  'success',
+  'danger',
+  'warning',
+  'info',
+  'light',
+  'dark',
+] as const;
+export type ResponseClass = typeof ALERT_CLASSES[number];
+
 export type ResponseMessage = {
-  class:
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'danger'
-    | 'warning'
-    | 'info'
-    | 'light'
-    | 'dark';
-  content: string | Element;
+  class: ResponseClass;
+  content: string | JSX.Element;
 };
 
 export type InteractionTime = {

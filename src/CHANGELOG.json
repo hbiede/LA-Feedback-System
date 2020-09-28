@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.6.0\n- Add announcement system",
     "## 1.5.0\n- Add comment sentiment tracking\n- Add feedback request count to admin page",
     "## 1.4.10\n- Prevent submitting sentences\n- Attach tooltip to username field",
     "## 1.4.9\n- Display feedback count on admin table",

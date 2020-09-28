@@ -331,4 +331,8 @@ const FeedbackForm = ({ style }: Props) => {
   );
 };
 
+FeedbackForm.defaultProps = {
+  style: {},
+};
+
 export default FeedbackForm;

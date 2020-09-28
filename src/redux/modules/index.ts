@@ -10,6 +10,7 @@ import SendEmail from 'redux/actions/SendEmail';
 
 import {
   CourseRest,
+  GetAnnouncements,
   GetCounts,
   GetInteractionBreakdowns,
   GetInteractionTimes,
@@ -17,6 +18,8 @@ import {
   GetRatings,
   GetUsername,
   NameRest,
+  SetAnnouncements,
+  ClearAnnouncements,
 } from 'redux/actions';
 
 import {
@@ -32,8 +35,12 @@ import {
 import ServiceInterface from 'statics/ServiceInterface';
 import { InteractionSummary, RatingRecord } from 'statics/Types';
 
+import { AnnouncementProps } from '../actions/SetAnnouncements';
+
 export type AppReduxState = {
+  clearAnnouncements: () => Promise<void>;
   course: string;
+  getAnnouncements: () => void;
   getCounts: () => Promise<CourseCount[]>;
   getCourse: () => void;
   getInteractionBreakdowns: () => Promise<InteractionBreakdown[]>;
@@ -41,7 +48,6 @@ export type AppReduxState = {
   getName: () => void;
   getRatings: () => void;
   getTimes: () => Promise<InteractionTime[]>;
-  getUsername: () => void;
   interactions: InteractionSummary;
   isAdmin: boolean;
   loading: boolean;
@@ -56,22 +62,25 @@ export type AppReduxState = {
     multiples?: boolean,
     interactionType?: string | null
   ) => void;
+  setAnnouncements: (props: AnnouncementProps) => Promise<number>;
   setCourse: (args: SetCourseArgs) => void;
   setInteractions: (ints: InteractionSummary) => void;
   setName: (args: SetNameArgs) => void;
   setResponse: (res: ResponseMessage | null) => void;
   setSelectedUsername: (args: SetSelectedUsernameArgs) => void;
+  startUp: () => void;
   username: string;
 };
 
 export const [useStore, api] = create<AppReduxState>((set, get) => ({
   loading: true,
   username: '',
-  getUsername: () => {
+  startUp: () => {
     GetUsername(set).then(() => {
       get().getName();
       get().getCourse();
       get().getInteractions();
+      get().getAnnouncements();
     });
   },
   name: '',
@@ -139,6 +148,18 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   getTimes: GetInteractionTimes,
   getCounts: GetCounts,
   getInteractionBreakdowns: GetInteractionBreakdowns,
+  getAnnouncements: () => {
+    GetAnnouncements(get).then((responseBody) => {
+      if (
+        (responseBody.content as string).length > 0 ||
+        (responseBody.content as JSX.Element)
+      ) {
+        set(() => ({ response: responseBody }));
+      }
+    });
+  },
+  setAnnouncements: SetAnnouncements,
+  clearAnnouncements: ClearAnnouncements,
 }));
 
 export default useStore;

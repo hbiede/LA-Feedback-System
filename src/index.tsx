@@ -11,7 +11,7 @@ import { api } from 'redux/modules';
 
 import App from './App';
 
-api.getState().getUsername();
+api.getState().startUp();
 
 ReactDOM.render(
   <React.StrictMode>

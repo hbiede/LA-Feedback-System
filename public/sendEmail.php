@@ -58,7 +58,8 @@ function send_email($obj, $interaction_id) {
 $obj = json_decode(file_get_contents('php://input'));
 if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isset($obj->{'course'})
     && $obj->{'studentCSE'} !== $obj->{'laCSE'}) {
-    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentCSE'}, $obj->{'course'}, $obj->{'interactionType'});
+    $student_username = str_replace('@cse.unl.edu', '',$obj->{'studentCSE'});
+    $interaction_id = add_interaction($obj->{'laCSE'}, $student_username, $obj->{'course'}, $obj->{'interactionType'});
 
     if ($interaction_id !== null && $interaction_id > 0 && mt_rand() / mt_getrandmax() < FEEDBACK_RATE &&
         !received_email_today($obj->{'studentCSE'})) {

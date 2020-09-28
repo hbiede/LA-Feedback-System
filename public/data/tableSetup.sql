@@ -7,6 +7,7 @@
 drop table if exists feedback;
 drop table if exists interactions;
 drop table if exists cse_usernames;
+drop table if exists announcements;
 
 create table cse_usernames
 (
@@ -54,6 +55,14 @@ create table feedback
     constraint feedback_interaction_fk
         foreign key (interaction_key) references interactions (interaction_key)
             on delete cascade
+);
+
+create table announcements
+(
+    announcement_key int                 not null primary key auto_increment,
+    course           varchar(20)  unique null,
+    class            varchar(20)         null, # Type of announcement ('primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark')
+    body             varchar(500)        null
 );
 
 CREATE VIEW interactions_readable AS

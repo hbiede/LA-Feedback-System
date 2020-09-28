@@ -156,4 +156,8 @@ const BreakdownTable = ({ style }: Props) => {
   );
 };
 
+BreakdownTable.defaultProps = {
+  style: {},
+};
+
 export default BreakdownTable;

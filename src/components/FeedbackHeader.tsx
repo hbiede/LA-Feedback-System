@@ -51,4 +51,8 @@ const FeedbackHeader = ({ style }: Props) => {
   );
 };
 
+FeedbackHeader.defaultProps = {
+  style: {},
+};
+
 export default FeedbackHeader;

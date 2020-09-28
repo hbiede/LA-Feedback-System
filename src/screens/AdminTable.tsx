@@ -42,7 +42,7 @@ type LA = {
   name?: string;
 };
 
-export default function AdminTable({ style }: Props) {
+const AdminTable = ({ style }: Props) => {
   const {
     interactions,
     getInteractions,
@@ -236,4 +236,10 @@ export default function AdminTable({ style }: Props) {
       <LAAdminTable />
     </div>
   );
-}
+};
+
+AdminTable.defaultProps = {
+  style: {},
+};
+
+export default AdminTable;

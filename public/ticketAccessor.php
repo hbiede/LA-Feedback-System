@@ -46,6 +46,9 @@ function responseForTicket($ticket) {
 
 $obj = json_decode(file_get_contents('php://input'));
 if (isset($obj) && isset($obj->{'ticket'})) {
+    if (isset($obj->{'service'}) && $obj->{'service'} !== $thisService) {
+        $thisService = $obj->{'service'};
+    }
     if ($response = responseForTicket($obj->{'ticket'})) {
         $xml = simplexml_load_string($response);
         $user = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0];

@@ -21,7 +21,7 @@ const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ ticket }),
+    body: JSON.stringify({ ticket, service: ServiceInterface.getPath() }),
   };
   await fetch(ticketService, requestConfig)
     .then((response: Response) => response.text())

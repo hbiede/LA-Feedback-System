@@ -22,7 +22,10 @@ import SettingsForm from 'components/SettingsForm';
 
 import CountsTable from 'components/CountsTable';
 
+import AnnouncementEditor from 'components/AnnouncementEditor';
+
 import changelog from '../CHANGELOG.json';
+import ServiceInterface from '../statics/ServiceInterface';
 
 type Props = {
   adminAsLA: boolean;
@@ -53,6 +56,9 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   );
   const [showingChangelog, setChangelogVisibility] = useState(false);
   const [showingStats, setStatsVisibility] = useState(false);
+  const [showingAnnouncementEditor, setAnnouncementEditorVisibility] = useState(
+    false
+  );
 
   const hideSettings = useCallback(() => {
     setSettingsVisibility(false);
@@ -65,6 +71,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setChangelogVisibility(false);
       setStatsVisibility(false);
       setSettingsVisibility(true);
+      setAnnouncementEditorVisibility(false);
     }
   }, [showingSettings, setSettingsVisibility, setChangelogVisibility]);
 
@@ -79,6 +86,7 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setSettingsVisibility(false);
       setStatsVisibility(false);
       setChangelogVisibility(true);
+      setAnnouncementEditorVisibility(false);
     }
   }, [showingChangelog, setChangelogVisibility, setSettingsVisibility]);
 
@@ -93,8 +101,24 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
       setSettingsVisibility(false);
       setChangelogVisibility(false);
       setStatsVisibility(true);
+      setAnnouncementEditorVisibility(false);
     }
   }, [showingStats]);
+
+  const hideAnnouncementEditor = useCallback(() => {
+    setAnnouncementEditorVisibility(false);
+  }, [setAnnouncementEditorVisibility]);
+
+  const toggleAnnouncementEditor = useCallback(() => {
+    if (showingAnnouncementEditor) {
+      setAnnouncementEditorVisibility(false);
+    } else {
+      setSettingsVisibility(false);
+      setChangelogVisibility(false);
+      setStatsVisibility(false);
+      setAnnouncementEditorVisibility(true);
+    }
+  }, [showingAnnouncementEditor]);
 
   const toggleAdminStatus = useCallback(() => {
     if (!isAdmin) return;
@@ -103,7 +127,15 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
     hideSettings();
     hideChangelog();
     hideStats();
-  }, [isAdmin, toggleAdminAsLA, hideSettings, hideChangelog, hideStats]);
+    hideAnnouncementEditor();
+  }, [
+    isAdmin,
+    toggleAdminAsLA,
+    hideSettings,
+    hideChangelog,
+    hideStats,
+    hideAnnouncementEditor,
+  ]);
 
   if (loading) return null;
 
@@ -119,7 +151,11 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
         role="navigation"
       >
         <Navbar.Brand style={{ marginBottom: 0 }}>
-          {`LA Feedback${isAdmin ? ' Admin' : ''}`}
+          {`LA Feedback${isAdmin ? ' Admin' : ''}${
+            ServiceInterface.getPath().toLowerCase().includes('test')
+              ? ' (Test)'
+              : ''
+          }`}
         </Navbar.Brand>
         <Navbar.Toggle aria-controls={NAVBAR_ID} />
 
@@ -176,17 +212,30 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
               </NavDropdown.Item>
             </NavDropdown>
             {isAdmin && (
-              <Nav.Item>
-                <Button
-                  style={buttonStyle}
-                  role="button"
-                  variant="dark"
-                  type="button"
-                  onClick={toggleAdminStatus}
-                >
-                  {adminAsLA ? 'Admin Panel' : 'LA Page'}
-                </Button>
-              </Nav.Item>
+              <>
+                <Nav.Item>
+                  <Button
+                    style={buttonStyle}
+                    role="button"
+                    variant="dark"
+                    type="button"
+                    onClick={toggleAdminStatus}
+                  >
+                    {adminAsLA ? 'Admin Panel' : 'LA Page'}
+                  </Button>
+                </Nav.Item>
+                <Nav.Item>
+                  <Button
+                    style={buttonStyle}
+                    role="button"
+                    variant="dark"
+                    type="button"
+                    onClick={toggleAnnouncementEditor}
+                  >
+                    Announcement Editor
+                  </Button>
+                </Nav.Item>
+              </>
             )}
             {(!isAdmin || adminAsLA) && (
               <Nav.Item>
@@ -243,6 +292,27 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
             <span aria-hidden="true">×</span>
           </button>
           <SettingsForm closeModal={hideSettings} />
+        </Modal>
+      )}
+      {isAdmin && (
+        <Modal
+          isOpen={showingAnnouncementEditor}
+          onRequestClose={hideAnnouncementEditor}
+          contentLabel="Announcement Editor"
+          style={MODAL_STYLE}
+        >
+          <button
+            type="button"
+            className="close"
+            data-dismiss="modal"
+            aria-label="Close"
+            onClick={hideAnnouncementEditor}
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+          <div style={{ marginTop: 25 }}>
+            <AnnouncementEditor />
+          </div>
         </Modal>
       )}
       <Modal
