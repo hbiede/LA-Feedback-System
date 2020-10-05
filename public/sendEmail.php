@@ -61,7 +61,8 @@ if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isse
     $student_username = str_replace('@cse.unl.edu', '',$obj->{'studentCSE'});
     $interaction_id = add_interaction($obj->{'laCSE'}, $student_username, $obj->{'course'}, $obj->{'interactionType'});
 
-    if ($interaction_id !== null && $interaction_id > 0 && mt_rand() / mt_getrandmax() < FEEDBACK_RATE &&
+    if ($interaction_id !== null && $interaction_id > 0 &&
+        ($obj->{'interactionType'} === 'cohort meeting' || mt_rand() / mt_getrandmax() < FEEDBACK_RATE) &&
         !received_email_today($obj->{'studentCSE'})) {
         send_email($obj, $interaction_id);
     } else {
