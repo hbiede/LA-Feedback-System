@@ -71,7 +71,6 @@ const AnnouncementEditor = () => {
 
   const handleSubmit = useCallback(() => {
     if (currentBody && alertType && courseRecord) {
-      console.log('sending');
       setAnnouncements({
         body: currentBody,
         class: alertType,
@@ -84,7 +83,6 @@ const AnnouncementEditor = () => {
         }
       });
     } else {
-      console.log('not sending');
       setHeading('Unable to send. Please fill out all values');
     }
   }, [alertType, courseRecord, currentBody, setAnnouncements]);

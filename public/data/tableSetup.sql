@@ -83,6 +83,7 @@ SELECT IFNULL(name, username)               AS 'la',
        rating,
        comment,
        IFNULL(CONCAT(sentiment, '%'), null) AS sentiment,
+       interaction_type,
        time_of_interaction
 FROM feedback
          LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key

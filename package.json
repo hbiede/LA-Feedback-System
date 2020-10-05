@@ -65,7 +65,7 @@
     "test": "react-scripts test",
     "eslint": "eslint --fix ./src --ext .js,.jsx,.ts,.tsx",
     "prettify": "npx prettier --write .",
-    "lc": "git ls-files | egrep \".*\\.(tsx?)|(html)|(php)\" | egrep -v \"data/lib\" | xargs wc -l"
+    "lc": "git ls-files | egrep \".*\\.(tsx?)|(html)|(php)\" | egrep -v \"data/lib\" | xargs wc -l | sort"
   },
   "eslintConfig": {
     "extends": "react-app"
