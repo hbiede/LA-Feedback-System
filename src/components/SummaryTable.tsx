@@ -21,6 +21,8 @@ import PaginationButtons, {
   RATINGS_PER_PAGE,
 } from 'components/PaginationButtons';
 
+import ServiceInterface from '../statics/ServiceInterface';
+
 type Props = {
   showLA: (la: InteractionRecord) => void;
 };
@@ -218,6 +220,14 @@ const SummaryTable = ({ showLA }: Props) => {
         itemCount={getData.length}
         setActivePage={setActivePage}
       />
+      <Button
+        href={`${ServiceInterface.getPath()}/feedbackDownload.php`}
+        type="button"
+        variant="primary"
+        style={{ marginBottom: 20 }}
+      >
+        Download Feedback as CSV
+      </Button>
     </>
   );
 };

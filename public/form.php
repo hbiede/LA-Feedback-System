@@ -345,8 +345,9 @@ if (!can_give_feedback(get_id())) {
             <button type="submit" onclick="validateSubmit();">Send Feedback</button>
         </div>
         <div class="footer-link">
-            <a href="http://cse.unl.edu" target="_blank">Learning Assistant
-                Program, University of Nebraska-Lincoln — CSE Department</a>
+            <a href="http://cse.unl.edu/learning-assistant-program" target="_blank">Learning Assistant Program</a>,
+            <a href="http://unl.edu" target="_blank">University of Nebraska-Lincoln</a> —
+            <a href="http://cse.unl.edu" target="_blank">CSE Department</a>
         </div>
     </div>
 </div>

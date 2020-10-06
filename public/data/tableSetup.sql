@@ -59,10 +59,10 @@ create table feedback
 
 create table announcements
 (
-    announcement_key int                 not null primary key auto_increment,
-    course           varchar(20)  unique null,
-    class            varchar(20)         null, # Type of announcement ('primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark')
-    body             varchar(500)        null
+    announcement_key int                not null primary key auto_increment,
+    course           varchar(20) unique null,
+    class            varchar(20)        null, # Type of announcement ('primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark')
+    body             varchar(500)       null
 );
 
 CREATE VIEW interactions_readable AS
@@ -91,12 +91,24 @@ FROM feedback
 ORDER BY username, time_of_interaction;
 
 CREATE VIEW outstanding_feedback_req AS
-SELECT 'outstanding feedback requests' AS 'category', COUNT(*) AS 'count'
+SELECT 'outstanding feedback requests'                            AS 'category',
+       CONCAT(COUNT(*), ' (', (SELECT (SELECT COUNT(*) AS 'count'
+                                       FROM interactions
+                                       WHERE seeking_feedback = 1
+                                         AND has_received_feedback = 0) / COUNT(*) * 100
+                               FROM interactions
+                               WHERE seeking_feedback = 1), '%)') AS 'count'
 FROM interactions
 WHERE seeking_feedback = 1
   AND has_received_feedback = 0
 UNION
-SELECT 'completed feedback requests' AS 'category', COUNT(*) AS 'count'
+SELECT 'completed feedback requests'                              AS 'category',
+       CONCAT(COUNT(*), ' (', (SELECT (SELECT COUNT(*)
+                                       FROM interactions
+                                       WHERE seeking_feedback = 1
+                                         AND has_received_feedback = 1) / COUNT(*) * 100
+                               FROM interactions
+                               WHERE seeking_feedback = 1), '%)') AS 'count'
 FROM interactions
 WHERE seeking_feedback = 1
   AND has_received_feedback = 1
