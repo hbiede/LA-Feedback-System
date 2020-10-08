@@ -81,6 +81,7 @@ ORDER BY time_of_interaction;
 CREATE VIEW feedback_readable AS
 SELECT IFNULL(name, username)               AS 'la',
        rating,
+       i.course,
        comment,
        IFNULL(CONCAT(sentiment, '%'), null) AS sentiment,
        interaction_type,
