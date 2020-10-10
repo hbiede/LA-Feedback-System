@@ -25,18 +25,18 @@ const clearAnnouncements = async (): Promise<void> => {
     body: JSON.stringify({ clear: true }),
   };
 
-  await fetch(
-    `${ServiceInterface.getPath()}/announcements.php`,
-    requestOptions
-  ).catch((error) => {
-    const { setResponse } = Redux(
-      (state) => ({
-        setResponse: state.setResponse,
-      }),
-      shallow
-    );
-    setResponse(error);
-  });
+  await fetch(`${ServiceInterface.getPath()}/announcements.php`, requestOptions)
+    // eslint-disable-next-line no-alert
+    .then(() => alert('Announcements cleared'))
+    .catch((error) => {
+      const { setResponse } = Redux(
+        (state) => ({
+          setResponse: state.setResponse,
+        }),
+        shallow
+      );
+      setResponse(error);
+    });
 };
 
 export default clearAnnouncements;

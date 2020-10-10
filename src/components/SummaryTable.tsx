@@ -135,12 +135,6 @@ const SummaryTable = ({ showLA }: Props) => {
     [sortConfig, setSortConfig]
   );
 
-  const clearAnnouncementsCallback = useCallback(
-    // eslint-disable-next-line no-alert
-    () => alert('Announcements cleared'),
-    []
-  );
-
   const { column, order } = sortConfig;
   const clearableSearch = searchTerm.length > 0;
   return (
@@ -228,7 +222,6 @@ const SummaryTable = ({ showLA }: Props) => {
       />
       <Button
         href={`${ServiceInterface.getPath()}/feedbackDownload.php`}
-        onClick={clearAnnouncementsCallback}
         type="button"
         variant="primary"
         style={{ marginBottom: 20 }}
