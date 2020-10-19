@@ -41,6 +41,18 @@ create table interactions
             on delete cascade
 );
 
+create table logins
+(
+    login_key           int auto_increment unique primary key,
+    la_username_key     int                                    not null,
+    time_of_interaction timestamp  default current_timestamp() not null,
+    constraint interactions_interaction_key_uindex
+        unique (login_key),
+    constraint interactions_la_fk
+        foreign key (la_username_key) references cse_usernames (username_key)
+            on delete cascade
+);
+
 create table feedback
 (
     feedback_key     int auto_increment unique primary key,
@@ -119,6 +131,13 @@ UNION
 SELECT 'total feedback requests' AS 'category', COUNT(*) AS 'count'
 FROM interactions
 WHERE seeking_feedback = 1;
+
+CREATE VIEW logins_readable AS
+SELECT time_of_interaction,
+       IFNULL(cul.name, cul.username) AS 'la'
+FROM logins l
+         LEFT JOIN cse_usernames cul on l.la_username_key = cul.username_key
+ORDER BY time_of_interaction;
 
 CREATE VIEW course_interactions AS
 SELECT course, COUNT(*) AS 'count'

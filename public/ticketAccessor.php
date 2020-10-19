@@ -17,6 +17,28 @@ ini_set('error_log', './log/ticket.log');
 $casService = 'https://cse-apps.unl.edu/cas';
 $thisService = 'https://cse.unl.edu/~learningassistants/LA-Feedback';
 
+function addLogin($username) {
+    $conn = get_connection();
+    if ($conn !== null) {
+        $conn->begin_transaction();
+        $ps = $conn->prepare("INSERT INTO logins (la_username_key) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?));");
+        if ($ps) {
+            $ps->bind_param("s", $username);
+            $ps->execute();
+            $return_val = $ps->insert_id;
+            $conn->commit();
+
+            $ps->close();
+            $conn->close();
+            return $return_val;
+        } else {
+            $conn->close();
+            error_log("Failed to build prepped statement for adding CSE username $username");
+        }
+    }
+    return null;
+}
+
 /*
 * Returns the CAS response if the ticket is valid, and false if not.
 */
@@ -29,6 +51,7 @@ function responseForTicket($ticket) {
     $response = file_get_contents($casGet);
 
     if (preg_match('/cas:authenticationSuccess/', $response)) {
+        addLogin($response);
         return $response;
     }
     else if (strlen(trim($response)) > 0){
