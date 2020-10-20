@@ -5,6 +5,8 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
+require_once 'sqlManager.php';
+
 ini_set('error_log', './log/ticket.log');
 
 // Call with a POST call with a JSON body as follows:
@@ -25,18 +27,15 @@ function addLogin($username) {
         if ($ps) {
             $ps->bind_param("s", $username);
             $ps->execute();
-            $return_val = $ps->insert_id;
             $conn->commit();
 
             $ps->close();
             $conn->close();
-            return $return_val;
         } else {
             $conn->close();
-            error_log("Failed to build prepped statement for adding CSE username $username");
+            error_log("Failed to build prepped statement for login for $username");
         }
     }
-    return null;
 }
 
 /*
@@ -72,6 +71,7 @@ if (isset($obj) && isset($obj->{'ticket'})) {
     if (isset($obj->{'service'}) && $obj->{'service'} !== $thisService) {
         $thisService = $obj->{'service'};
     }
+
     if ($response = responseForTicket($obj->{'ticket'})) {
         $xml = simplexml_load_string($response);
         $user = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0];
