@@ -28,13 +28,11 @@ function addLogin($username) {
             $ps->bind_param("s", $username);
             $ps->execute();
             $conn->commit();
-
             $ps->close();
-            $conn->close();
         } else {
-            $conn->close();
             error_log("Failed to build prepped statement for login for $username");
         }
+        $conn->close();
     }
 }
 
@@ -50,7 +48,6 @@ function responseForTicket($ticket) {
     $response = file_get_contents($casGet);
 
     if (preg_match('/cas:authenticationSuccess/', $response)) {
-        addLogin($response);
         return $response;
     }
     else if (strlen(trim($response)) > 0){
@@ -75,7 +72,7 @@ if (isset($obj) && isset($obj->{'ticket'})) {
     if ($response = responseForTicket($obj->{'ticket'})) {
         $xml = simplexml_load_string($response);
         $user = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0];
-
+        addLogin($user);
         echo $user;
     } else {
         echo 'INVALID_TICKET_KEY';
