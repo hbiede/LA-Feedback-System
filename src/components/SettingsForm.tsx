@@ -4,7 +4,13 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 
 import Form from 'react-bootstrap/Form';
@@ -108,7 +114,7 @@ const SettingsForm = ({ closeModal }: Props) => {
   );
 
   const handleSubmit = useCallback(
-    (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    (event: FormEvent<HTMLElement>) => {
       setValidated(true);
       if (hasSelectedUsername) {
         const trimmedName = nameRecord.trim();

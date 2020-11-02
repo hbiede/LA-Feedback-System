@@ -20,6 +20,7 @@ $casService = 'https://cse-apps.unl.edu/cas';
 $thisService = 'https://cse.unl.edu/~learningassistants/LA-Feedback';
 
 function addLogin($username) {
+    error_log("Attempting to log $username");
     $conn = get_connection();
     if ($conn !== null) {
         $conn->begin_transaction();
