@@ -62,7 +62,8 @@ if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isse
     $interaction_id = add_interaction($obj->{'laCSE'}, $student_username, $obj->{'course'}, $obj->{'interactionType'});
 
     if ($interaction_id !== null && $interaction_id > 0 &&
-        ($obj->{'interactionType'} === 'cohort meeting' || mt_rand() / mt_getrandmax() < FEEDBACK_RATE) &&
+        ($obj->{'interactionType'} === 'cohort meeting' || has_been_a_week($obj->{'laCSE'}) ||
+            mt_rand() / mt_getrandmax() < FEEDBACK_RATE) &&
         !received_email_today($obj->{'studentCSE'})) {
         send_email($obj, $interaction_id);
     } else {

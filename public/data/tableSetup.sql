@@ -8,8 +8,15 @@ drop table if exists feedback;
 drop table if exists interactions;
 drop table if exists cse_usernames;
 drop table if exists announcements;
+drop view if exists course_interactions;
+drop view if exists feedback_readable;
+drop view if exists interactions_readable;
+drop view if exists la_interactions;
+drop view if exists logins_readable;
+drop view if exists outstanding_feedback_req;
+drop view if exists weekly_interactions;
 
-create table cse_usernames
+CREATE TABLE cse_usernames
 (
     username_key int auto_increment unique primary key,
     username     varchar(20) not null,
@@ -21,7 +28,7 @@ create table cse_usernames
         unique (username)
 );
 
-create table interactions
+CREATE TABLE interactions
 (
     interaction_key       int auto_increment unique primary key,
     la_username_key       int                                    not null,
@@ -41,11 +48,11 @@ create table interactions
             on delete cascade
 );
 
-create table logins
+CREATE TABLE logins
 (
     login_key           int auto_increment unique primary key,
-    la_username_key     int                                    not null,
-    time_of_interaction timestamp  default current_timestamp() not null,
+    la_username_key     int                                   not null,
+    time_of_interaction timestamp default current_timestamp() not null,
     constraint interactions_interaction_key_uindex
         unique (login_key),
     constraint interactions_la_fk
@@ -53,7 +60,7 @@ create table logins
             on delete cascade
 );
 
-create table feedback
+CREATE TABLE feedback
 (
     feedback_key     int auto_increment unique primary key,
     interaction_key  int                  not null,
@@ -69,7 +76,7 @@ create table feedback
             on delete cascade
 );
 
-create table announcements
+CREATE TABLE announcements
 (
     announcement_key int                not null primary key auto_increment,
     course           varchar(20) unique null,
@@ -146,3 +153,30 @@ GROUP BY course
 UNION
 SELECT 'total', COUNT(*) AS 'count'
 FROM interactions;
+
+CREATE VIEW weekly_interactions AS
+SELECT IFNULL(cu.name, cu.username) AS 'name',
+       cu.course                    AS 'course',
+       COUNT(0)                     AS 'interactions',
+       AVG(f.rating)                AS 'avg_rating'
+FROM interactions
+         LEFT JOIN cse_usernames cu ON cu.username_key = interactions.la_username_key
+         LEFT JOIN feedback f ON interactions.interaction_key = f.interaction_key
+WHERE interactions.time_of_interaction >= curdate() - INTERVAL 7 DAY
+GROUP BY cu.username
+ORDER BY cu.username;
+
+CREATE VIEW la_interactions AS
+SELECT IFNULL(cul.name, cul.username) AS 'la',
+       COUNT(i.interaction_key)       AS 'count',
+       MAX(time_of_interaction)       AS 'latest',
+       COUNT(f.interaction_key)       AS 'pieces of feedback',
+       AVG(f.rating)                  AS 'average feedback'
+FROM interactions i
+         LEFT JOIN cse_usernames cul on la_username_key = cul.username_key
+         LEFT JOIN feedback f on i.interaction_key = f.interaction_key
+GROUP BY cul.username
+UNION
+SELECT 'total', COUNT(*) AS 'count', MAX(time_of_interaction), COUNT(f.interaction_key), AVG(f.rating)
+FROM interactions
+         LEFT JOIN feedback f on interactions.interaction_key = f.interaction_key;

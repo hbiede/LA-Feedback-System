@@ -206,6 +206,33 @@ function update_interaction_for_feedback($interaction_id) {
     }
 }
 
+function has_been_a_week($username) {
+    $conn = get_connection();
+    if ($conn !== null) {
+        $ps = $conn->prepare("SELECT COUNT(*) AS 'count' FROM interactions " .
+            "LEFT JOIN cse_usernames cu ON cu.username_key = interactions.la_username_key WHERE cu.username = ? " .
+            "AND time_of_interaction > (CURRENT_DATE() - INTERVAL 7 DAY)");
+        if ($ps) {
+            $ps->bind_param("s", $username);
+            $ps->execute();
+
+            $result = $ps->get_result()->fetch_assoc()['count'];
+            if ($result !== null) {
+
+                $ps->close();
+                $conn->close();
+                return $result === 0;
+            }
+        } else {
+            error_log("Failed to build prepped statement for checking if $username has recent interactions");
+        }
+        $ps->close();
+        $conn->close();
+        return false;
+    }
+    return false;
+}
+
 function received_email_today($student_cse) {
     $conn = get_connection();
     if ($conn !== null && $student_cse !== null) {
