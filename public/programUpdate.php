@@ -6,6 +6,24 @@ include_once 'sqlManager.php';
 
 ini_set('error_log', './log/programUpdate.log');
 
+function should_update($days = DAYS) {
+    $conn = get_connection();
+    $ps = $conn->prepare("SELECT COUNT(*) AS 'count' FROM interactions WHERE time_of_interaction >= " .
+        "(CURRENT_DATE() - INTERVAL ? DAY);");
+    $count = 0;
+    if ($ps) {
+        $ps->bind_param('i', $days);
+        $ps->execute();
+        $result = $ps->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $count += $row['count'];
+        }
+        $ps->close();
+    }
+    $conn->close();
+    return $count > 0;
+}
+
 function get_interaction_counts($days) {
     $conn = get_connection();
     $ps = $conn->prepare("SELECT course, COUNT(*) AS 'count' FROM interactions WHERE time_of_interaction >= " .
@@ -102,13 +120,13 @@ function send_email($report) {
 
     $subject = 'LA Feedback Update';
     $body = shell_exec('cat ./data/programUpdate.txt') . $report;
-    if (!$body || !mail('learningassistants@cse.unl.edu', $subject, $body, $headers) |
+    if (!$body || !mail('learningassistants@cse.unl.edu', $subject, $body, $headers) ||
         !mail('hbiede@cse.unl.edu', $subject, $body, $headers)) {
         error_log('Failed to send email');
     }
 }
 
 $update_string = get_update_string();
-if (strlen($update_string) > 0) {
+if (should_update() && strlen($update_string) > 0) {
     send_email($update_string);
 }
