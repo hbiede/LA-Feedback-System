@@ -15,6 +15,7 @@ drop view if exists la_interactions;
 drop view if exists logins_readable;
 drop view if exists outstanding_feedback_req;
 drop view if exists weekly_interactions;
+drop view if exists interaction_type_readable;
 
 CREATE TABLE cse_usernames
 (
@@ -180,3 +181,15 @@ UNION
 SELECT 'total', COUNT(*) AS 'count', MAX(time_of_interaction), COUNT(f.interaction_key), AVG(f.rating)
 FROM interactions
          LEFT JOIN feedback f on interactions.interaction_key = f.interaction_key;
+
+CREATE VIEW interaction_type_readable AS
+SELECT interaction_type,
+       COUNT(*)                                                          AS 'count',
+       CONCAT(COUNT(*) / (SELECT COUNT(*) FROM interactions) * 100, '%') AS 'percent'
+FROM interactions
+GROUP BY interaction_type
+UNION
+SELECT '---', '---', '---'
+UNION
+SELECT 'total', COUNT(*), '100%'
+FROM interactions;
