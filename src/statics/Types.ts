@@ -16,6 +16,7 @@ export type InteractionRecord = {
 };
 
 export type InteractionSummary = {
+  isAdmin: boolean;
   outstanding: number;
   ratings: InteractionRecord[];
   sentiment: number | null;

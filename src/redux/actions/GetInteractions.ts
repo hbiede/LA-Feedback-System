@@ -22,6 +22,7 @@ type InteractionResponseRecord = {
 };
 
 type InteractionResponseSummary = {
+  isAdmin: boolean;
   outstanding: string | null;
   ratings: InteractionResponseRecord[];
   sentiment: string | null;
@@ -33,6 +34,7 @@ const getInteractions = async (
 ): Promise<InteractionSummary> => {
   const { username, setResponse } = state();
   let interactions: InteractionSummary = {
+    isAdmin: false,
     outstanding: 0,
     ratings: [],
     sentiment: -1,
@@ -51,6 +53,7 @@ const getInteractions = async (
       .then((json) => {
         if (Array.isArray(json)) {
           interactions = {
+            isAdmin: false,
             outstanding: 0,
             ratings: json,
             sentiment: -1,
@@ -58,10 +61,14 @@ const getInteractions = async (
           };
         } else {
           const intHolder: InteractionResponseSummary = json;
+          interactions.isAdmin = intHolder.isAdmin;
           interactions.time =
-            intHolder.time === null ? 0 : Number.parseFloat(intHolder.time);
+            intHolder.time === null || intHolder.time.startsWith('-')
+              ? 0
+              : Number.parseFloat(intHolder.time);
           interactions.outstanding =
-            intHolder.outstanding === null
+            intHolder.outstanding === null ||
+            intHolder.outstanding.startsWith('-')
               ? 0
               : Number.parseFloat(intHolder.outstanding);
           interactions.sentiment =

@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 1.7.0\n- Add interaction counter",
     "## 1.6.1\n- Allow admins to download feedback as CSV",
     "## 1.6.0\n- Add announcement system",
     "## 1.5.0\n- Add comment sentiment tracking\n- Add feedback request count to admin page",

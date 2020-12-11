@@ -65,7 +65,14 @@ function App() {
                     <h4 style={styles.appHeading}>
                       LA Feedback Admin Interface
                     </h4>
-                    <Collapse in={response !== null}>
+                    <Collapse
+                      in={
+                        response !== null &&
+                        response.content !== null &&
+                        (typeof response.content !== 'string' ||
+                          response.content.trim() !== '')
+                      }
+                    >
                       <Alert
                         variant={response?.class}
                         id="responseDiv"

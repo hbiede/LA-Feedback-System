@@ -33,10 +33,10 @@ const getAnnouncements = async (
   await fetch(`${ServiceInterface.getPath()}/announcements.php`, requestOptions)
     .then((response: Response) => response.json())
     .then((json) => {
-      if (json.body) {
+      if (json.body && json.body.toString().trim().length > 0) {
         responseObj = {
           class: (json.class as ResponseMessage['class']) ?? 'info',
-          content: <ReactMarkdown source={json.body as string} />,
+          content: <ReactMarkdown source={json.body.toString().trim()} />,
         };
       }
     })

@@ -70,7 +70,7 @@ function get_sentiment() {
         $ps->close();
     }
     $conn->close();
-    return $result;
+    return $result == null ? -1 : $result;
 }
 
 function get_time_to_complete() {
@@ -83,7 +83,7 @@ function get_time_to_complete() {
         $ps->close();
     }
     $conn->close();
-    return $result;
+    return $result == null ? -1 : $result;
 }
 
 function get_outstanding_feedback() {
@@ -157,6 +157,7 @@ if ($isAdmin && $la !== null) {
     echo json_encode(get_ratings($la));
 } else if ($isAdmin) {
     $response = [
+        'isAdmin' => true,
         'ratings' => get_interactions(),
         'time' => get_time_to_complete(),
         'outstanding' => get_outstanding_feedback(),

@@ -48,6 +48,7 @@ export type AppReduxState = {
   getName: () => void;
   getRatings: () => void;
   getTimes: () => Promise<InteractionTime[]>;
+  incrementSessionInteractions: (student: string) => void;
   interactions: InteractionSummary;
   isAdmin: boolean;
   loading: boolean;
@@ -62,6 +63,7 @@ export type AppReduxState = {
     multiples?: boolean,
     interactionType?: string | null
   ) => void;
+  sessionInteractions: Record<string, number>;
   setAnnouncements: (props: AnnouncementProps) => Promise<number>;
   setCourse: (args: SetCourseArgs) => void;
   setInteractions: (ints: InteractionSummary) => void;
@@ -99,15 +101,22 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
     }
   },
   isAdmin: false,
-  interactions: { outstanding: 0, ratings: [], sentiment: -1, time: -1 },
+  interactions: {
+    isAdmin: false,
+    outstanding: 0,
+    ratings: [],
+    sentiment: -1,
+    time: -1,
+  },
+  sessionInteractions: {},
+  incrementSessionInteractions: (student: string) =>
+    set(() => ({
+      sessionInteractions: { ...get().sessionInteractions, [student]: true },
+    })),
   getInteractions: () => {
     GetInteractions(get).then((ints) => {
-      const isAdmin =
-        ints.ratings.length > 0 &&
-        ints.time !== null &&
-        !Number.isNaN(ints.time) &&
-        Number.isFinite(ints.time);
-      const { name, course } = api.getState();
+      const { isAdmin } = ints;
+      const { name, course } = get();
       set(() => ({
         interactions: ints,
         isAdmin,

@@ -1,10 +1,8 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import React, { ChangeEvent, useCallback, useState } from 'react';
 
 import SimpleMDE from 'react-simplemde-editor';
 
 import ReactMarkdown from 'react-markdown';
-
-import hljs from 'highlight.js';
 
 import Alert from 'react-bootstrap/Alert';
 import Collapse from 'react-bootstrap/Collapse';
@@ -29,8 +27,6 @@ const COURSE_LABEL = 'Course';
 const CLASS_ID = 'AnnouncementAlertClassSelectionDropdown';
 const CLASS_LABEL = 'Alert Type';
 
-const CODE_REGEX = new RegExp(/```\w.*```/m).compile();
-
 const AnnouncementEditor = () => {
   const { clearAnnouncements, setAnnouncements } = Redux(
     (state: AppReduxState) => ({
@@ -45,12 +41,6 @@ const AnnouncementEditor = () => {
   const [alertType, setAlertType] = useState<string | null>(null);
   const disabled = courseRecord === null || currentBody.trim().length === 0;
   const [heading, setHeading] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (CODE_REGEX.test(currentBody)) {
-      hljs.initHighlighting();
-    }
-  }, [currentBody]);
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

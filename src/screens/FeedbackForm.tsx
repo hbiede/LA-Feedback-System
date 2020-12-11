@@ -9,17 +9,20 @@ import React, {
   CSSProperties,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
 import Button from 'react-bootstrap/Button';
+import Collapse from 'react-bootstrap/Collapse';
 import Form from 'react-bootstrap/Form';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Row from 'react-bootstrap/Row';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import shallow from 'zustand/shallow';
+
+import OverlayTrigger from 'react-bootstrap/esm/OverlayTrigger';
 
 import Redux, { api, AppReduxState } from 'redux/modules';
 
@@ -48,6 +51,8 @@ const FeedbackForm = ({ style }: Props) => {
     setSelectedUsername,
     course,
     isAdmin,
+    incrementSessionInteractions,
+    sessionInteractions,
     setResponse,
     sendEmail,
   } = Redux(
@@ -57,6 +62,8 @@ const FeedbackForm = ({ style }: Props) => {
       setSelectedUsername: state.setSelectedUsername,
       course: state.course,
       isAdmin: state.isAdmin,
+      incrementSessionInteractions: state.incrementSessionInteractions,
+      sessionInteractions: state.sessionInteractions,
       setResponse: state.setResponse,
       sendEmail: state.sendEmail,
     }),
@@ -151,14 +158,15 @@ const FeedbackForm = ({ style }: Props) => {
         ) {
           setResponse({ class: 'danger', content: 'Invalid username(s)' });
         } else {
-          students.forEach((student: string) =>
+          students.forEach((student: string) => {
+            incrementSessionInteractions(student);
             sendEmail(
               student,
               courseRecord,
               students.length > 1,
               interactionTypeRecord
-            )
-          );
+            );
+          });
 
           setStudentCSE('');
         }
@@ -193,9 +201,31 @@ const FeedbackForm = ({ style }: Props) => {
       interactionTypeRecord,
       usernameRecord,
       isAdmin,
+      incrementSessionInteractions,
       setSelectedUsername,
       sendEmail,
     ]
+  );
+
+  const [isSessionTextOpen, setSessionTextOpen] = useState(false);
+  const sessionCountText = useMemo(
+    () =>
+      `Student interactions this session: ${
+        Object.keys(sessionInteractions).length
+      }`,
+    [sessionInteractions]
+  );
+  const expandedSessionCountText = useMemo(() => {
+    const students = Object.keys(sessionInteractions).sort((a, b) =>
+      a.localeCompare(b)
+    );
+    return `Student${students.length > 0 ? 's' : ''} helped:\n${students.join(
+      ', '
+    )}`;
+  }, [sessionInteractions]);
+  const toggleSessionCollapsable = useCallback(
+    () => setSessionTextOpen(!isSessionTextOpen),
+    [isSessionTextOpen]
   );
 
   return (
@@ -327,6 +357,15 @@ const FeedbackForm = ({ style }: Props) => {
           </div>
         </FormGroup>
       </Form>
+      <Button
+        onClick={toggleSessionCollapsable}
+        aria-expanded={isSessionTextOpen}
+      >
+        {sessionCountText}
+      </Button>
+      <Collapse in={isSessionTextOpen}>
+        <div>{expandedSessionCountText}</div>
+      </Collapse>
     </div>
   );
 };
