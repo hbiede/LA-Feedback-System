@@ -78,6 +78,14 @@ function App() {
                         id="responseDiv"
                         onClose={() => setResponse(null)}
                         dismissible={response !== null}
+                        hidden={
+                          response === null ||
+                          response.content === null ||
+                          !(
+                            typeof response.content !== 'string' ||
+                            response.content.trim() !== ''
+                          )
+                        }
                       >
                         {response?.content}
                       </Alert>
