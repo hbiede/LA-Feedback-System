@@ -1,11 +1,9 @@
-import React, { Fragment, ReactNode, useMemo } from 'react';
+import React, { Fragment, useMemo } from 'react';
 
 import {
   Highlighter,
   Menu,
   MenuItem,
-  Token,
-  TokenProps,
   Typeahead,
   TypeaheadMenuProps,
   TypeaheadProps,
@@ -75,23 +73,15 @@ const StudentSelectionTypeahead = ({
     return <Menu {...menuProps}>{courses}</Menu>;
   };
 
-  const renderToken = (
-    selectedItem: Student,
-    { onRemove }: TokenProps,
-    index: number
-  ): ReactNode => (
-    <Token key={index} onRemove={onRemove}>
-      {`${selectedItem.name} (${selectedItem.canvas_username})`}
-    </Token>
-  );
+  const labelKey = (student: Student) =>
+    `${student.name} (${student.canvas_username})`;
 
   return (
     <Typeahead<Student>
       {...rest}
-      labelKey="name"
+      labelKey={labelKey}
       multiple
       renderMenu={renderMenu}
-      renderToken={renderToken}
       options={options}
       clearButton
       minLength={2}
