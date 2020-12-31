@@ -339,6 +339,8 @@ const FeedbackForm = ({ style }: Props) => {
       <Button
         onClick={toggleSessionCollapsable}
         aria-expanded={isSessionTextOpen}
+        type="button"
+        variant="secondary"
       >
         {sessionCountText}
       </Button>
