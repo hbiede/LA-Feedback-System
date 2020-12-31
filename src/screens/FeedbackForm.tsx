@@ -342,6 +342,7 @@ const FeedbackForm = ({ style }: Props) => {
         aria-expanded={isSessionTextOpen}
         type="button"
         variant="secondary"
+        disabled={Object.keys(sessionInteractions).length === 0}
       >
         {sessionCountText}
       </Button>
