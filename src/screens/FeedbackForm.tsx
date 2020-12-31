@@ -111,6 +111,7 @@ const FeedbackForm = ({ style }: Props) => {
           break;
         case COURSE_ID:
           setCourseRecord(value === 'choose' ? null : value);
+          setStudents([]);
           break;
         case INTERACTION_TYPE_ID:
           setInteractionTypeRecord(value);
