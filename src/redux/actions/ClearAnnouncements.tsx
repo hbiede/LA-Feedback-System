@@ -35,7 +35,7 @@ const clearAnnouncements = async (): Promise<void> => {
         }),
         shallow
       );
-      setResponse(error);
+      setResponse({ class: 'danger', content: error });
     });
 };
 

@@ -51,3 +51,10 @@ export type InteractionBreakdown = {
 };
 
 export const DEFAULT_COURSE_NAME = '---';
+
+export type Student = {
+  canvas_username: string;
+  course: string;
+  id: number;
+  name: string;
+};

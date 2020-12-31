@@ -12,29 +12,20 @@ const CSE_CAS_SERVICE = 'https://cse-apps.unl.edu/cas';
 
 class ServiceInterface {
   static sendEmail = async (
-    studentCSE: string,
+    studentID: number,
     course: string | null = null,
     interactionType: string | null = null
   ): Promise<string | number | null> => {
     const { course: defaultCourse, setResponse } = api.getState();
     const laCSE = ServiceInterface.getActiveUser();
-    if (laCSE === studentCSE) {
-      setResponse({
-        class: 'danger',
-        content: 'No self-interaction',
-      });
-    } else if (
-      laCSE !== null &&
-      laCSE.trim().length > 0 &&
-      laCSE !== 'INVALID'
-    ) {
+    if (laCSE !== null && laCSE.trim().length > 0 && laCSE !== 'INVALID') {
       const requestOptions = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          studentCSE,
+          studentID,
           laCSE,
           course:
             course === null || course.trim().length === 0
@@ -50,12 +41,12 @@ class ServiceInterface {
           status = body.message;
         });
       return status;
-    } else {
-      setResponse({
-        class: 'danger',
-        content: 'Must set a username',
-      });
     }
+    setResponse({
+      class: 'danger',
+      content: 'Must set a username',
+    });
+
     return null;
   };
 

@@ -5,16 +5,11 @@
  -----------------------------------------------------------------------------*/
 
 import { api } from 'redux/modules';
-import { CourseCount } from 'redux/modules/Types';
+import { Student } from 'redux/modules/Types';
 import ServiceInterface from 'statics/ServiceInterface';
 
-type CountResponse = {
-  count: string;
-  course: string;
-};
-
-const getCounts = async (): Promise<CourseCount[]> => {
-  let courses: CountResponse[] = [];
+const getStudents = async (): Promise<Student[]> => {
+  let students: Student[] = [];
 
   const requestOptions = {
     method: 'GET',
@@ -23,18 +18,21 @@ const getCounts = async (): Promise<CourseCount[]> => {
     },
   };
 
-  await fetch(`${ServiceInterface.getPath()}/counts.php`, requestOptions)
+  await fetch(`${ServiceInterface.getPath()}/getStudents.php`, requestOptions)
     .then((response: Response) => response.json())
-    .then((json: CountResponse[]) => {
-      courses = json;
+    .then(({ students: studentResponse }: { students: Student[] }) => {
+      students = studentResponse;
+      if (studentResponse.length === 0) {
+        api.getState().setResponse({
+          class: 'danger',
+          content: 'No students registered for any courses',
+        });
+      }
     })
     .catch((error) =>
       api.getState().setResponse({ class: 'danger', content: error })
     );
-  return courses.map((avg: CountResponse) => ({
-    ...avg,
-    count: Number.parseFloat(avg.count),
-  }));
+  return students;
 };
 
-export default getCounts;
+export default getStudents;

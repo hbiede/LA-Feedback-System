@@ -6,6 +6,7 @@
 
 drop table if exists feedback;
 drop table if exists interactions;
+drop table if exists logins;
 drop table if exists cse_usernames;
 drop table if exists announcements;
 drop view if exists course_interactions;
@@ -19,14 +20,15 @@ drop view if exists interaction_type_readable;
 
 CREATE TABLE cse_usernames
 (
-    username_key int auto_increment unique primary key,
-    username     varchar(20) not null,
-    name         varchar(70),
-    course       varchar(10),
-    constraint cse_usernames_username_key_uindex
-        unique (username_key),
-    constraint cse_usernames_username_uindex
-        unique (username)
+    username_key    int auto_increment unique primary key,
+
+    # Not unique due to potential for students to appear multiple times in the future
+    username        varchar(20),
+    canvas_username varchar(20),
+
+    name            varchar(70),
+    course          varchar(10),
+    email           varchar(100)
 );
 
 CREATE TABLE interactions
@@ -54,9 +56,7 @@ CREATE TABLE logins
     login_key           int auto_increment unique primary key,
     la_username_key     int                                   not null,
     time_of_interaction timestamp default current_timestamp() not null,
-    constraint interactions_interaction_key_uindex
-        unique (login_key),
-    constraint interactions_la_fk
+    constraint interactions_la_login_fk
         foreign key (la_username_key) references cse_usernames (username_key)
             on delete cascade
 );

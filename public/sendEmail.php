@@ -16,7 +16,7 @@ const FEEDBACK_RATE = 0.6;
 
 // Call with a POST call with a JSON body as follows:
 //{
-//  studentCSE: string,
+//  studentID: string,
 //  laCSE: string,
 //  course: string,
 //  interactionType: string | null
@@ -37,7 +37,8 @@ function send_email($obj, $interaction_id) {
     $subject = shell_exec('grep "<title>" form.php | sed "s/\s*<\/*title>//gi"');
     $body = shell_exec('cat ./data/emailBody.html | sed "s/INTERACTION_ID/' . $interaction_id .
         '/gi" | sed "s/LA_NAME/' . $name . '/gi"');
-    if ($body && mail($obj->{'studentCSE'} . '@cse.unl.edu', $subject, $body, $headers)) {
+    $address = get_email($obj->{'studentID'});
+    if ($body && $address && mail($address, $subject, $body, $headers)) {
         update_interaction_for_feedback($interaction_id);
 
         header('Status: 200 OK');
@@ -56,15 +57,12 @@ function send_email($obj, $interaction_id) {
 }
 
 $obj = json_decode(file_get_contents('php://input'));
-if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentCSE'}) && isset($obj->{'course'})
-    && $obj->{'studentCSE'} !== $obj->{'laCSE'}) {
-    $student_username = str_replace('@cse.unl.edu', '',$obj->{'studentCSE'});
-    $interaction_id = add_interaction($obj->{'laCSE'}, $student_username, $obj->{'course'}, $obj->{'interactionType'});
+if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentID'}) && isset($obj->{'course'})) {
+    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentID'}, $obj->{'course'}, $obj->{'interactionType'});
 
     if ($interaction_id !== null && $interaction_id > 0 &&
-        ($obj->{'interactionType'} === 'cohort meeting' || has_been_a_week($obj->{'laCSE'}) ||
-            mt_rand() / mt_getrandmax() < FEEDBACK_RATE) &&
-        !received_email_today($obj->{'studentCSE'})) {
+        (has_been_a_week($obj->{'laCSE'}) || mt_rand() / mt_getrandmax() < FEEDBACK_RATE) &&
+        !received_email_today($obj->{'studentID'})) {
         send_email($obj, $interaction_id);
     } else {
         echo json_encode([

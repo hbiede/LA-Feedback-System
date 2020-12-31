@@ -163,13 +163,7 @@
         ]
       }
     ],
-    "react/sort-prop-types": [
-      "error",
-      {
-        "callbacksLast": true,
-        "requiredFirst": false
-      }
-    ],
+    "react/jsx-props-no-spreading":  "off",
     "button-label-required/button-label-required": ["error"]
   },
   "settings": {

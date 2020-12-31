@@ -37,7 +37,7 @@ const GetRatings = async (
         rating: Number.parseFloat(rating.rating),
       }));
     })
-    .catch((error) => setResponse(error));
+    .catch((error) => setResponse({ class: 'danger', content: error }));
   return ratings;
 };
 

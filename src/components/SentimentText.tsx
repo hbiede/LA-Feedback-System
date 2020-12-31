@@ -21,7 +21,7 @@ const SentimentText = () => {
 
   return (
     <>
-      {sentiment && sentiment > 0 && (
+      {sentiment !== null && sentiment > 0 && (
         <p>{sentiment.toFixed(2)}% average sentiment</p>
       )}
     </>

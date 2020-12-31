@@ -33,7 +33,9 @@ const getInteractionTimes = async (): Promise<InteractionTime[]> => {
         course: time.course,
       }));
     })
-    .catch((error) => api.getState().setResponse(error));
+    .catch((error) =>
+      api.getState().setResponse({ class: 'danger', content: error })
+    );
   return times;
 };
 

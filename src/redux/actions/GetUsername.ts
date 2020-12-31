@@ -11,6 +11,11 @@ import { api, AppReduxState } from 'redux/modules';
 import ServiceInterface from 'statics/ServiceInterface';
 
 const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
+  if (window.location.host === 'localhost') {
+    set(() => ({ username: 'dev' }));
+    return;
+  }
+
   const ticketService = `${ServiceInterface.getPath()}/ticketAccessor.php`;
   const ticket = new URLSearchParams(window.location.search).get('ticket');
   if (ticket === null) {
@@ -33,7 +38,7 @@ const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
       }
     })
     .catch((error) => {
-      api.getState().setResponse(error);
+      api.getState().setResponse({ class: 'danger', content: error });
     });
 };
 

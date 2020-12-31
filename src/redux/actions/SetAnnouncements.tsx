@@ -37,7 +37,7 @@ const setAnnouncements = async (props: AnnouncementProps): Promise<number> => {
       }),
       shallow
     );
-    setResponse(error);
+    setResponse({ class: 'danger', content: error });
     response = 1;
   });
   return response;

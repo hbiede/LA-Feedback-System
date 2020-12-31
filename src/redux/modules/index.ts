@@ -9,6 +9,7 @@ import create from 'zustand';
 import SendEmail from 'redux/actions/SendEmail';
 
 import {
+  ClearAnnouncements,
   CourseRest,
   GetAnnouncements,
   GetCounts,
@@ -16,20 +17,21 @@ import {
   GetInteractionTimes,
   GetInteractions,
   GetRatings,
+  GetStudents,
   GetUsername,
   NameRest,
   SetAnnouncements,
-  ClearAnnouncements,
 } from 'redux/actions';
 
 import {
   CourseCount,
   InteractionBreakdown,
+  InteractionTime,
   ResponseMessage,
   SetCourseArgs,
   SetNameArgs,
   SetSelectedUsernameArgs,
-  InteractionTime,
+  Student,
 } from 'redux/modules/Types';
 
 import ServiceInterface from 'statics/ServiceInterface';
@@ -47,6 +49,7 @@ export type AppReduxState = {
   getInteractions: () => void;
   getName: () => void;
   getRatings: () => void;
+  getStudents: () => void;
   getTimes: () => Promise<InteractionTime[]>;
   incrementSessionInteractions: (student: string) => void;
   interactions: InteractionSummary;
@@ -58,7 +61,7 @@ export type AppReduxState = {
   response: ResponseMessage | null;
   selectedUsername: string;
   sendEmail: (
-    studentCSE: string | null,
+    studentID: number,
     course?: string | null,
     multiples?: boolean,
     interactionType?: string | null
@@ -71,6 +74,7 @@ export type AppReduxState = {
   setResponse: (res: ResponseMessage | null) => void;
   setSelectedUsername: (args: SetSelectedUsernameArgs) => void;
   startUp: () => void;
+  students: Student[];
   username: string;
 };
 
@@ -83,6 +87,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
       get().getCourse();
       get().getInteractions();
       get().getAnnouncements();
+      get().getStudents();
     });
   },
   name: '',
@@ -169,6 +174,12 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   },
   setAnnouncements: SetAnnouncements,
   clearAnnouncements: ClearAnnouncements,
+  students: [],
+  getStudents: () => {
+    GetStudents().then((result) => {
+      set(() => ({ students: result }));
+    });
+  },
 }));
 
 export default useStore;

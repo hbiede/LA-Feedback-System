@@ -8,13 +8,13 @@ import { api } from 'redux/modules';
 import ServiceInterface from 'statics/ServiceInterface';
 
 const SendEmail = (
-  studentCSE: string | null,
+  studentID: number,
   course: string | null = null,
   multiples = false,
   interactionType: string | null = null
 ) => {
   const { setResponse } = api.getState();
-  if (studentCSE === null) {
+  if (studentID === null) {
     setResponse({
       class: 'danger',
       content: 'Must set a username',
@@ -22,7 +22,7 @@ const SendEmail = (
     return;
   }
 
-  ServiceInterface.sendEmail(studentCSE, course, interactionType)
+  ServiceInterface.sendEmail(studentID, course, interactionType)
     .then((response) => {
       if (response === '0' || response === 0) {
         setResponse({

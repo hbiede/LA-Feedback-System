@@ -40,7 +40,7 @@ const getAnnouncements = async (
         };
       }
     })
-    .catch((error) => setResponse(error));
+    .catch((error) => setResponse({ class: 'danger', content: error }));
   return responseObj;
 };
 

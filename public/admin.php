@@ -128,14 +128,22 @@ function get_ratings($la_username) {
         'LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key WHERE ' .
         'feedback.interaction_key IN (SELECT interaction_key FROM interactions WHERE la_username_key = ' .
         '(SELECT username_key FROM cse_usernames WHERE username = ?)) ORDER BY rating DESC;');
-    $ps->bind_param('s', $la_username);
-    $ps->execute();
-    $result = $ps->get_result();
     $returnVal = [];
-    while ($row = $result->fetch_assoc()) {
-        array_push($returnVal, $row);
+    if ($ps) {
+        $ps->bind_param('s', $la_username);
+        $ps->execute();
+        if ($ps->error) {
+            error_log($ps->error);
+        } else {
+            $result = $ps->get_result();
+            while ($row = $result->fetch_assoc()) {
+                array_push($returnVal, $row);
+            }
+            $ps->close();
+        }
+    } else {
+        error_log("Failed to build PS to get ratings for $la_username");
     }
-    $ps->close();
     $conn->close();
     return $returnVal;
 }

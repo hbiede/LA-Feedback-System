@@ -18,27 +18,25 @@ import Collapse from 'react-bootstrap/Collapse';
 import Form from 'react-bootstrap/Form';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Row from 'react-bootstrap/Row';
-import Tooltip from 'react-bootstrap/Tooltip';
 
 import shallow from 'zustand/shallow';
-
-import OverlayTrigger from 'react-bootstrap/esm/OverlayTrigger';
 
 import Redux, { api, AppReduxState } from 'redux/modules';
 
 import { COURSES } from 'statics/Types';
 
+import { Student } from '../redux/modules/Types';
+import StudentSelectionTypeahead from '../components/StudentSelectionTypeahead';
+
 const LA_USERNAME_ID = 'la_username';
 const COURSE_ID = 'course';
-const STUDENT_CSE_ID = 'student_cse_login';
+const STUDENT_ID = 'student_login';
 const INTERACTION_TYPE_ID = 'interaction_type';
 
 const LA_LABEL = 'LA CSE Username';
 const COURSE_LABEL = 'Course';
-const STUDENT_LABEL = 'Student CSE Username';
+const STUDENT_LABEL = 'Student';
 const INTERACTION_TYPE_LABEL = 'Interaction Type';
-
-const BANNED_USERNAMES = [...COURSES, '155h', '156h', 'i', "don't", 'know'];
 
 type Props = {
   style?: CSSProperties;
@@ -73,12 +71,22 @@ const FeedbackForm = ({ style }: Props) => {
   const [usernameRecord, setUsernameRecord] = useState<string>(
     isAdmin ? selectedUsername : username
   );
-  const [studentCSE, setStudentCSE] = useState<string>('');
+  const [disabled, setDisabled] = useState(false);
   const [courseRecord, setCourseRecord] = useState<string | null>(course);
+  const [students, setStudents] = useState<Student[]>([]);
+  const setStudentCallback = (newStudents: Student[]) => {
+    if (
+      !courseRecord ||
+      (courseRecord === 'choose' && newStudents.length > 0)
+    ) {
+      setCourseRecord(newStudents[0].course);
+    }
+    setStudents(newStudents);
+    setDisabled(false);
+  };
   const [interactionTypeRecord, setInteractionTypeRecord] = useState<
     string | null
   >(course);
-  const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
     api.subscribe(
@@ -104,9 +112,6 @@ const FeedbackForm = ({ style }: Props) => {
         case COURSE_ID:
           setCourseRecord(value === 'choose' ? null : value);
           break;
-        case STUDENT_CSE_ID:
-          setStudentCSE(value);
-          break;
         case INTERACTION_TYPE_ID:
           setInteractionTypeRecord(value);
           break;
@@ -123,7 +128,7 @@ const FeedbackForm = ({ style }: Props) => {
       setResponse(null);
       setDisabled(true);
 
-      const studentUserValid = studentCSE && studentCSE.trim().length > 0;
+      const studentUserValid = students && students.length > 0;
       const courseIsValid =
         courseRecord &&
         courseRecord.trim().length > 0 &&
@@ -135,41 +140,23 @@ const FeedbackForm = ({ style }: Props) => {
       const laUserValid =
         usernameRecord &&
         usernameRecord.trim().length > 0 &&
-        usernameRecord !== studentCSE;
+        !students.some((student) => student.canvas_username === usernameRecord);
 
       if (studentUserValid && courseIsValid && intTypeIsValid && laUserValid) {
         if (isAdmin) {
           setSelectedUsername({ username: usernameRecord });
         }
 
-        // Send to all students listed (Based on regex expression /[,\s|&+;]/)
-        const students = Array.from(new Set(studentCSE?.split(/[,|&+;]/) ?? []))
-          .map((student) => student.trim())
-          .filter((student) => student.length > 0);
-
-        if (
-          students.some(
-            (student) =>
-              BANNED_USERNAMES.includes(student.toLowerCase()) ||
-              student.includes('(') ||
-              student.includes(')') ||
-              student.includes(' ')
-          )
-        ) {
-          setResponse({ class: 'danger', content: 'Invalid username(s)' });
-        } else {
-          students.forEach((student: string) => {
-            incrementSessionInteractions(student);
-            sendEmail(
-              student,
-              courseRecord,
-              students.length > 1,
-              interactionTypeRecord
-            );
-          });
-
-          setStudentCSE('');
-        }
+        students.forEach((student: Student) => {
+          incrementSessionInteractions(student.canvas_username);
+          sendEmail(
+            student.id,
+            student.course,
+            students.length > 1,
+            interactionTypeRecord
+          );
+        });
+        setStudents([]);
       } else {
         let issue = 'A field';
         if (!studentUserValid) {
@@ -177,10 +164,7 @@ const FeedbackForm = ({ style }: Props) => {
         } else if (!courseIsValid) {
           issue = 'The course username';
         } else if (!laUserValid) {
-          issue =
-            usernameRecord === studentCSE
-              ? 'You cannot Self-interact'
-              : "The LA's username";
+          issue = "The LA's username";
         } else if (!intTypeIsValid) {
           issue = 'The interaction type';
         }
@@ -196,7 +180,7 @@ const FeedbackForm = ({ style }: Props) => {
     },
     [
       setResponse,
-      studentCSE,
+      students,
       courseRecord,
       interactionTypeRecord,
       usernameRecord,
@@ -216,12 +200,12 @@ const FeedbackForm = ({ style }: Props) => {
     [sessionInteractions]
   );
   const expandedSessionCountText = useMemo(() => {
-    const students = Object.keys(sessionInteractions).sort((a, b) =>
+    const studentsHelped = Object.keys(sessionInteractions).sort((a, b) =>
       a.localeCompare(b)
     );
-    return `Student${students.length > 0 ? 's' : ''} helped:\n${students.join(
-      ', '
-    )}`;
+    return `Student${
+      studentsHelped.length > 0 ? 's' : ''
+    } helped:\n${studentsHelped.join(', ')}`;
   }, [sessionInteractions]);
   const toggleSessionCollapsable = useCallback(
     () => setSessionTextOpen(!isSessionTextOpen),
@@ -290,31 +274,26 @@ const FeedbackForm = ({ style }: Props) => {
           </div>
         </FormGroup>
 
-        <FormGroup as={Row} controlId={STUDENT_CSE_ID}>
+        <FormGroup as={Row} controlId={STUDENT_ID}>
           <Form.Label className="col-sm-5">{STUDENT_LABEL}</Form.Label>
-          <OverlayTrigger
-            placement="right"
-            overlay={
-              <Tooltip id="username-tooltip">
-                Submit multiple usernames with a comma separated list
-              </Tooltip>
-            }
-          >
-            <div className="col-sm-7">
-              <Form.Control
-                type="text"
-                role="textbox"
-                placeholder={STUDENT_LABEL}
-                aria-placeholder={STUDENT_LABEL}
-                value={studentCSE ?? undefined}
-                onChange={handleChange}
-                required
-                aria-required
-                aria-haspopup
-                autoComplete="false"
-              />
-            </div>
-          </OverlayTrigger>
+          <div className="col-sm-7">
+            <StudentSelectionTypeahead
+              id={STUDENT_ID}
+              placeholder={STUDENT_LABEL}
+              selected={students}
+              onChange={setStudentCallback}
+              course={courseRecord}
+              inputProps={{
+                type: 'text',
+                role: 'textbox',
+                'aria-placeholder': STUDENT_LABEL,
+                required: true,
+                'aria-required': true,
+                'aria-haspopup': true,
+                autoComplete: 'false',
+              }}
+            />
+          </div>
         </FormGroup>
 
         <FormGroup as={Row} controlId={INTERACTION_TYPE_ID}>

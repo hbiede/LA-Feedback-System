@@ -157,32 +157,35 @@ function add_cse($username) {
     return null;
 }
 
-function add_interaction($la_cse, $student_cse, $course, $interaction_type) {
+function add_interaction($la_cse, $student_id, $course, $interaction_type) {
     $la_id = get_username_id($la_cse);
-    $student_id = get_username_id($student_cse);
+    if ($la_id === $student_id) return null;
     $conn = get_connection();
     if ($conn !== null && is_int($la_id) && is_int($student_id)) {
         $conn->begin_transaction();
         $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key, course, " .
-            "interaction_type) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?), " .
-            "(SELECT username_key FROM cse_usernames WHERE username=?), ?, ?);");
+            "interaction_type) VALUE (?, ?, ?, ?);");
         if ($ps) {
-            $ps->bind_param("ssss", $la_cse, $student_cse, $course, $interaction_type);
+            $ps->bind_param("siss", $la_id, $student_id, $course, $interaction_type);
             $ps->execute();
-            $conn->commit();
-            $returnVal = $ps->insert_id;
+            if ($ps->error) {
+                error_log($ps->error);
+            } else {
+                $conn->commit();
+                $returnVal = $ps->insert_id;
 
-            $ps->close();
-            $conn->close();
+                $ps->close();
+                $conn->close();
 
-            return $returnVal;
+                return $returnVal;
+            }
         } else {
-            $conn->close();
-            error_log("Failed to build prepped statement to add interaction between $la_cse and $student_cse");
+            error_log("Failed to build prepped statement to add interaction between $la_cse and $student_id");
         }
     } else {
-        error_log('Failed to add interaction for { la: ' . $la_cse . ', student: ' . $student_cse . ' }');
+        error_log('Failed to add interaction for { la: ' . $la_cse . ', student: ' . $student_id . ' }');
     }
+    $conn->close();
     return null;
 }
 
@@ -233,14 +236,14 @@ function has_been_a_week($username) {
     return false;
 }
 
-function received_email_today($student_cse) {
+function received_email_today($student_id) {
     $conn = get_connection();
-    if ($conn !== null && $student_cse !== null) {
+    if ($conn !== null && $student_id !== null) {
         $ps = $conn->prepare("SELECT time_of_interaction AS time FROM interactions WHERE seeking_feedback = 1 " .
-            "AND student_username_key = (SELECT username_key FROM cse_usernames WHERE username=?) " .
+            "AND student_username_key = ? " .
             "ORDER BY time_of_interaction DESC LIMIT 1;");
         if ($ps) {
-            $ps->bind_param("s", $student_cse);
+            $ps->bind_param("s", $student_id);
             $ps->execute();
 
             $result = $ps->get_result()->fetch_assoc()['time'];
@@ -259,7 +262,7 @@ function received_email_today($student_cse) {
                 return false;
             }
         } else {
-            error_log("Failed to build prepped statement for checking if $student_cse received an email");
+            error_log("Failed to build prepped statement for checking if $student_id received an email");
             $ps->close();
             $conn->close();
             return false;
@@ -280,19 +283,17 @@ function get_username_id($username) {
             return null;
         }
 
+        $id = -1;
         $ps->bind_param("s", $username);
         $ps->execute();
-        if ($ps->num_rows() > 0) {
-            $ps->bind_result($id);
-            $ps->fetch();
-            $ps->close();
-            $conn->close();
-            return $id;
-        } else {
-            $ps->close();
-            $conn->close();
-            return add_cse($username);
+        $ps->bind_result($id);
+        $ps->fetch();
+        if ($ps->num_rows() == -1) {
+            $id = add_cse($username);
         }
+        $ps->close();
+        $conn->close();
+        return $id;
     }
     return null;
 }
@@ -313,4 +314,30 @@ function get_course_counts() {
         $conn->close();
         return [];
     }
+}
+
+function get_email($student_id) {
+    if ($student_id === null) return null;
+
+    $conn = get_connection();
+    $result = null;
+    if ($conn !== null) {
+        $ps = $conn->prepare("SELECT IFNULL(email, CONCAT(username, '@cse.unl.edu')) AS 'email' " .
+            "FROM cse_usernames WHERE username_key=?;");
+        if ($ps) {
+            $ps->bind_param("i", $student_id);
+            $ps->execute();
+            $assoc = $ps->get_result()->fetch_assoc();
+            if ($assoc) {
+                $result = $assoc['email'];
+            } else if ($ps->error) {
+                error_log($ps->error);
+            }
+            $ps->close();
+        } else {
+            error_log("Failed to build prepped statement for getting email for $student_id");
+        }
+    }
+    $conn->close();
+    return $result;
 }

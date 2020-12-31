@@ -12,6 +12,7 @@ export { default as GetInteractionBreakdowns } from './GetInteractionBreakdowns'
 export { default as GetInteractionTimes } from './GetInteractionTimes';
 export { default as GetInteractions } from './GetInteractions';
 export { default as GetRatings } from './GetRatings';
+export { default as GetStudents } from './GetStudents';
 export { default as GetUsername } from './GetUsername';
 export { default as NameRest } from './NameRest';
 export { default as SetAnnouncements } from './SetAnnouncements';

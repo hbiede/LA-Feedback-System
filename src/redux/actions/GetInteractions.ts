@@ -16,7 +16,7 @@ type InteractionResponseRecord = {
   avg: string;
   count: string;
   course: string;
-  fCount: string;
+  feedbackCount: string;
   username: string;
   name?: string;
 };
@@ -63,12 +63,9 @@ const getInteractions = async (
           const intHolder: InteractionResponseSummary = json;
           interactions.isAdmin = intHolder.isAdmin;
           interactions.time =
-            intHolder.time === null || intHolder.time.startsWith('-')
-              ? 0
-              : Number.parseFloat(intHolder.time);
+            intHolder.time === null ? 0 : Number.parseFloat(intHolder.time);
           interactions.outstanding =
-            intHolder.outstanding === null ||
-            intHolder.outstanding.startsWith('-')
+            intHolder.outstanding === null
               ? 0
               : Number.parseFloat(intHolder.outstanding);
           interactions.sentiment =
@@ -81,12 +78,12 @@ const getInteractions = async (
               avg: Number.parseFloat(rating.avg),
               course: rating.course ?? '---',
               count: Number.parseInt(rating.count, 10),
-              fCount: Number.parseInt(rating.fCount, 10),
+              fCount: Number.parseInt(rating.feedbackCount, 10),
             }))
             .filter((int) => int.count > 0);
         }
       })
-      .catch((error) => setResponse(error));
+      .catch((error) => setResponse({ class: 'danger', content: error }));
   }
   return interactions;
 };

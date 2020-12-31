@@ -31,7 +31,9 @@ const getBreakdowns = async (): Promise<InteractionBreakdown[]> => {
     .then((json: InteractionBreakdownResponse[]) => {
       breakdowns = json;
     })
-    .catch((error) => api.getState().setResponse(error));
+    .catch((error) =>
+      api.getState().setResponse({ class: 'danger', content: error })
+    );
   return breakdowns.map((int) => ({
     ...int,
     name: int.name ?? int.username,

@@ -25,7 +25,8 @@ const FeedbackTimeText = () => {
     const minutes = Math.floor(time / 1000 / 60);
     const seconds = (time / 1000) % 60;
     const numberOfInteractions = interactions.ratings.reduce(
-      (acc: number, la: InteractionRecord) => acc + la.fCount,
+      (acc: number, { fCount }: InteractionRecord) =>
+        Number.isInteger(fCount) ? acc + fCount : acc,
       0
     );
     timeText = `Average time to give feedback for ${numberOfInteractions} interaction${
@@ -33,9 +34,9 @@ const FeedbackTimeText = () => {
     }: ${minutes} minute${minutes !== 1 ? 's' : ''}${
       seconds > 1 ? ` and ${seconds.toPrecision(3)} seconds` : ''
     }`;
+    return <p>{timeText}</p>;
   }
-
-  return <>{timeText && <p>{timeText}</p>}</>;
+  return null;
 };
 
 export default FeedbackTimeText;

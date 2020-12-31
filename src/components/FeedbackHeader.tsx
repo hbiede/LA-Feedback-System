@@ -43,7 +43,7 @@ const FeedbackHeader = ({ style }: Props) => {
           <p style={{ marginLeft: 0 }}>
             This web interface allows LAs to receive anonymous feedback on their
             performance from students. Select the course you worked with and
-            enter the Student&apos;s CSE username
+            enter the Student&apos;s name
           </p>
         </>
       )}

@@ -109,7 +109,7 @@ if (isset($obj) && isset($obj->{'clear'})) {
     clear_announcements();
 } else if (isset($obj) && isset($obj->{'body'})) {
     set_announcements($obj->{'course'}, $obj->{'body'}, $obj->{'class'});
-} else {
+} else if (isset($obj->{'course'})) {
     $response = get_announcements($obj->{'course'});
 }
 echo json_encode($response);
