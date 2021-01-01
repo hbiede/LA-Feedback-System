@@ -217,10 +217,10 @@ const FeedbackForm = ({ style }: Props) => {
     <div className="col-md-7" style={style}>
       <Form noValidate>
         <FormGroup as={Row} controlId={LA_USERNAME_ID}>
-          <Form.Label htmlFor="la_username" className="col-sm-5">
+          <Form.Label htmlFor="la_username" className="col-sm-3">
             {LA_LABEL}
           </Form.Label>
-          <div className="col-sm-7">
+          <div className="col-sm-9">
             <Form.Control
               type="text"
               role="textbox"
@@ -240,8 +240,8 @@ const FeedbackForm = ({ style }: Props) => {
         </FormGroup>
 
         <FormGroup as={Row} controlId={COURSE_ID}>
-          <Form.Label className="col-sm-5">{COURSE_LABEL}</Form.Label>
-          <div className="col-sm-7">
+          <Form.Label className="col-sm-9">{COURSE_LABEL}</Form.Label>
+          <div className="col-sm-3">
             <Form.Control
               as="select"
               role="combobox"
@@ -276,8 +276,8 @@ const FeedbackForm = ({ style }: Props) => {
         </FormGroup>
 
         <FormGroup as={Row} controlId={STUDENT_ID}>
-          <Form.Label className="col-sm-5">{STUDENT_LABEL}</Form.Label>
-          <div className="col-sm-7">
+          <Form.Label className="col-sm-3">{STUDENT_LABEL}</Form.Label>
+          <div className="col-sm-9">
             <StudentSelectionTypeahead
               id={STUDENT_ID}
               placeholder={STUDENT_LABEL}
@@ -298,8 +298,8 @@ const FeedbackForm = ({ style }: Props) => {
         </FormGroup>
 
         <FormGroup as={Row} controlId={INTERACTION_TYPE_ID}>
-          <Form.Label className="col-sm-5">{INTERACTION_TYPE_LABEL}</Form.Label>
-          <div className="col-sm-7">
+          <Form.Label className="col-sm-3">{INTERACTION_TYPE_LABEL}</Form.Label>
+          <div className="col-sm-9">
             <Form.Control
               as="select"
               role="combobox"
