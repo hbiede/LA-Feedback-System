@@ -31,6 +31,6 @@ if ($ps) {
     $ps->close();
 } else {
     error_log("Failed to build prepped statement to add values");
-    error_log("INSERT INTO cse_usernames (username, name, course, email) VALUES $values;");
+    error_log("INSERT INTO cse_usernames (course, name, canvas_username, email) VALUES $values;");
 }
 $conn->close();
