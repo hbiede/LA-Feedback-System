@@ -4,6 +4,14 @@ include_once 'sqlManager.php';
 // This file is expected to be formatted with every line conforming to the following spec:
 // "course;name;canvasID;email"
 
+function map($array_of_text) {
+    $return_val = [];
+    foreach ($array_of_text as $line) {
+        array_push($return_val, str_replace("'", "\\'", $line));
+    }
+    return $return_val;
+}
+
 if ($argc === 0) {
     echo "Include a file name as an argument";
     return;
@@ -17,7 +25,7 @@ foreach ($file_contents as $line) {
     $line = trim($line);
     if (strlen($line) > 0) {
         if (strlen($values) > 0) $values .= ', ';
-        $values .= "('" . join("','", explode(';', $line)) . "')";
+        $values .= "('" . join("','", map(explode(';', $line))) . "')";
     }
 }
 
@@ -32,5 +40,6 @@ if ($ps) {
 } else {
     error_log("Failed to build prepped statement to add values");
     error_log("INSERT INTO cse_usernames (course, name, canvas_username, email) VALUES $values;");
+    error_log($conn->error);
 }
 $conn->close();
