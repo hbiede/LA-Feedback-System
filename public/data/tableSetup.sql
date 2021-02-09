@@ -21,14 +21,13 @@ drop view if exists interaction_type_readable;
 CREATE TABLE cse_usernames
 (
     username_key    int auto_increment unique primary key,
-
-    # Not unique due to potential for students to appear multiple times in the future
     username        varchar(20),
     canvas_username varchar(20),
-
     name            varchar(70),
     course          varchar(10),
-    email           varchar(100)
+    email           varchar(100),
+    constraint cse_usernames_uindex
+        unique (username, canvas_username, course)
 );
 
 CREATE TABLE interactions
