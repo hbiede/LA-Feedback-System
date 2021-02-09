@@ -60,7 +60,9 @@ $ps_create_table = $conn->prepare(
     "canvas_username varchar(20)," .
     "name            varchar(70)," .
     "course          varchar(10)," .
-    "email           varchar(100)" .
+    "email           varchar(100)," .
+    "constraint temp_merge_uindex" .
+    "    unique (username, canvas_username, course)" .
     ");");
 $working = run_ps($ps_create_table, $conn, "create temp table");
 
