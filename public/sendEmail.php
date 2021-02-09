@@ -28,6 +28,15 @@ const FEEDBACK_RATE = 0.6;
 //  message?: string | int
 //}
 
+/*
+ * Response codes:
+ * 0 - Success
+ * 1 - Email send failure
+ * 2 - Unknown (Deprecated)
+ * 3 - 30 seconds between interactions (Deprecated)
+ * 4 - Failed to get an interaction ID
+ */
+
 function send_email($obj, $interaction_id) {
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8\r\n";
@@ -68,7 +77,7 @@ if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentID'}) && isset
         if ($interaction_id === null) {
             echo json_encode([
                 'status' => 500,
-                'message' => 3
+                'message' => 4
             ]);
         } else {
             echo json_encode([
