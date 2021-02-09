@@ -65,10 +65,17 @@ if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentID'}) && isset
         !received_email_today($obj->{'studentID'})) {
         send_email($obj, $interaction_id);
     } else {
-        echo json_encode([
-            'status' => 200,
-            'message' => 0
-        ]);
+        if ($interaction_id === null) {
+            echo json_encode([
+                'status' => 500,
+                'message' => 3
+            ]);
+        } else {
+            echo json_encode([
+                'status' => 200,
+                'message' => 0
+            ]);
+        }
     }
 } else {
     error_log('Cannot parse: ' . file_get_contents('php://input'));

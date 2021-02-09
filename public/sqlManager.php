@@ -183,7 +183,7 @@ function add_interaction($la_cse, $student_id, $course, $interaction_type) {
             error_log("Failed to build prepped statement to add interaction between $la_cse and $student_id");
         }
     } else {
-        error_log('Failed to add interaction for { la: ' . $la_cse . ', student: ' . $student_id . ' }');
+        error_log('Failed to add interaction for { la: ' . $la_cse . ' (id: ' . ($la_id === null ? 'null' : $la_id) . '), student: ' . $student_id . ' }');
     }
     $conn->close();
     return null;
@@ -283,12 +283,12 @@ function get_username_id($username) {
             return null;
         }
 
-        $id = -1;
+        $id = null;
         $ps->bind_param("s", $username);
         $ps->execute();
         $ps->bind_result($id);
         $ps->fetch();
-        if ($ps->num_rows() == -1) {
+        if ($id === null) {
             $id = add_cse($username);
         }
         $ps->close();
