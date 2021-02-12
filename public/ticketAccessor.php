@@ -34,6 +34,8 @@ function addLogin($username) {
             error_log("Failed to build prepped statement for login for $username");
         }
         $conn->close();
+    } else {
+        error_log('Failed to connect to log login');
     }
 }
 

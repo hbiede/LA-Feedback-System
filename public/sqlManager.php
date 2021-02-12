@@ -287,6 +287,7 @@ function get_username_id($username) {
         $ps->bind_param("s", $username);
         $ps->execute();
         $ps->bind_result($id);
+        error_log('INFO: { la_username: ' . $username . ', la_id: ' . $id . ' }');
         $ps->fetch();
         if ($id === null) {
             $id = add_cse($username);

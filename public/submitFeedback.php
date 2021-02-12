@@ -50,7 +50,12 @@ function get_feedback_count($la_username) {
     if ($ps) {
         $ps->bind_param('s', $la_username);
         $ps->execute();
-        $count = $ps->get_result()->fetch_assoc()['count'];
+        $count = 1;
+        if ($ps->error) {
+            error_log($ps->error);
+        } else {
+            $count = $ps->get_result()->fetch_assoc()['count'];
+        }
         $ps->close();
         $conn->close();
         return $count;
