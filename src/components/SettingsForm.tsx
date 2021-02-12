@@ -126,7 +126,7 @@ const SettingsForm = ({ closeModal }: Props) => {
           courseRecord !== 'choose' &&
           course !== courseRecord
         ) {
-          setCourse({ course: courseRecord });
+          setTimeout(() => setCourse({ course: courseRecord }), 1000);
         }
         if (!isAdmin && trimmedName.length > 0) {
           closeModal();
