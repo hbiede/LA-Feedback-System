@@ -57,4 +57,5 @@ export type Student = {
   course: string;
   id: number;
   name: string;
+  username: string;
 };

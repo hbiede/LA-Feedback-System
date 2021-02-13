@@ -18,7 +18,7 @@ include_once 'sqlManager.php';
 
 function get_students() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username_key AS id, name, course, canvas_username FROM cse_usernames;');
+    $ps = $conn->prepare('SELECT username_key AS id, username, name, course, canvas_username FROM cse_usernames;');
     $ps->execute();
     $result = $ps->get_result();
     $returnVal = [];

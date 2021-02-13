@@ -62,7 +62,11 @@ const StudentSelectionTypeahead = ({
               <MenuItem key={index} option={student} position={index}>
                 <Highlighter search={state.text}>{student.name}</Highlighter>
                 <div>
-                  <small>{`Canvas Username: ${student.canvas_username}`}</small>
+                  <small>
+                    {student.canvas_username
+                      ? `Canvas Username: ${student.canvas_username}`
+                      : `Username: ${student.username}`}
+                  </small>
                 </div>
               </MenuItem>
             );
@@ -74,7 +78,7 @@ const StudentSelectionTypeahead = ({
   };
 
   const labelKey = (student: Student) =>
-    `${student.name} (${student.canvas_username})`;
+    `${student.name} (${student.canvas_username ?? student.username})`;
 
   return (
     <Typeahead<Student>
