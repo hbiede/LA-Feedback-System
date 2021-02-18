@@ -28,6 +28,9 @@ function addLogin($username) {
         if ($ps) {
             $ps->bind_param("s", $username);
             $ps->execute();
+            if ($ps->error) {
+                error_log("Failed to log $username");
+            }
             $conn->commit();
             $ps->close();
         } else {
