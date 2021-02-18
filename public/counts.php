@@ -11,6 +11,7 @@ ini_set('error_log', './log/counts.log');
 
 // Call with GET call with no query tags
 
+// Returns the number of pieces of feedback
 // Returns a JSON encoded array of objects formatted as follows:
 //{
 //  avg: double,

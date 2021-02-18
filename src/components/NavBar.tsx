@@ -40,6 +40,9 @@ const NAVBAR_ID = 'laNavBar';
 
 const VERSION = changelog.changes[0].split('\n')[0].replace(/[\s#]+/, '');
 
+/**
+ * The main navigation bar for the website
+ */
 const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
   const { isAdmin, loading, logout, name, username } = Redux(
     (state: AppReduxState) => ({

@@ -13,6 +13,9 @@ type CountResponse = {
   course: string;
 };
 
+/**
+ * Gets the number of interactions per course in the last 7 days
+ */
 const getCounts = async (): Promise<CourseCount[]> => {
   let courses: CountResponse[] = [];
 

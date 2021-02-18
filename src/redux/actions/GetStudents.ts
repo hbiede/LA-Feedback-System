@@ -8,6 +8,11 @@ import { api } from 'redux/modules';
 import { Student } from 'redux/modules/Types';
 import ServiceInterface from 'statics/ServiceInterface';
 
+/**
+ * Get a list of `Student`s
+ *
+ * @return all students in the database
+ */
 const getStudents = async (): Promise<Student[]> => {
   let students: Student[] = [];
 

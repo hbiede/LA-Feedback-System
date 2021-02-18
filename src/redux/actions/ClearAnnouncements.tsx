@@ -16,6 +16,9 @@ export type AnnouncementProps = {
   course: string;
 };
 
+/**
+ * Eliminates all current announcements
+ */
 const clearAnnouncements = async (): Promise<void> => {
   const requestOptions = {
     method: 'POST',

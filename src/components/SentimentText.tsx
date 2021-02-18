@@ -10,6 +10,9 @@ import shallow from 'zustand/shallow';
 
 import Redux, { AppReduxState } from 'redux/modules';
 
+/**
+ * Calculates average feedback sentiment
+ */
 const SentimentText = () => {
   const { interactions } = Redux(
     (state: AppReduxState) => ({

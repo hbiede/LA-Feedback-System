@@ -10,6 +10,11 @@ import { api, AppReduxState } from 'redux/modules';
 
 import ServiceInterface from 'statics/ServiceInterface';
 
+/**
+ * Get the CSE username of of an individual based on the ticket received from the CAS
+ *
+ * @param set The redux setter
+ */
 const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
   if (window.location.host === 'localhost') {
     set(() => ({ username: 'dev' }));

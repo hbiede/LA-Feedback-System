@@ -42,6 +42,9 @@ type Props = {
   style?: CSSProperties;
 };
 
+/**
+ * The main page for interaction logging
+ */
 const FeedbackForm = ({ style }: Props) => {
   const {
     username,
@@ -52,7 +55,7 @@ const FeedbackForm = ({ style }: Props) => {
     incrementSessionInteractions,
     sessionInteractions,
     setResponse,
-    sendEmail,
+    logInteraction,
   } = Redux(
     (state: AppReduxState) => ({
       username: state.username,
@@ -63,7 +66,7 @@ const FeedbackForm = ({ style }: Props) => {
       incrementSessionInteractions: state.incrementSessionInteractions,
       sessionInteractions: state.sessionInteractions,
       setResponse: state.setResponse,
-      sendEmail: state.sendEmail,
+      logInteraction: state.logInteraction,
     }),
     shallow
   );
@@ -150,7 +153,7 @@ const FeedbackForm = ({ style }: Props) => {
 
         students.forEach((student: Student) => {
           incrementSessionInteractions(student.canvas_username);
-          sendEmail(
+          logInteraction(
             student.id,
             student.course,
             students.length > 1,
@@ -188,7 +191,7 @@ const FeedbackForm = ({ style }: Props) => {
       isAdmin,
       incrementSessionInteractions,
       setSelectedUsername,
-      sendEmail,
+      logInteraction,
     ]
   );
 
@@ -201,9 +204,9 @@ const FeedbackForm = ({ style }: Props) => {
     [sessionInteractions]
   );
   const expandedSessionCountText = useMemo(() => {
-    const studentsHelped = Object.keys(sessionInteractions).sort((a, b) =>
-      a.localeCompare(b)
-    );
+    const studentsHelped = Object.keys(sessionInteractions)
+      .sort((a, b) => a.localeCompare(b))
+      .map((student) => `${student} (${sessionInteractions[student]})`);
     return `Student${
       studentsHelped.length > 0 ? 's' : ''
     } helped:\n${studentsHelped.join(', ')}`;

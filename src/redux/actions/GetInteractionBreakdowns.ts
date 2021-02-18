@@ -16,6 +16,10 @@ export type InteractionBreakdownResponse = {
   name?: string;
 };
 
+/**
+ * Get the number of interactions (both total and weekly) per LA.
+ * Used on the Stats page
+ */
 const getBreakdowns = async (): Promise<InteractionBreakdown[]> => {
   let breakdowns: InteractionBreakdownResponse[] = [];
 

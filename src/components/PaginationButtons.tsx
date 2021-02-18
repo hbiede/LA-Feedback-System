@@ -17,6 +17,9 @@ type Props = {
 
 const MAX_PAGE_COUNT = 5;
 
+/**
+ * Allows for paginated tables
+ */
 const PaginationButtons = ({ itemCount, activePage, setActivePage }: Props) => {
   const handlePageClick = useCallback(
     (event: React.MouseEvent<HTMLElement, MouseEvent>) => {

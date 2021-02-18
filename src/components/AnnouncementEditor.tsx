@@ -15,7 +15,7 @@ import Button from 'react-bootstrap/Button';
 import shallow from 'zustand/shallow';
 
 import { COURSES } from 'statics/Types';
-import { ALERT_CLASSES } from 'redux/modules/Types';
+import { ALERT_CLASSES, ResponseClass } from 'redux/modules/Types';
 
 import Redux, { AppReduxState } from 'redux/modules';
 
@@ -27,6 +27,9 @@ const COURSE_LABEL = 'Course';
 const CLASS_ID = 'AnnouncementAlertClassSelectionDropdown';
 const CLASS_LABEL = 'Alert Type';
 
+/**
+ * A screen on which an admin can create announcements viewable by the LAs
+ */
 const AnnouncementEditor = () => {
   const { clearAnnouncements, setAnnouncements } = Redux(
     (state: AppReduxState) => ({
@@ -38,7 +41,7 @@ const AnnouncementEditor = () => {
 
   const [currentBody, setCurrentBody] = useState<string>('');
   const [courseRecord, setCourseRecord] = useState<string | null>(null);
-  const [alertType, setAlertType] = useState<string | null>(null);
+  const [alertType, setAlertType] = useState<ResponseClass | null>(null);
   const disabled = courseRecord === null || currentBody.trim().length === 0;
   const [heading, setHeading] = useState<string | null>(null);
 
@@ -48,7 +51,7 @@ const AnnouncementEditor = () => {
       const { id, value } = event.target;
       switch (id) {
         case CLASS_ID:
-          setAlertType(value === 'choose' ? null : value);
+          setAlertType(value === 'choose' ? null : (value as ResponseClass));
           break;
         case COURSE_ID:
           setCourseRecord(value === 'choose' ? null : value);

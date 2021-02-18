@@ -181,5 +181,5 @@ if ($isAdmin && $la !== null) {
         'outstanding' => 0,
         'sentiment' => -1,
     ];
-    json_encode($response);
+    echo json_encode($response);
 }

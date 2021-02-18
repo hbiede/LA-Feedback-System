@@ -11,7 +11,14 @@ import { RESTResponse } from 'statics/Types';
 const CSE_CAS_SERVICE = 'https://cse-apps.unl.edu/cas';
 
 class ServiceInterface {
-  static sendEmail = async (
+  /**
+   * Logs an interaction with a given student
+   *
+   * @param studentID The database ID of the student being logged
+   * @param course The course for which the student had an interaction
+   * @param interactionType The type of interaction (i.e., 'office hour', 'lab')
+   */
+  static logInteraction = async (
     studentID: number,
     course: string | null = null,
     interactionType: string | null = null
@@ -50,16 +57,34 @@ class ServiceInterface {
     return null;
   };
 
+  /**
+   * Gets the current URL without the query params
+   */
   static getPath = () => window.location.href.split('?')[0].replace(/\/$/, '');
 
+  /**
+   * Redirects to the CAS login page
+   */
   static login = () => {
     window.location.href = `${CSE_CAS_SERVICE}/login?service=${ServiceInterface.getPath()}`;
   };
 
+  /**
+   * Redirects to the CAS logout page
+   */
   static logout = () => {
     window.location.href = `${CSE_CAS_SERVICE}/logout?service=${ServiceInterface.getPath()}`;
   };
 
+  /**
+   * Used to modify data about the currently selected user
+   *
+   * @param service The REST api URL
+   * @param username The currently selected user's username
+   * @param updateVal The new value
+   * @return RESTResponse
+   * @see RESTResponse
+   */
   static rest = async (
     service: string,
     username: string,

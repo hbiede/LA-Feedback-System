@@ -30,6 +30,9 @@ type Props = {
   style?: CSSProperties;
 };
 
+/**
+ * The table viewble from the stats page containing the number of interactions per LA
+ */
 const BreakdownTable = ({ style }: Props) => {
   const { getInteractionBreakdowns } = Redux(
     (state: AppReduxState) => ({

@@ -10,6 +10,9 @@ import shallow from 'zustand/shallow';
 
 import Redux, { AppReduxState } from 'redux/modules';
 
+/**
+ * Displays the number of outstanding feedback requests
+ */
 const OutstandingFeedbackText = () => {
   const { interactions } = Redux(
     (state: AppReduxState) => ({

@@ -13,6 +13,11 @@ import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
 import { RatingRecord, RatingResponse } from 'statics/Types';
 
+/**
+ * Get all ratings in the data base for the currently selected LA
+ *
+ * @param get The app redux state accessor
+ */
 const GetRatings = async (
   get: GetState<AppReduxState>
 ): Promise<RatingRecord[]> => {

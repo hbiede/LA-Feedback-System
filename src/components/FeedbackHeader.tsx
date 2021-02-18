@@ -15,6 +15,9 @@ type Props = {
   style?: CSSProperties;
 };
 
+/**
+ * The title header for the main window
+ */
 const FeedbackHeader = ({ style }: Props) => {
   const { isAdmin } = Redux(
     (state: AppReduxState) => ({

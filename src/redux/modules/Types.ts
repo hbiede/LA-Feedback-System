@@ -38,11 +38,6 @@ export type ResponseMessage = {
   content: string | JSX.Element;
 };
 
-export type InteractionTime = {
-  course: string;
-  time: number;
-};
-
 export type InteractionBreakdown = {
   count: number;
   course: string;

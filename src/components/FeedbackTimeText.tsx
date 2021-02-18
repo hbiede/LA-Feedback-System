@@ -12,6 +12,9 @@ import Redux, { AppReduxState } from 'redux/modules';
 
 import { InteractionRecord } from 'statics/Types';
 
+/**
+ * Used to display the average time for students to complete the feedback survey
+ */
 const FeedbackTimeText = () => {
   const { interactions } = Redux(
     (state: AppReduxState) => ({

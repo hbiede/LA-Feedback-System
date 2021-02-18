@@ -30,6 +30,11 @@ type InteractionResponseSummary = {
   time: string | null;
 };
 
+/**
+ * Collects all data for the Admin page
+ *
+ * @param state The current Redux app state
+ */
 const getInteractions = async (
   state: GetState<AppReduxState>
 ): Promise<InteractionSummary> => {

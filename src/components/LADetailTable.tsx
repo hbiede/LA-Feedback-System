@@ -25,7 +25,7 @@ const TIME_ID = 'time_col_header';
 const SENTIMENT_ID = 'sentiment_col_header';
 const COURSE_ID = 'course_col_header';
 
-const LAAdminTable = () => {
+const LADetailTable = () => {
   const { ratings } = Redux(
     (state: AppReduxState) => ({
       ratings: state.ratings,
@@ -175,4 +175,4 @@ const LAAdminTable = () => {
   );
 };
 
-export default LAAdminTable;
+export default LADetailTable;

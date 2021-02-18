@@ -32,6 +32,9 @@ const SELECTED_USERNAME_ID = 'selected_username';
 const LA_NAME_ID = 'la_name';
 const COURSE_ID = 'course';
 
+/**
+ * Allows for modification of LA name and default course
+ */
 const SettingsForm = ({ closeModal }: Props) => {
   const {
     selectedUsername,

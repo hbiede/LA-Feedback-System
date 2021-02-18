@@ -14,16 +14,23 @@ import { AppReduxState } from 'redux/modules';
 
 import { ResponseMessage } from '../modules/Types';
 
+/**
+ * Gets the current announcements. If more than one announcement exists,
+ * the most specific course announcement will be received.
+ *
+ * @param state The redux state
+ */
 const getAnnouncements = async (
   state: GetState<AppReduxState>
 ): Promise<ResponseMessage> => {
-  const { setResponse } = state();
+  const { course, setResponse } = state();
 
   const requestOptions = {
-    method: 'GET',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({ course }),
   };
 
   let responseObj: ResponseMessage = {

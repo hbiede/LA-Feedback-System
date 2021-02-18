@@ -21,6 +21,9 @@ type Props = Omit<TypeaheadProps<Student>, 'options'> & {
   course?: string | null;
 };
 
+/**
+ * Allows LAs to enter a set of students for recording interactions
+ */
 const StudentSelectionTypeahead = ({
   course: filterCourse,
   ...rest

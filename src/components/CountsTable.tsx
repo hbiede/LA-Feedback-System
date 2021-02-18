@@ -18,6 +18,9 @@ import { SORT_CHARS, SortConfig } from 'statics/Types';
 const COURSE_ID = 'course_title';
 const COUNT_ID = 'course_count';
 
+/**
+ * The table viewble from the stats page containing the number of interactions per course
+ */
 const CountsTable = () => {
   const { getCounts } = Redux(
     (state: AppReduxState) => ({

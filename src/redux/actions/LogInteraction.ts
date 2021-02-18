@@ -7,7 +7,15 @@
 import { api } from 'redux/modules';
 import ServiceInterface from 'statics/ServiceInterface';
 
-const SendEmail = (
+/**
+ * Logs an interaction with a given student
+ *
+ * @param studentID The database ID of the student being logged
+ * @param course The course for which the student had an interaction
+ * @param multiples If the LA logged multiple students at once
+ * @param interactionType The type of interaction (i.e., 'office hour', 'lab')
+ */
+const LogInteraction = (
   studentID: number,
   course: string | null = null,
   multiples = false,
@@ -22,7 +30,7 @@ const SendEmail = (
     return;
   }
 
-  ServiceInterface.sendEmail(studentID, course, interactionType)
+  ServiceInterface.logInteraction(studentID, course, interactionType)
     .then((response) => {
       if (response === '0' || response === 0) {
         setResponse({
@@ -50,4 +58,4 @@ const SendEmail = (
     });
 };
 
-export default SendEmail;
+export default LogInteraction;

@@ -10,12 +10,29 @@ import ServiceInterface from 'statics/ServiceInterface';
 
 import Redux from 'redux/modules';
 
+import { ResponseClass } from '../modules/Types';
+
 export type AnnouncementProps = {
+  /**
+   * The body of the announcement
+   */
   body: string;
-  class: string;
+  /**
+   * The way the announcement should be displayed
+   */
+  class: ResponseClass;
+  /**
+   * What course for which the announcement will be displayed
+   * ('all' will display for all LAs)
+   */
   course: string;
 };
 
+/**
+ * Sets the announcement for a given course
+ *
+ * @param props The body, class, and course of the announcement
+ */
 const setAnnouncements = async (props: AnnouncementProps): Promise<number> => {
   const requestOptions = {
     method: 'POST',

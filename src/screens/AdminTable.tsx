@@ -27,8 +27,8 @@ import Redux, { AppReduxState } from 'redux/modules';
 import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
 import { COURSES } from 'statics/Types';
-import SummaryTable from 'components/SummaryTable';
-import LAAdminTable from 'components/LAAdminTable';
+import LASummaryTable from 'components/LASummaryTable';
+import LADetailTable from 'components/LADetailTable';
 import FeedbackTimeText from 'components/FeedbackTimeText';
 import OutstandingFeedbackText from 'components/OutstandingFeedbackText';
 
@@ -42,6 +42,9 @@ type LA = {
   name?: string;
 };
 
+/**
+ * The main page for admins
+ */
 const AdminTable = ({ style }: Props) => {
   const {
     interactions,
@@ -165,7 +168,7 @@ const AdminTable = ({ style }: Props) => {
   if (selectedLA === null) {
     return (
       <div style={style} className="col-md-10">
-        <SummaryTable showLA={showLA} />
+        <LASummaryTable showLA={showLA} />
         <SentimentText />
         <OutstandingFeedbackText />
         <FeedbackTimeText />
@@ -233,7 +236,7 @@ const AdminTable = ({ style }: Props) => {
           )}
         </InputGroup>
       </Form.Row>
-      <LAAdminTable />
+      <LADetailTable />
     </div>
   );
 };
