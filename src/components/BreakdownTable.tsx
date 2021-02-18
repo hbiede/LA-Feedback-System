@@ -123,18 +123,34 @@ const BreakdownTable = ({ style }: Props) => {
       <Table hover style={{ width: '100%', cursor: 'default' }}>
         <thead className="thead-dark">
           <tr>
-            <th id={NAME_ID} onClick={handleSortClick}>
+            <th
+              id={NAME_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Name ${column === NAME_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th id={COURSE_ID} onClick={handleSortClick}>
+            <th
+              id={COURSE_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th id={COUNT_ID} onClick={handleSortClick}>
+            <th
+              id={COUNT_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Interactions ${
                 column === COUNT_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
-            <th id={WEEK_COUNT_ID} onClick={handleSortClick}>
+            <th
+              id={WEEK_COUNT_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Interactions (Last 7 Days) ${
                 column === WEEK_COUNT_ID ? SORT_CHARS.get(order) : ' '
               }`}

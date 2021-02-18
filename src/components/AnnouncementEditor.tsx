@@ -1,7 +1,5 @@
 import React, { ChangeEvent, useCallback, useState } from 'react';
 
-import SimpleMDE from 'react-simplemde-editor';
-
 import ReactMarkdown from 'react-markdown';
 
 import Alert from 'react-bootstrap/Alert';
@@ -20,6 +18,8 @@ import { ALERT_CLASSES, ResponseClass } from 'redux/modules/Types';
 import Redux, { AppReduxState } from 'redux/modules';
 
 const ALL_COURSE_OPTION = 'all';
+
+const CONTENT_ID = 'AnnouncementContentEditorTextArea';
 
 const COURSE_ID = 'AnnouncementCourseSelectionDropdown';
 const COURSE_LABEL = 'Course';
@@ -46,10 +46,17 @@ const AnnouncementEditor = () => {
   const [heading, setHeading] = useState<string | null>(null);
 
   const handleChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    (
+      event: ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >
+    ) => {
       setHeading(null);
       const { id, value } = event.target;
       switch (id) {
+        case CONTENT_ID:
+          setCurrentBody(value);
+          break;
         case CLASS_ID:
           setAlertType(value === 'choose' ? null : (value as ResponseClass));
           break;
@@ -89,28 +96,7 @@ const AnnouncementEditor = () => {
         </Alert>
       </Collapse>
 
-      <SimpleMDE
-        onChange={setCurrentBody}
-        options={{
-          toolbar: [
-            'bold',
-            'italic',
-            'heading',
-            '|',
-            'code',
-            'quote',
-            'ordered-list',
-            'unordered-list',
-            '|',
-            'link',
-            'image',
-            'table',
-            'horizontal-rule',
-            '|',
-            'guide',
-          ],
-        }}
-      />
+      <textarea id={CONTENT_ID} onChange={handleChange} value={currentBody} />
       <FormGroup as={Row} controlId={COURSE_ID}>
         <Form.Label className="col-sm-5">{COURSE_LABEL}</Form.Label>
         <div className="col-sm-7">

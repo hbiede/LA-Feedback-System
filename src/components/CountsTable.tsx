@@ -100,10 +100,18 @@ const CountsTable = () => {
       <Table hover style={{ width: '100%', cursor: 'default' }}>
         <thead className="thead-dark">
           <tr>
-            <th id={COURSE_ID} onClick={handleSortClick}>
+            <th
+              id={COURSE_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th id={COUNT_ID} onClick={handleSortClick}>
+            <th
+              id={COUNT_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Interactions ${
                 column === COUNT_ID ? SORT_CHARS.get(order) : ' '
               }`}

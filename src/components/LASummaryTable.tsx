@@ -180,16 +180,27 @@ const LASummaryTable = ({ showLA }: Props) => {
       <Table hover style={{ width: '100%', cursor: 'default' }} role="table">
         <thead className="thead-dark">
           <tr>
-            <th role="columnheader" id={LA_ID} onClick={handleSortClick}>
+            <th
+              role="columnheader"
+              id={LA_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`LA ${column === LA_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th role="columnheader" id={COURSE_ID} onClick={handleSortClick}>
+            <th
+              role="columnheader"
+              id={COURSE_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
             <th
               role="columnheader"
               id={INTERACTION_COUNT_ID}
               onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
             >
               {`Interactions ${
                 column === INTERACTION_COUNT_ID ? SORT_CHARS.get(order) : ' '
@@ -199,6 +210,7 @@ const LASummaryTable = ({ showLA }: Props) => {
               role="columnheader"
               id={WEEKLY_INTERACTION_COUNT_ID}
               onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
             >
               {`Weekly Interactions ${
                 column === WEEKLY_INTERACTION_COUNT_ID
@@ -210,6 +222,7 @@ const LASummaryTable = ({ showLA }: Props) => {
               role="columnheader"
               id={AVERAGE_RATING_ID}
               onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
             >
               {`Average Rating ${
                 column === AVERAGE_RATING_ID ? SORT_CHARS.get(order) : ' '

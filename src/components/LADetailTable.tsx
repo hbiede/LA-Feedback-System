@@ -126,23 +126,39 @@ const LADetailTable = () => {
       <Table hover style={{ width: '100%', cursor: 'default' }}>
         <thead className="thead-dark">
           <tr>
-            <th id={RATING_ID} onClick={handleSortClick}>
+            <th
+              id={RATING_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Rating (Avg: ${avg.toFixed(2)}) ${
                 column === RATING_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
-            <th id={TIME_ID} onClick={handleSortClick}>
+            <th
+              id={TIME_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Time of Interaction ${
                 column === TIME_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
-            <th id={SENTIMENT_ID} onClick={handleSortClick}>
+            <th
+              id={SENTIMENT_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
               {`Sentiment ${
                 column === SENTIMENT_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
             {isMultiCourseLA && (
-              <th id={COURSE_ID} onClick={handleSortClick}>
+              <th
+                id={COURSE_ID}
+                onClick={handleSortClick}
+                style={{ cursor: 'pointer' }}
+              >
                 {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
               </th>
             )}
