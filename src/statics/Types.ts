@@ -11,6 +11,7 @@ export type InteractionRecord = {
   count: number;
   fCount: number;
   username: string;
+  wCount: number;
   course?: string;
   name?: string;
 };

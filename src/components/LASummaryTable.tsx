@@ -27,7 +27,13 @@ type Props = {
   showLA: (la: InteractionRecord) => void;
 };
 
-const SummaryTable = ({ showLA }: Props) => {
+const LA_ID = 'la_name';
+const COURSE_ID = 'course';
+const INTERACTION_COUNT_ID = 'int_count';
+const WEEKLY_INTERACTION_COUNT_ID = 'week_int_count';
+const AVERAGE_RATING_ID = 'avg_rating';
+
+const LASummaryTable = ({ showLA }: Props) => {
   const { interactions } = Redux(
     (state: AppReduxState) => ({
       interactions: state.interactions,
@@ -36,7 +42,7 @@ const SummaryTable = ({ showLA }: Props) => {
   );
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    column: 'la',
+    column: LA_ID,
     order: 1,
   });
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -60,20 +66,27 @@ const SummaryTable = ({ showLA }: Props) => {
         .sort((a, b) => {
           let cmp = 0;
           switch (sortConfig.column) {
-            case 'course':
+            case COURSE_ID:
               if (!a.course && !b.course) return 0;
               if (!a.course) return 1;
               if (!b.course) return -1;
 
               return sortConfig.order * a.course.localeCompare(b.course);
-            case 'int_count':
+            case INTERACTION_COUNT_ID:
               if (a.count < b.count) {
                 cmp = -1;
               } else if (a.count > b.count) {
                 cmp = 1;
               }
               return sortConfig.order * cmp;
-            case 'avg_rating':
+            case WEEKLY_INTERACTION_COUNT_ID:
+              if (a.wCount < b.wCount) {
+                cmp = -1;
+              } else if (a.wCount > b.wCount) {
+                cmp = 1;
+              }
+              return sortConfig.order * cmp;
+            case AVERAGE_RATING_ID:
               const aDoesntExist = !a.avg || a.avg === 0;
               const bDoesntExist = !b.avg || b.avg === 0;
               if (aDoesntExist && bDoesntExist) return 0;
@@ -167,20 +180,39 @@ const SummaryTable = ({ showLA }: Props) => {
       <Table hover style={{ width: '100%', cursor: 'default' }} role="table">
         <thead className="thead-dark">
           <tr>
-            <th role="columnheader" id="la" onClick={handleSortClick}>
-              {`LA ${column === 'la' ? SORT_CHARS.get(order) : ' '}`}
+            <th role="columnheader" id={LA_ID} onClick={handleSortClick}>
+              {`LA ${column === LA_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th role="columnheader" id="course" onClick={handleSortClick}>
-              {`Course ${column === 'course' ? SORT_CHARS.get(order) : ' '}`}
+            <th role="columnheader" id={COURSE_ID} onClick={handleSortClick}>
+              {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
-            <th role="columnheader" id="int_count" onClick={handleSortClick}>
+            <th
+              role="columnheader"
+              id={INTERACTION_COUNT_ID}
+              onClick={handleSortClick}
+            >
               {`Interactions ${
-                column === 'int_count' ? SORT_CHARS.get(order) : ' '
+                column === INTERACTION_COUNT_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
-            <th role="columnheader" id="avg_rating" onClick={handleSortClick}>
+            <th
+              role="columnheader"
+              id={WEEKLY_INTERACTION_COUNT_ID}
+              onClick={handleSortClick}
+            >
+              {`Weekly Interactions ${
+                column === WEEKLY_INTERACTION_COUNT_ID
+                  ? SORT_CHARS.get(order)
+                  : ' '
+              }`}
+            </th>
+            <th
+              role="columnheader"
+              id={AVERAGE_RATING_ID}
+              onClick={handleSortClick}
+            >
               {`Average Rating ${
-                column === 'avg_rating' ? SORT_CHARS.get(order) : ' '
+                column === AVERAGE_RATING_ID ? SORT_CHARS.get(order) : ' '
               }`}
             </th>
           </tr>
@@ -203,6 +235,7 @@ const SummaryTable = ({ showLA }: Props) => {
                     <td>{row.name ? row.name : row.username}</td>
                     <td>{row.course}</td>
                     <td>{row.count}</td>
+                    <td>{row.wCount}</td>
                     <td>
                       {row.avg !== null &&
                       !Number.isNaN(row.avg) &&
@@ -232,4 +265,4 @@ const SummaryTable = ({ showLA }: Props) => {
   );
 };
 
-export default SummaryTable;
+export default LASummaryTable;

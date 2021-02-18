@@ -103,10 +103,11 @@ function get_outstanding_feedback() {
 function get_interactions() {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT username, name, cse_usernames.course, ' .
-        'COUNT(i.interaction_key) AS count, COUNT(f.feedback_key) AS fCount, ' .
+        'COUNT(i.interaction_key) AS count, COUNT(t.interaction_key) AS wCount, COUNT(f.feedback_key) AS fCount, ' .
         'AVG(rating) AS avg, AVG(sentiment) AS sentiment FROM cse_usernames ' .
         'LEFT JOIN interactions i on cse_usernames.username_key = i.la_username_key ' .
         'LEFT JOIN feedback f on i.interaction_key = f.interaction_key ' .
+        'LEFT JOIN (SELECT interaction_key FROM interactions WHERE interactions.time_of_interaction >= CURDATE() - INTERVAL 7 DAY) t on t.interaction_key = i.interaction_key ' .
         'GROUP BY username ORDER BY username;');
     $returnVal = [];
     if ($ps) {
@@ -173,5 +174,12 @@ if ($isAdmin && $la !== null) {
     ];
     echo json_encode($response);
 } else {
-    echo '[]';
+    $response = [
+        'isAdmin' => false,
+        'ratings' => [],
+        'time' => -1,
+        'outstanding' => 0,
+        'sentiment' => -1,
+    ];
+    json_encode($response);
 }

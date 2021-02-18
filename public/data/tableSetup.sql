@@ -157,12 +157,12 @@ FROM interactions;
 CREATE VIEW weekly_interactions AS
 SELECT IFNULL(cu.name, cu.username) AS 'name',
        cu.course                    AS 'course',
-       COUNT(0)                     AS 'interactions',
+       COUNT(cu.username_key)       AS 'interactions',
        AVG(f.rating)                AS 'avg_rating'
 FROM interactions
          LEFT JOIN cse_usernames cu ON cu.username_key = interactions.la_username_key
          LEFT JOIN feedback f ON interactions.interaction_key = f.interaction_key
-WHERE interactions.time_of_interaction >= curdate() - INTERVAL 7 DAY
+WHERE interactions.time_of_interaction >= CURDATE() - INTERVAL 7 DAY
 GROUP BY cu.username
 ORDER BY cu.username;
 

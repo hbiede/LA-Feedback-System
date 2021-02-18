@@ -16,8 +16,9 @@ type InteractionResponseRecord = {
   avg: string;
   count: string;
   course: string;
-  feedbackCount: string;
+  fCount: string;
   username: string;
+  wCount: string;
   name?: string;
 };
 
@@ -78,7 +79,8 @@ const getInteractions = async (
               avg: Number.parseFloat(rating.avg),
               course: rating.course ?? '---',
               count: Number.parseInt(rating.count, 10),
-              fCount: Number.parseInt(rating.feedbackCount, 10),
+              wCount: Number.parseInt(rating.wCount, 10),
+              fCount: Number.parseInt(rating.fCount, 10),
             }))
             .filter((int) => int.count > 0);
         }
