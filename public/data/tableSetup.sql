@@ -167,19 +167,26 @@ GROUP BY cu.username
 ORDER BY cu.username;
 
 CREATE VIEW la_interactions AS
-SELECT IFNULL(cul.name, cul.username) AS 'la',
-       COUNT(i.interaction_key)       AS 'count',
-       MAX(time_of_interaction)       AS 'latest',
-       COUNT(f.interaction_key)       AS 'pieces of feedback',
-       AVG(f.rating)                  AS 'average feedback'
+SELECT IFNULL(cul.name, cul.username)       AS 'la',
+       COUNT(i.interaction_key)             AS 'interaction count',
+       MAX(i.time_of_interaction)           AS 'latest',
+       COUNT(f.interaction_key)             AS 'pieces of feedback',
+       IFNULL(AVG(f.rating), 'No feedback') AS 'average feedback'
 FROM interactions i
          LEFT JOIN cse_usernames cul on la_username_key = cul.username_key
          LEFT JOIN feedback f on i.interaction_key = f.interaction_key
 GROUP BY cul.username
 UNION
-SELECT 'total', COUNT(*) AS 'count', MAX(time_of_interaction), COUNT(f.interaction_key), AVG(f.rating)
-FROM interactions
-         LEFT JOIN feedback f on interactions.interaction_key = f.interaction_key;
+SELECT '---', '---', '---', '---', '---'
+UNION
+SELECT 'total',
+       COUNT(i.interaction_key) AS 'interaction count',
+       MAX(i.time_of_interaction),
+       COUNT(f.interaction_key),
+       AVG(f.rating)
+FROM interactions i
+         LEFT JOIN feedback f on i.interaction_key = f.interaction_key;
+
 
 CREATE VIEW interaction_type_readable AS
 SELECT interaction_type,
