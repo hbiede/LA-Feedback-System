@@ -40,6 +40,12 @@ const getUsername = async (set: SetState<AppReduxState>): Promise<void> => {
         ServiceInterface.login();
       } else {
         set(() => ({ username: text }));
+        if (/^cse\d/.test(text)) {
+          api.getState().setResponse({
+            class: 'danger',
+            content: 'Cannot log interactions as a course',
+          });
+        }
       }
     })
     .catch((error) => {

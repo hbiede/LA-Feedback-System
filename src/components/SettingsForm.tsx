@@ -22,7 +22,7 @@ import shallow from 'zustand/shallow';
 
 import Redux, { api, AppReduxState } from 'redux/modules';
 
-import { COURSES } from 'statics/Types';
+import ServiceInterface from '../statics/ServiceInterface';
 
 type Props = {
   closeModal: () => void;
@@ -42,6 +42,7 @@ const SettingsForm = ({ closeModal }: Props) => {
     name,
     setName,
     course,
+    courses,
     setCourse,
     isAdmin,
     setResponse,
@@ -52,6 +53,7 @@ const SettingsForm = ({ closeModal }: Props) => {
       name: state.name,
       setName: state.setName,
       course: state.course,
+      courses: state.courses,
       setCourse: state.setCourse,
       isAdmin: state.isAdmin,
       setResponse: state.setResponse,
@@ -170,6 +172,35 @@ const SettingsForm = ({ closeModal }: Props) => {
       isAdmin &&
       (!selectedUsernameRecord || selectedUsernameRecord.trim().length === 0));
 
+  if (/^cse\d/.test(selectedUsername)) {
+    return (
+      <>
+        <h2>May not login as a course account</h2>
+        <Button
+          id="settingsLogoutButton"
+          type="reset"
+          variant={isAdmin ? 'outline-danger' : 'danger'}
+          value="Logout"
+          onClick={ServiceInterface.logout}
+        >
+          Logout
+        </Button>
+        {isAdmin && (
+          <Button
+            id="submitButton"
+            type="reset"
+            variant="primary"
+            value="Change LA"
+            onClick={changeLA}
+            style={{ marginLeft: 10 }}
+          >
+            Change LA
+          </Button>
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <h2>
@@ -217,7 +248,7 @@ const SettingsForm = ({ closeModal }: Props) => {
                   custom
                 >
                   <option value="choose">(choose)</option>
-                  {COURSES.map((c) => (
+                  {courses.map((c) => (
                     <option value={c} selected={course === c}>
                       {c}
                     </option>

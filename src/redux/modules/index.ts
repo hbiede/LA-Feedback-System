@@ -11,6 +11,7 @@ import {
   CourseRest,
   GetAnnouncements,
   GetCounts,
+  GetCourses,
   GetInteractionBreakdowns,
   GetInteractions,
   GetRatings,
@@ -45,6 +46,10 @@ export type AppReduxState = {
    * The current course for the currently selected user
    */
   course: string;
+  /**
+   * All courses in the program
+   */
+  courses: string[];
   /**
    * Gets the current announcements. If more than one announcement exists,
    * the most specific course announcement will be received.
@@ -203,6 +208,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   username: '',
   startUp: () => {
     GetUsername(set).then(() => {
+      GetCourses().then((courses) => set({ courses }));
       get().getName();
       get().getCourse();
       get().getInteractions();
@@ -217,6 +223,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
       NameRest(args.name).then(() => set(() => ({ name: args.name })));
     }
   },
+  courses: [],
   course: '',
   getCourse: () =>
     CourseRest().then((result) => set(() => ({ course: result }))),

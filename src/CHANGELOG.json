@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 2.0.4\n- Prevent course accounts from logging interactions\n- Move course list to an API call",
     "## 2.0.3\n- Add appropriate cursors to sortable table headers",
     "## 2.0.2\n- Shows the number of interactions with each student to the expended interaction section\n- Adds weekly interactions to the admin table",
     "## 2.0.1\n- Change session interaction count button style and disable requirements\n- Fix un-removable student bug\n- Clear students on course selection change",

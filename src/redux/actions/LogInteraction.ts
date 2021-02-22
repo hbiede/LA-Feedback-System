@@ -21,11 +21,18 @@ const LogInteraction = (
   multiples = false,
   interactionType: string | null = null
 ) => {
-  const { setResponse } = api.getState();
+  const { setResponse, username } = api.getState();
   if (studentID === null) {
     setResponse({
       class: 'danger',
       content: 'Must set a username',
+    });
+    return;
+  }
+  if (/^cse\d/.test(username)) {
+    setResponse({
+      class: 'danger',
+      content: 'You may not log interactions as a course',
     });
     return;
   }

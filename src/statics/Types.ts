@@ -148,11 +148,6 @@ export type StyleDef<T extends string | number | symbol> = Record<
 >;
 
 /**
- * All current courses
- */
-export const COURSES = ['101', '155E', '155N', '156'];
-
-/**
  * The characters used to display sort order
  */
 export const SORT_CHARS = new Map<number, string>()

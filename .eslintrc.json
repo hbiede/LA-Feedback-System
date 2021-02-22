@@ -31,7 +31,6 @@
   "plugins": [
     "typescript-sort-keys",
     "button-label-required",
-    "flowtype",
     "jsx-a11y",
     "react",
     "react-hooks",

@@ -30,6 +30,7 @@ function App() {
       isAdmin: state.isAdmin,
       response: state.response,
       setResponse: state.setResponse,
+      username: state.username,
     }),
     shallow
   );

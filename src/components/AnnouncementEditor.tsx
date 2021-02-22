@@ -12,7 +12,6 @@ import Button from 'react-bootstrap/Button';
 
 import shallow from 'zustand/shallow';
 
-import { COURSES } from 'statics/Types';
 import { ALERT_CLASSES, ResponseClass } from 'redux/modules/Types';
 
 import Redux, { AppReduxState } from 'redux/modules';
@@ -31,9 +30,10 @@ const CLASS_LABEL = 'Alert Type';
  * A screen on which an admin can create announcements viewable by the LAs
  */
 const AnnouncementEditor = () => {
-  const { clearAnnouncements, setAnnouncements } = Redux(
+  const { clearAnnouncements, courses, setAnnouncements } = Redux(
     (state: AppReduxState) => ({
       clearAnnouncements: state.clearAnnouncements,
+      courses: state.courses,
       setAnnouncements: state.setAnnouncements,
     }),
     shallow
@@ -115,7 +115,7 @@ const AnnouncementEditor = () => {
               hidden
               aria-hidden
               selected={
-                courseRecord !== null && !COURSES.includes(courseRecord)
+                courseRecord !== null && !courses.includes(courseRecord)
               }
             >
               (choose)
@@ -127,7 +127,7 @@ const AnnouncementEditor = () => {
             >
               {ALL_COURSE_OPTION}
             </option>
-            {COURSES.map((c) => (
+            {courses.map((c) => (
               <option
                 value={c}
                 selected={c === courseRecord}
@@ -156,7 +156,7 @@ const AnnouncementEditor = () => {
               value="choose"
               hidden
               aria-hidden
-              selected={alertType !== null && !COURSES.includes(alertType)}
+              selected={alertType !== null && !courses.includes(alertType)}
             >
               (choose)
             </option>

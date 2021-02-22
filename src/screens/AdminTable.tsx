@@ -26,7 +26,6 @@ import SentimentText from 'components/SentimentText';
 import Redux, { AppReduxState } from 'redux/modules';
 import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
-import { COURSES } from 'statics/Types';
 import LASummaryTable from 'components/LASummaryTable';
 import LADetailTable from 'components/LADetailTable';
 import FeedbackTimeText from 'components/FeedbackTimeText';
@@ -55,6 +54,7 @@ const AdminTable = ({ style }: Props) => {
     setSelectedUsername,
     name,
     setName,
+    courses,
     course,
     setCourse,
   } = Redux(
@@ -67,6 +67,7 @@ const AdminTable = ({ style }: Props) => {
       setSelectedUsername: state.setSelectedUsername,
       name: state.name,
       setName: state.setName,
+      courses: state.courses,
       course: state.course,
       setCourse: state.setCourse,
     }),
@@ -204,7 +205,7 @@ const AdminTable = ({ style }: Props) => {
                 aria-expanded="false"
                 title={courseRecord}
               >
-                {COURSES.map((c) => (
+                {courses.map((c) => (
                   <Dropdown.Item
                     type="button"
                     value={c}

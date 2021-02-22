@@ -23,8 +23,6 @@ import shallow from 'zustand/shallow';
 
 import Redux, { api, AppReduxState } from 'redux/modules';
 
-import { COURSES } from 'statics/Types';
-
 import { Student } from '../redux/modules/Types';
 import StudentSelectionTypeahead from '../components/StudentSelectionTypeahead';
 
@@ -50,6 +48,7 @@ const FeedbackForm = ({ style }: Props) => {
     username,
     selectedUsername,
     setSelectedUsername,
+    courses,
     course,
     isAdmin,
     incrementSessionInteractions,
@@ -61,6 +60,7 @@ const FeedbackForm = ({ style }: Props) => {
       username: state.username,
       selectedUsername: state.selectedUsername,
       setSelectedUsername: state.setSelectedUsername,
+      courses: state.courses,
       course: state.course,
       isAdmin: state.isAdmin,
       incrementSessionInteractions: state.incrementSessionInteractions,
@@ -260,12 +260,12 @@ const FeedbackForm = ({ style }: Props) => {
                 hidden
                 aria-hidden
                 selected={
-                  courseRecord !== null && !COURSES.includes(courseRecord)
+                  courseRecord !== null && !courses.includes(courseRecord)
                 }
               >
                 (choose)
               </option>
-              {COURSES.map((c) => (
+              {courses.map((c) => (
                 <option
                   value={c}
                   selected={c === (courseRecord ?? course)}
