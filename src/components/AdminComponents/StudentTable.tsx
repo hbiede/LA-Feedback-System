@@ -19,50 +19,68 @@ import Redux, { AppReduxState } from 'redux/modules';
 import PaginationButtons, {
   RATINGS_PER_PAGE,
 } from 'components/PaginationButtons';
+import { Student } from 'redux/modules/Types';
 
-const LA_ID = 'la_name_column';
-const DATE_ID = 'time_of_interaction_column';
+const STUDENT_USERNAME_ID = 'student_username_column';
+const STUDENT_NAME_ID = 'student_name_column';
+const INTERACTION_COUNT_ID = 'interaction_count_column';
+
+const getUsername = (s: Student) => s.username ?? s.canvas_username;
+const getName = (s: Student) => s.name ?? getUsername(s);
 
 const LoginTable = () => {
-  const { logins } = Redux(
+  const { students } = Redux(
     (state: AppReduxState) => ({
-      logins: state.interactions.logins,
+      students: state.students,
     }),
     shallow
   );
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    column: DATE_ID,
-    order: -1,
+    column: STUDENT_USERNAME_ID,
+    order: 1,
   });
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activePage, setActivePage] = useState(1);
 
   const getData = useMemo(
     () =>
-      logins
-        .filter((login) => {
+      students
+        .filter((student) => {
           const trimmedTerm = searchTerm.trim().toLowerCase();
+          const regexCompilation = new RegExp(trimmedTerm, 'i');
+          const { username, name, canvas_username, course } = student;
           return (
-            login.la.toLowerCase().includes(trimmedTerm) ||
-            new RegExp(trimmedTerm, 'i').test(login.la)
+            username?.toLowerCase().includes(trimmedTerm) ||
+            (name && name.toLowerCase().includes(trimmedTerm)) ||
+            (canvas_username &&
+              canvas_username.toLowerCase().includes(trimmedTerm)) ||
+            (course && course.toLowerCase().includes(trimmedTerm)) ||
+            (username && regexCompilation.test(username)) ||
+            (name && regexCompilation.test(name)) ||
+            (canvas_username && regexCompilation.test(canvas_username)) ||
+            (course && regexCompilation.test(course))
           );
         })
         .sort((a, b) => {
           let cmp = 0;
           switch (sortConfig.column) {
-            case DATE_ID:
-              if (a.timeOfInteraction < b.timeOfInteraction) {
+            case INTERACTION_COUNT_ID:
+              if (a.interaction_count < b.interaction_count) {
                 cmp = -1;
-              } else if (a.timeOfInteraction > b.timeOfInteraction) {
+              } else if (a.interaction_count > b.interaction_count) {
                 cmp = 1;
               }
               return sortConfig.order * cmp;
+            case STUDENT_USERNAME_ID:
+              return (
+                sortConfig.order * getUsername(a).localeCompare(getUsername(b))
+              );
             default:
-              return sortConfig.order * a.la.localeCompare(b.la);
+              return sortConfig.order * getName(a).localeCompare(getName(b));
           }
         }),
-    [searchTerm, sortConfig, logins]
+    [searchTerm, sortConfig, students]
   );
 
   const handleSearchChange = useCallback(
@@ -135,19 +153,33 @@ const LoginTable = () => {
           <tr>
             <th
               role="columnheader"
-              id={LA_ID}
+              id={STUDENT_USERNAME_ID}
               onClick={handleSortClick}
               style={{ cursor: 'pointer' }}
             >
-              {`LA ${column === LA_ID ? SORT_CHARS.get(order) : ' '}`}
+              {`Username ${
+                column === STUDENT_USERNAME_ID ? SORT_CHARS.get(order) : ' '
+              }`}
             </th>
             <th
               role="columnheader"
-              id={DATE_ID}
+              id={STUDENT_NAME_ID}
               onClick={handleSortClick}
               style={{ cursor: 'pointer' }}
             >
-              {`Date ${column === DATE_ID ? SORT_CHARS.get(order) : ' '}`}
+              {`Name ${
+                column === STUDENT_NAME_ID ? SORT_CHARS.get(order) : ' '
+              }`}
+            </th>
+            <th
+              role="columnheader"
+              id={INTERACTION_COUNT_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
+              {`Interaction Count ${
+                column === INTERACTION_COUNT_ID ? SORT_CHARS.get(order) : ' '
+              }`}
             </th>
           </tr>
         </thead>
@@ -158,13 +190,13 @@ const LoginTable = () => {
               activePage * RATINGS_PER_PAGE
             )
             .map(
-              ({ la, timeOfInteraction }) =>
-                la &&
-                la.trim().length > 0 &&
-                timeOfInteraction && (
+              (s: Student) =>
+                s &&
+                getName(s).trim().length > 0 && (
                   <tr>
-                    <td>{la}</td>
-                    <td>{timeOfInteraction.toLocaleString()}</td>
+                    <td>{getUsername(s)}</td>
+                    <td>{getName(s)}</td>
+                    <td>{s.interaction_count}</td>
                   </tr>
                 )
             )}

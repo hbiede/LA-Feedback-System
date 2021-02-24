@@ -173,7 +173,7 @@ const LASummaryTable = ({ showLA }: Props) => {
               </Button>
             ) : (
               <InputGroup.Text id="search">&#x1F50D;</InputGroup.Text>
-            ) /* Magnifying Class */
+            ) /* Magnifying Glass */
           }
         </InputGroup.Append>
       </InputGroup>

@@ -1,9 +1,18 @@
-export const groupBy = <T extends Record<string | number, string | number>>(
+type GroupByResult<
+  T extends Record<string | number, string | number | undefined>
+> = Record<NonNullable<T[keyof T]>, T[]>;
+
+export const groupBy = <
+  T extends Record<string | number, string | number | undefined>
+>(
   objs: T[],
   key: keyof T
-): Record<T[keyof T], T[]> => {
-  return objs.reduce((acc: Record<T[keyof T], T[]>, val) => {
-    (acc[val[key]] = acc[val[key]] || []).push(val);
+): GroupByResult<T> => {
+  return objs.reduce((acc, val) => {
+    const prop = val[key] as NonNullable<T[keyof T]>;
+    if (val[key]) {
+      (acc[prop] = acc[prop] || []).push(val);
+    }
     return acc;
-  }, {} as Record<T[keyof T], T[]>);
+  }, {} as GroupByResult<T>);
 };

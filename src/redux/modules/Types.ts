@@ -55,6 +55,7 @@ export type Student = {
   canvas_username: string;
   course: string;
   id: number;
-  name: string;
-  username: string;
+  interaction_count: number;
+  name?: string;
+  username?: string;
 };

@@ -18,7 +18,9 @@ ini_set('error_log', './log/student_list_accessor.log');
 
 
 function get_students() {
-    return run_accessor('SELECT username_key AS id, username, name, course, canvas_username FROM cse_usernames;');
+    return run_accessor('SELECT c.username_key AS id, c.username, c.name, c.course, c.canvas_username, ' .
+        'COUNT(i.interaction_key) AS \'interaction_count\' FROM cse_usernames c LEFT JOIN interactions i ' .
+        'on c.username_key = i.student_username_key GROUP BY username_key;');
 }
 
 $response = [

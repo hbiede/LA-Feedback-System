@@ -1,36 +1,37 @@
-import React, { CSSProperties, useCallback, useState } from 'react';
-
-import Tabs from 'react-bootstrap/Tabs';
-import Tab from 'react-bootstrap/Tab';
+import React, { CSSProperties } from 'react';
 
 import LAFeedbackTable from 'components/AdminComponents/LAFeedbackTable';
 import LoginTable from 'components/AdminComponents/LoginTable';
+import StudentTable from 'components/AdminComponents/StudentTable';
+
+import TabbedScreen, { TabContents } from 'components/TabbedScreen';
 
 type Props = {
   style: CSSProperties;
 };
 
-const FEEDBACK_KEY = 'feedback_tab';
-const LOGIN_KEY = 'login_tab';
+const TABS: TabContents[] = [
+  {
+    eventKey: 'feedback_tab',
+    title: 'Feedback',
+    children: <LAFeedbackTable />,
+  },
+  {
+    eventKey: 'login_tab',
+    title: 'Logins',
+    children: <LoginTable />,
+  },
+  {
+    eventKey: 'student_tab',
+    title: 'Students',
+    children: <StudentTable />,
+  },
+];
 
-const AdminTable = ({ style }: Props) => {
-  const [activeKey, setActiveKey] = useState<string | null>(FEEDBACK_KEY);
-  const setActiveKeyCallback = useCallback(
-    (newKey: string | null) => setActiveKey(newKey),
-    []
-  );
-  return (
-    <div style={style} className="col-md-10">
-      <Tabs activeKey={activeKey} onSelect={setActiveKeyCallback}>
-        <Tab eventKey={FEEDBACK_KEY} title="Feedback">
-          <LAFeedbackTable />
-        </Tab>
-        <Tab eventKey={LOGIN_KEY} title="Logins">
-          <LoginTable />
-        </Tab>
-      </Tabs>
-    </div>
-  );
-};
+const AdminTable = ({ style }: Props) => (
+  <div style={style} className="col-md-10">
+    <TabbedScreen tabs={TABS} />
+  </div>
+);
 
 export default AdminTable;
