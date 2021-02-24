@@ -4,13 +4,7 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
-import React, {
-  ChangeEvent,
-  CSSProperties,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import React, { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -21,19 +15,15 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 import shallow from 'zustand/shallow';
 
-import SentimentText from 'components/SentimentText';
+import SentimentText from 'components/AdminComponents/SentimentText';
 
 import Redux, { AppReduxState } from 'redux/modules';
 import { DEFAULT_COURSE_NAME } from 'redux/modules/Types';
 
-import LASummaryTable from 'components/LASummaryTable';
-import LADetailTable from 'components/LADetailTable';
-import FeedbackTimeText from 'components/FeedbackTimeText';
-import OutstandingFeedbackText from 'components/OutstandingFeedbackText';
-
-type Props = {
-  style?: CSSProperties;
-};
+import LASummaryTable from 'components/AdminComponents/LASummaryTable';
+import LADetailTable from 'components/AdminComponents/LADetailTable';
+import FeedbackTimeText from 'components/AdminComponents/FeedbackTimeText';
+import OutstandingFeedbackText from 'components/AdminComponents/OutstandingFeedbackText';
 
 type LA = {
   username: string;
@@ -44,7 +34,7 @@ type LA = {
 /**
  * The main page for admins
  */
-const AdminTable = ({ style }: Props) => {
+const LAFeedbackTable = () => {
   const {
     interactions,
     getInteractions,
@@ -57,6 +47,7 @@ const AdminTable = ({ style }: Props) => {
     courses,
     course,
     setCourse,
+    setResponse,
   } = Redux(
     (state: AppReduxState) => ({
       interactions: state.interactions,
@@ -70,6 +61,7 @@ const AdminTable = ({ style }: Props) => {
       courses: state.courses,
       course: state.course,
       setCourse: state.setCourse,
+      setResponse: state.setResponse,
     }),
     shallow
   );
@@ -83,12 +75,25 @@ const AdminTable = ({ style }: Props) => {
 
   const showLA = useCallback(
     (la: LA) => {
-      setSelectedLA(la);
-      setSelectedUsername(la);
-      setNewName(la.name ?? la.username);
-      setCourseRecord(la.course ?? null);
+      if (
+        (
+          interactions.ratings.find(
+            (rating) => rating.username === la.username
+          ) ?? { fCount: 0 }
+        ).fCount > 0
+      ) {
+        setSelectedLA(la);
+        setSelectedUsername(la);
+        setNewName(la.name ?? la.username);
+        setCourseRecord(la.course ?? null);
+      } else {
+        setResponse({
+          class: 'danger',
+          content: `${la.name ?? la.username} has no recorded feedback`,
+        });
+      }
     },
-    [setSelectedUsername]
+    [interactions.ratings, setSelectedUsername, setResponse]
   );
 
   useEffect(() => {
@@ -168,17 +173,17 @@ const AdminTable = ({ style }: Props) => {
 
   if (selectedLA === null) {
     return (
-      <div style={style} className="col-md-10">
+      <>
         <LASummaryTable showLA={showLA} />
         <SentimentText />
         <OutstandingFeedbackText />
         <FeedbackTimeText />
-      </div>
+      </>
     );
   }
 
   return (
-    <div style={style} className="col-md-10">
+    <>
       <Form.Row>
         <InputGroup style={{ marginTop: 10 }} className="mb-3">
           <Button variant="dark" type="button" onClick={clearSelection}>
@@ -238,12 +243,12 @@ const AdminTable = ({ style }: Props) => {
         </InputGroup>
       </Form.Row>
       <LADetailTable />
-    </div>
+    </>
   );
 };
 
-AdminTable.defaultProps = {
+LAFeedbackTable.defaultProps = {
   style: {},
 };
 
-export default AdminTable;
+export default LAFeedbackTable;

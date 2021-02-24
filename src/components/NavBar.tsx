@@ -22,7 +22,7 @@ import SettingsForm from 'components/SettingsForm';
 
 import CountsTable from 'components/CountsTable';
 
-import AnnouncementEditor from 'components/AnnouncementEditor';
+import AnnouncementEditor from 'components/AdminComponents/AnnouncementEditor';
 
 import changelog from '../CHANGELOG.json';
 import ServiceInterface from '../statics/ServiceInterface';

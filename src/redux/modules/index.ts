@@ -235,6 +235,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   isAdmin: false,
   interactions: {
     isAdmin: false,
+    logins: [],
     outstanding: 0,
     ratings: [],
     sentiment: -1,

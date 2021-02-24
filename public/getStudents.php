@@ -14,20 +14,11 @@
 //}
 
 include_once 'sqlManager.php';
+ini_set('error_log', './log/student_list_accessor.log');
 
 
 function get_students() {
-    $conn = get_connection();
-    $ps = $conn->prepare('SELECT username_key AS id, username, name, course, canvas_username FROM cse_usernames;');
-    $ps->execute();
-    $result = $ps->get_result();
-    $returnVal = [];
-    while ($row = $result->fetch_assoc()) {
-        array_push($returnVal, $row);
-    }
-    $ps->close();
-    $conn->close();
-    return $returnVal;
+    return run_accessor('SELECT username_key AS id, username, name, course, canvas_username FROM cse_usernames;');
 }
 
 $response = [

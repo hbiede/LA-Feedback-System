@@ -317,6 +317,28 @@ function get_course_counts() {
     }
 }
 
+function run_accessor($query) {
+    $conn = get_connection();
+    $ps = $conn->prepare($query);
+    $returnVal = [];
+    if ($ps) {
+        $ps->execute();
+        $result = $ps->get_result();
+        if ($ps->error) {
+            error_log($ps->error);
+        } else {
+            while ($row = $result->fetch_assoc()) {
+                array_push($returnVal, $row);
+            }
+        }
+        $ps->close();
+    } else {
+        error_log($ps->error);
+    }
+    $conn->close();
+    return $returnVal;
+}
+
 function get_email($student_id) {
     if ($student_id === null) return null;
 

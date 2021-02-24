@@ -12,6 +12,11 @@ import { AppReduxState } from 'redux/modules';
 
 import { InteractionSummary } from 'statics/Types';
 
+type LoginResponseRecord = {
+  la: string;
+  time_of_interaction: string;
+};
+
 type InteractionResponseRecord = {
   avg: string;
   count: string;
@@ -24,6 +29,7 @@ type InteractionResponseRecord = {
 
 type InteractionResponseSummary = {
   isAdmin: boolean;
+  logins: LoginResponseRecord[];
   outstanding: string | null;
   ratings: InteractionResponseRecord[];
   sentiment: string | null;
@@ -41,6 +47,7 @@ const getInteractions = async (
   const { username, setResponse } = state();
   let interactions: InteractionSummary = {
     isAdmin: false,
+    logins: [],
     outstanding: 0,
     ratings: [],
     sentiment: -1,
@@ -60,6 +67,7 @@ const getInteractions = async (
         if (Array.isArray(json)) {
           interactions = {
             isAdmin: false,
+            logins: [],
             outstanding: 0,
             ratings: json,
             sentiment: -1,
@@ -68,6 +76,14 @@ const getInteractions = async (
         } else {
           const intHolder: InteractionResponseSummary = json;
           interactions.isAdmin = intHolder.isAdmin;
+          interactions.logins = intHolder.logins.map(
+            ({ time_of_interaction, la }) => ({
+              la,
+              timeOfInteraction: new Date(
+                Number.parseInt(time_of_interaction, 10) * 1000 // Convert UNIX time stamp to date
+              ),
+            })
+          );
           interactions.time =
             intHolder.time === null ? 0 : Number.parseFloat(intHolder.time);
           interactions.outstanding =

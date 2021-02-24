@@ -11,13 +11,23 @@
 //  username: string (username of the Admin running the check),
 //}
 
+
 // Returns a JSON encoded object formatted as follows:
 //{
-//  time: int (average time to complete the feedback form),
-//  sentiment: int (sentiment of a all comments ([-100,100] inclusive)),
+//  isAdmin: boolean,
+//  logins: LoginRecord[],
+//  outstanding: int (number of outstanding requests for feedback),
 //  ratings: InteractionRecord[]
+//  sentiment: int (sentiment of a all comments ([-100,100] inclusive)),
+//  time: int (average time to complete the feedback form),
 //}
-// If the username in the POST call is not an admin, this script returns an empty array
+// If the username in the POST call is not an admin, this script returns empty data
+
+// Where LoginRecord is an object summarizing a LA login timestamp as follows:
+//{
+//  la: string (LA's name),
+//  time_of_interaction: date,
+//}
 
 // Where InteractionRecord is an object summarizing a single LA formatted as follows:
 //{
@@ -59,6 +69,14 @@
 include_once 'sqlManager.php';
 
 ini_set('error_log', './log/admin.log');
+
+function get_logins() {
+    return run_accessor("SELECT UNIX_TIMESTAMP(time_of_interaction) AS 'time_of_interaction', " .
+        "CONCAT(IFNULL(cul.name, cul.username), IF(is_admin, ' (Admin)', '')) AS 'la' " .
+        "FROM logins l " .
+        "LEFT JOIN cse_usernames cul on l.la_username_key = cul.username_key " .
+        "ORDER BY time_of_interaction");
+}
 
 function get_sentiment() {
     $result = -1;
@@ -102,8 +120,9 @@ function get_outstanding_feedback() {
 
 function get_interactions() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username, name, cse_usernames.course, ' .
-        'COUNT(i.interaction_key) AS count, COUNT(t.interaction_key) AS wCount, COUNT(f.feedback_key) AS fCount, ' .
+    $ps = $conn->prepare('SELECT username, CONCAT(name, IF(is_admin, \' (Admin)\', \'\')) AS \'name\', ' .
+        'cse_usernames.course, COUNT(i.interaction_key) AS count, COUNT(t.interaction_key) AS wCount, ' .
+        'COUNT(f.feedback_key) AS fCount, ' .
         'AVG(rating) AS avg, AVG(sentiment) AS sentiment FROM cse_usernames ' .
         'LEFT JOIN interactions i on cse_usernames.username_key = i.la_username_key ' .
         'LEFT JOIN feedback f on i.interaction_key = f.interaction_key ' .
@@ -125,7 +144,7 @@ function get_interactions() {
 function get_ratings($la_username) {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT rating, comment, course, sentiment, ' .
-        ' DATE_FORMAT(time_of_interaction, "%Y-%m-%dT%TZ") AS time FROM feedback ' .
+        ' UNIX_TIMESTAMP(time_of_interaction) AS time FROM feedback ' .
         'LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key WHERE ' .
         'feedback.interaction_key IN (SELECT interaction_key FROM interactions WHERE la_username_key = ' .
         '(SELECT username_key FROM cse_usernames WHERE username = ?)) ORDER BY rating DESC;');
@@ -167,6 +186,7 @@ if ($isAdmin && $la !== null) {
 } else if ($isAdmin) {
     $response = [
         'isAdmin' => true,
+        'logins' => get_logins(),
         'ratings' => get_interactions(),
         'time' => get_time_to_complete(),
         'outstanding' => get_outstanding_feedback(),
@@ -176,6 +196,7 @@ if ($isAdmin && $la !== null) {
 } else {
     $response = [
         'isAdmin' => false,
+        'logins' => [],
         'ratings' => [],
         'time' => -1,
         'outstanding' => 0,

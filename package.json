@@ -1,6 +1,8 @@
 {
   "name": "la-feedback-system",
-  "version": "2.0.4",
+  "version": "2.1.0",
+  "repository": "https://github.com/hbiede/LA-Feedback-System",
+  "readme": "./README.md",
   "private": true,
   "license": "Apache-2.0",
   "description": "A website to gather feedback from students after interactions with LAs",
@@ -52,7 +54,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "yarn webpack --mode production --config webpack.config.ts",
     "eject": "react-scripts eject",
     "test": "react-scripts test",
     "eslint": "eslint --fix ./src --ext .js,.jsx,.ts,.tsx",

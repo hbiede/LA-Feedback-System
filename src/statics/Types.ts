@@ -7,6 +7,20 @@
 import React from 'react';
 
 /**
+ * A record of a single login to the system
+ */
+export type LoginRecord = {
+  /**
+   * The name of the LA
+   */
+  la: string;
+  /**
+   * The date-time of the login
+   */
+  timeOfInteraction: Date;
+};
+
+/**
  * The information used to summarize a single LA's interaction for an admin
  */
 export type InteractionRecord = {
@@ -48,6 +62,10 @@ export type InteractionSummary = {
    * If the currently logged in user is an admin
    */
   isAdmin: boolean;
+  /**
+   * A list of all logins to the system
+   */
+  logins: LoginRecord[];
   /**
    * The number of outstanding pieces of feedback
    */

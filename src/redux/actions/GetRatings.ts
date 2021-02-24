@@ -38,7 +38,7 @@ const GetRatings = async (
       ratings = ratingsResponse.map((rating) => ({
         ...rating,
         course: rating.course ?? DEFAULT_COURSE_NAME,
-        time: new Date(rating.time),
+        time: new Date(Number.parseInt(rating.time, 10) * 1000), // Convert UNIX time stamp to date
         rating: Number.parseFloat(rating.rating),
       }));
     })

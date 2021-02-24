@@ -41,7 +41,7 @@ function App() {
     adminAsLA,
   ]);
 
-  const AdminTable = React.lazy(() => import('screens/AdminTable'));
+  const AdminScreen = React.lazy(() => import('screens/AdminScreen'));
   const loadingLabel = <h4 style={styles.loadingSpinner}>Loading</h4>;
 
   return (
@@ -78,7 +78,9 @@ function App() {
                         variant={response?.class}
                         id="responseDiv"
                         onClose={() => setResponse(null)}
-                        dismissible={response !== null}
+                        dismissible={
+                          response !== null && response.dismissable !== false
+                        }
                         hidden={
                           response === null ||
                           response.content === null ||
@@ -92,7 +94,7 @@ function App() {
                       </Alert>
                     </Collapse>
                     <React.Suspense fallback={loadingLabel}>
-                      <AdminTable style={styles.tableContainer} />
+                      <AdminScreen style={styles.tableContainer} />
                     </React.Suspense>
                   </>
                 ) : (

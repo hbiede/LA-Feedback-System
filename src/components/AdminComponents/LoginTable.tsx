@@ -13,36 +13,27 @@ import Table from 'react-bootstrap/Table';
 
 import shallow from 'zustand/shallow';
 
-import { InteractionRecord, SORT_CHARS, SortConfig } from 'statics/Types';
+import ServiceInterface from 'statics/ServiceInterface';
+import { SORT_CHARS, SortConfig } from 'statics/Types';
 
-import getRowClass from 'components/TableRowColors';
 import Redux, { AppReduxState } from 'redux/modules';
 import PaginationButtons, {
   RATINGS_PER_PAGE,
 } from 'components/PaginationButtons';
 
-import ServiceInterface from '../statics/ServiceInterface';
+const LA_ID = 'la_name_column';
+const DATE_ID = 'time_of_interaction_column';
 
-type Props = {
-  showLA: (la: InteractionRecord) => void;
-};
-
-const LA_ID = 'la_name';
-const COURSE_ID = 'course';
-const INTERACTION_COUNT_ID = 'int_count';
-const WEEKLY_INTERACTION_COUNT_ID = 'week_int_count';
-const AVERAGE_RATING_ID = 'avg_rating';
-
-const LASummaryTable = ({ showLA }: Props) => {
-  const { interactions } = Redux(
+const LoginTable = () => {
+  const { logins } = Redux(
     (state: AppReduxState) => ({
-      interactions: state.interactions,
+      logins: state.interactions.logins,
     }),
     shallow
   );
 
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    column: LA_ID,
+    column: DATE_ID,
     order: 1,
   });
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -50,66 +41,29 @@ const LASummaryTable = ({ showLA }: Props) => {
 
   const getData = useMemo(
     () =>
-      interactions.ratings
-        .slice()
-        .filter((rating) => {
+      logins
+        .filter((login) => {
           const trimmedTerm = searchTerm.trim().toLowerCase();
-          const regexCompilation = new RegExp(trimmedTerm, 'i');
-          const { username, name } = rating;
           return (
-            username.toLowerCase().includes(trimmedTerm) ||
-            (name && name.toLowerCase().includes(trimmedTerm)) ||
-            regexCompilation.test(username) ||
-            (name && regexCompilation.test(name))
+            login.la.toLowerCase().includes(trimmedTerm) ||
+            new RegExp(trimmedTerm, 'i').test(login.la)
           );
         })
         .sort((a, b) => {
           let cmp = 0;
           switch (sortConfig.column) {
-            case COURSE_ID:
-              if (!a.course && !b.course) return 0;
-              if (!a.course) return 1;
-              if (!b.course) return -1;
-
-              return sortConfig.order * a.course.localeCompare(b.course);
-            case INTERACTION_COUNT_ID:
-              if (a.count < b.count) {
+            case DATE_ID:
+              if (a.timeOfInteraction < b.timeOfInteraction) {
                 cmp = -1;
-              } else if (a.count > b.count) {
-                cmp = 1;
-              }
-              return sortConfig.order * cmp;
-            case WEEKLY_INTERACTION_COUNT_ID:
-              if (a.wCount < b.wCount) {
-                cmp = -1;
-              } else if (a.wCount > b.wCount) {
-                cmp = 1;
-              }
-              return sortConfig.order * cmp;
-            case AVERAGE_RATING_ID:
-              const aDoesntExist = !a.avg || a.avg === 0;
-              const bDoesntExist = !b.avg || b.avg === 0;
-              if (aDoesntExist && bDoesntExist) return 0;
-              if (aDoesntExist) return 1;
-              if (bDoesntExist) return -1;
-
-              // Stupid TS
-              const aAvg = a.avg ?? 0;
-              const bAvg = b.avg ?? 0;
-              if (aAvg < bAvg) {
-                cmp = -1;
-              } else if (aAvg > bAvg) {
+              } else if (a.timeOfInteraction > b.timeOfInteraction) {
                 cmp = 1;
               }
               return sortConfig.order * cmp;
             default:
-              return (
-                sortConfig.order *
-                (a.name ?? a.username).localeCompare(b.name ?? b.username)
-              );
+              return sortConfig.order * a.la.localeCompare(b.la);
           }
         }),
-    [searchTerm, sortConfig, interactions.ratings]
+    [searchTerm, sortConfig, logins]
   );
 
   const handleSearchChange = useCallback(
@@ -190,43 +144,11 @@ const LASummaryTable = ({ showLA }: Props) => {
             </th>
             <th
               role="columnheader"
-              id={COURSE_ID}
+              id={DATE_ID}
               onClick={handleSortClick}
               style={{ cursor: 'pointer' }}
             >
-              {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
-            </th>
-            <th
-              role="columnheader"
-              id={INTERACTION_COUNT_ID}
-              onClick={handleSortClick}
-              style={{ cursor: 'pointer' }}
-            >
-              {`Interactions ${
-                column === INTERACTION_COUNT_ID ? SORT_CHARS.get(order) : ' '
-              }`}
-            </th>
-            <th
-              role="columnheader"
-              id={WEEKLY_INTERACTION_COUNT_ID}
-              onClick={handleSortClick}
-              style={{ cursor: 'pointer' }}
-            >
-              {`Weekly Interactions ${
-                column === WEEKLY_INTERACTION_COUNT_ID
-                  ? SORT_CHARS.get(order)
-                  : ' '
-              }`}
-            </th>
-            <th
-              role="columnheader"
-              id={AVERAGE_RATING_ID}
-              onClick={handleSortClick}
-              style={{ cursor: 'pointer' }}
-            >
-              {`Average Rating ${
-                column === AVERAGE_RATING_ID ? SORT_CHARS.get(order) : ' '
-              }`}
+              {`Date ${column === DATE_ID ? SORT_CHARS.get(order) : ' '}`}
             </th>
           </tr>
         </thead>
@@ -237,25 +159,13 @@ const LASummaryTable = ({ showLA }: Props) => {
               activePage * RATINGS_PER_PAGE
             )
             .map(
-              (row: InteractionRecord) =>
-                row.username &&
-                row.username.trim().length > 0 &&
-                !Number.isNaN(row.count) && (
-                  <tr
-                    className={getRowClass(row.avg ?? 0)}
-                    onClick={() => showLA(row)}
-                  >
-                    <td>{row.name ? row.name : row.username}</td>
-                    <td>{row.course}</td>
-                    <td>{row.count}</td>
-                    <td>{row.wCount}</td>
-                    <td>
-                      {row.avg !== null &&
-                      !Number.isNaN(row.avg) &&
-                      row.avg.toFixed
-                        ? `${row.avg.toFixed(2)} (${row.fCount})`
-                        : 'No Reviews'}
-                    </td>
+              ({ la, timeOfInteraction }) =>
+                la &&
+                la.trim().length > 0 &&
+                timeOfInteraction && (
+                  <tr>
+                    <td>{la}</td>
+                    <td>{timeOfInteraction.toLocaleString()}</td>
                   </tr>
                 )
             )}
@@ -278,4 +188,4 @@ const LASummaryTable = ({ showLA }: Props) => {
   );
 };
 
-export default LASummaryTable;
+export default LoginTable;

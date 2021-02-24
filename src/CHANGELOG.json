@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 2.1.0\n- Add login records table to admin view\n- Prevent viewing feedback from LAs who have not received feedback",
     "## 2.0.4\n- Prevent course accounts from logging interactions\n- Move course list to an API call",
     "## 2.0.3\n- Add appropriate cursors to sortable table headers",
     "## 2.0.2\n- Shows the number of interactions with each student to the expended interaction section\n- Adds weekly interactions to the admin table",
