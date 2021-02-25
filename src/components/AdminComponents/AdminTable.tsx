@@ -209,13 +209,17 @@ const AdminTable = () => {
                     <td>{s.username}</td>
                     <td>
                       <Button
-                        disabled={s.username === 'learningassistants'}
+                        disabled={
+                          s.username === ServiceInterface.getAccountHost()
+                        }
                         onClick={() => removeCallback(s)}
                         variant="outline-secondary"
                         style={{
                           cursor: 'default',
                           opacity:
-                            s.username === 'learningassistants' ? 0.3 : 1,
+                            s.username === ServiceInterface.getAccountHost()
+                              ? 0.3
+                              : 1,
                         }}
                       >
                         {'\u274C' /* X Emoji */}
