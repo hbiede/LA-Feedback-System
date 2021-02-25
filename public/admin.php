@@ -14,6 +14,7 @@
 
 // Returns a JSON encoded object formatted as follows:
 //{
+//  admins: Admin[],
 //  isAdmin: boolean,
 //  logins: LoginRecord[],
 //  outstanding: int (number of outstanding requests for feedback),
@@ -22,6 +23,12 @@
 //  time: int (average time to complete the feedback form),
 //}
 // If the username in the POST call is not an admin, this script returns empty data
+
+// Where Admin is an object with admins as follows:
+//{
+//  id: number,
+//  username: string,
+//}
 
 // Where LoginRecord is an object summarizing a LA login timestamp as follows:
 //{
@@ -179,13 +186,13 @@ if (isset($obj) && isset($obj->{'la'})) {
     $la = $obj->{'la'};
 }
 
-$admins = json_decode(file_get_contents("./data/admins.json"));
-$isAdmin = $user !== null && in_array($user, $admins);
+$isAdmin = is_admin($user);
 if ($isAdmin && $la !== null) {
     echo json_encode(get_ratings($la));
 } else if ($isAdmin) {
     $response = [
         'isAdmin' => true,
+        'admins' => get_admins(),
         'logins' => get_logins(),
         'ratings' => get_interactions(),
         'time' => get_time_to_complete(),
@@ -196,6 +203,7 @@ if ($isAdmin && $la !== null) {
 } else {
     $response = [
         'isAdmin' => false,
+        'admins' => [],
         'logins' => [],
         'ratings' => [],
         'time' => -1,

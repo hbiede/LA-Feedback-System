@@ -302,19 +302,22 @@ function get_username_id($username) {
 function get_course_counts() {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT course, COUNT(course) AS count FROM interactions WHERE course IS NOT NULL GROUP BY course ORDER BY course;');
+    $returnVal = [];
     if ($ps) {
         $ps->execute();
-        $results = $ps->get_result();
-        $returnVal = [];
-        while ($row = $results->fetch_assoc()) {
-            array_push($returnVal, $row);
+        if ($ps->error) {
+            error_log($ps->error);
+        } else {
+            $results = $ps->get_result();
+            while ($row = $results->fetch_assoc()) {
+                array_push($returnVal, $row);
+            }
         }
-        return $returnVal;
     } else {
         error_log('Failed to prep statement for getting course counts');
-        $conn->close();
-        return [];
     }
+    $conn->close();
+    return $returnVal;
 }
 
 function run_accessor($query) {
@@ -337,6 +340,51 @@ function run_accessor($query) {
     }
     $conn->close();
     return $returnVal;
+}
+
+function is_admin($user) {
+    $conn = get_connection();
+    $ps = $conn->prepare("SELECT is_admin FROM cse_usernames WHERE username=?;");
+    $result = false;
+    if ($ps) {
+        $ps->bind_param("s", $user);
+        $ps->execute();
+        if ($ps->error) {
+            error_log($ps->error);
+        } else {
+            $result = $ps->get_result()->fetch_assoc()['is_admin'];
+        }
+    } else {
+        error_log('Failed to prep statement for getting admin state');
+    }
+    $conn->close();
+    return $result;
+}
+
+function get_admins() {
+    return run_accessor("SELECT username_key AS 'id', username FROM cse_usernames WHERE is_admin UNION " .
+        "SELECT -1, 'learningassistants';");
+}
+
+function update_admin($is_admin, $user_key) {
+    if ($user_key != null) {
+        $conn = get_connection();
+        $ps = $conn->prepare("UPDATE cse_usernames SET is_admin=? WHERE username_key=?");
+        if ($ps) {
+            $is_admin_int = $is_admin ? 1 : 0;
+            $ps->bind_param("ii", $is_admin_int, $user_key);
+            $ps->execute();
+            if ($ps->error) {
+                error_log($ps->error);
+            }
+            $ps->close();
+        } else {
+            error_log("Failed to prepare statement for { user_key: $user_key, is_admin: $is_admin }");
+        }
+        $conn->close();
+    } else {
+        error_log("Invalid param to update admin: $is_admin : $user_key");
+    }
 }
 
 function get_email($student_id) {
@@ -363,4 +411,99 @@ function get_email($student_id) {
     }
     $conn->close();
     return $result;
+}
+
+function run_ps($ps, $conn, $action) {
+    $return_val = true;
+    if ($ps) {
+        $ps->execute();
+        if ($ps->error) {
+            error_log($ps->error);
+            $return_val = false;
+        }
+        $ps->close();
+    } else {
+        error_log("Failed to build prepped statement to $action.");
+        error_log($conn->error);
+        $return_val = false;
+    }
+    return $return_val;
+}
+
+function add_students($values) {
+    $conn = get_connection();
+    $conn->begin_transaction();
+    $ps_create_table = $conn->prepare(
+        "CREATE TABLE IF NOT EXISTS TEMP_USERNAMES_FOR_MERGE" .
+        "(" .
+        "username_key    int auto_increment unique primary key," .
+        "username        varchar(20)," .
+        "canvas_username varchar(20)," .
+        "name            varchar(70)," .
+        "course          varchar(10)," .
+        "email           varchar(100)," .
+        "constraint temp_merge_uindex" .
+        "    unique (username, canvas_username, course)" .
+        ");");
+    $working = run_ps($ps_create_table, $conn, "create temp table");
+
+    if ($working) {
+        $ps_insert = $conn->prepare(
+            "INSERT INTO TEMP_USERNAMES_FOR_MERGE (course, name, canvas_username, email) VALUES $values;"
+        );
+        if ($ps_insert) {
+            $working = run_ps($ps_insert, $conn, "insert to temp table");
+        } else {
+            $working = false;
+            error_log("Failed to prepare insert into temp table");
+            error_log($conn->error);
+        }
+    }
+
+    if ($working) {
+        $ps_merge = $conn->prepare(
+            "INSERT INTO cse_usernames (username, canvas_username, name, course, email) " .
+            "SELECT t.username, t.canvas_username, t.name, t.course, email FROM TEMP_USERNAMES_FOR_MERGE t " .
+            "WHERE (SELECT COUNT(*) FROM cse_usernames c WHERE " .
+            "(c.username IS NULL OR c.username LIKE t.username) " .
+            "AND (c.canvas_username IS NULL OR c.canvas_username LIKE t.canvas_username) " .
+            "AND c.course LIKE t.course) < 1 ORDER BY canvas_username;"
+        );
+        $working = run_ps($ps_merge, $conn, "merge temp table into main username table");
+    }
+
+    if ($working) {
+        $ps_drop = $conn->prepare("DROP TABLE TEMP_USERNAMES_FOR_MERGE;");
+        $working = run_ps($ps_drop, $conn, "drop table");
+    }
+
+    if ($working) {
+        $conn->commit();
+    } else {
+        error_log("Transaction not committed for:\n$values");
+    }
+    $conn->close();
+    return $working;
+}
+
+function student_map($array_of_text) {
+    $return_val = [];
+    foreach ($array_of_text as $line) {
+        array_push($return_val, str_replace("'", "\\'", $line));
+    }
+    return $return_val;
+}
+
+function parse_ssv_to_students_sql($text) {
+    $contents = explode("\n", $text);
+    $values = "";
+
+    foreach ($contents as $line) {
+        $line = trim($line);
+        if (strlen($line) > 0) {
+            if (strlen($values) > 0) $values .= ', ';
+            $values .= "('" . join("','", student_map(explode(';', $line))) . "')";
+        }
+    }
+    return $values;
 }

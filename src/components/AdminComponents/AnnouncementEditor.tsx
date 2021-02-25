@@ -96,7 +96,15 @@ const AnnouncementEditor = () => {
         </Alert>
       </Collapse>
 
-      <textarea id={CONTENT_ID} onChange={handleChange} value={currentBody} />
+      <Form.Control
+        as="textarea"
+        cols={50}
+        rows={10}
+        id={CONTENT_ID}
+        onChange={handleChange}
+        value={currentBody}
+        style={{ marginBottom: 10 }}
+      />
       <FormGroup as={Row} controlId={COURSE_ID}>
         <Form.Label className="col-sm-5">{COURSE_LABEL}</Form.Label>
         <div className="col-sm-7">

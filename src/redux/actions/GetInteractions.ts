@@ -10,7 +10,7 @@ import ServiceInterface from 'statics/ServiceInterface';
 
 import { AppReduxState } from 'redux/modules';
 
-import { InteractionSummary } from 'statics/Types';
+import { Admin, InteractionSummary } from 'statics/Types';
 
 type LoginResponseRecord = {
   la: string;
@@ -28,6 +28,7 @@ type InteractionResponseRecord = {
 };
 
 type InteractionResponseSummary = {
+  admins: Admin[];
   isAdmin: boolean;
   logins: LoginResponseRecord[];
   outstanding: string | null;
@@ -46,6 +47,7 @@ const getInteractions = async (
 ): Promise<InteractionSummary> => {
   const { username, setResponse } = state();
   let interactions: InteractionSummary = {
+    admins: [],
     isAdmin: false,
     logins: [],
     outstanding: 0,
@@ -66,6 +68,7 @@ const getInteractions = async (
       .then((json) => {
         if (Array.isArray(json)) {
           interactions = {
+            admins: [],
             isAdmin: false,
             logins: [],
             outstanding: 0,
@@ -75,6 +78,7 @@ const getInteractions = async (
           };
         } else {
           const intHolder: InteractionResponseSummary = json;
+          interactions.admins = intHolder.admins;
           interactions.isAdmin = intHolder.isAdmin;
           interactions.logins = intHolder.logins.map(
             ({ time_of_interaction, la }) => ({

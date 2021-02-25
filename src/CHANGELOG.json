@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 2.2.0\n- Display students on the admin page\n- Add the ability to add new students to the database from the frontend\n- Add directions for admins to be able to reset the entire system\n- Allow admins to add/remove other admins from the page\n- Allow full reset of page by an admin",
     "## 2.1.0\n- Add login records table to admin view\n- Prevent viewing feedback from LAs who have not received feedback",
     "## 2.0.4\n- Prevent course accounts from logging interactions\n- Move course list to an API call",
     "## 2.0.3\n- Add appropriate cursors to sortable table headers",

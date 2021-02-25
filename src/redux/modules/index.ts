@@ -7,6 +7,8 @@
 import create from 'zustand';
 
 import {
+  AddAdmin,
+  AddStudents,
   ClearAnnouncements,
   CourseRest,
   GetAnnouncements,
@@ -19,6 +21,7 @@ import {
   GetUsername,
   LogInteraction,
   NameRest,
+  RemoveAdmin,
   SetAnnouncements,
 } from 'redux/actions';
 
@@ -38,6 +41,18 @@ import { InteractionSummary, RatingRecord } from 'statics/Types';
 import { AnnouncementProps } from '../actions/SetAnnouncements';
 
 export type AppReduxState = {
+  /**
+   * Adds a new admin
+   *
+   * @param username The username of the new admin
+   */
+  addAdmin: (username: string) => void;
+  /**
+   * Adds new students
+   *
+   * @param studentString New students
+   */
+  addStudents: (studentString: string) => Promise<number>;
   /**
    * Eliminates all current announcements
    */
@@ -138,6 +153,12 @@ export type AppReduxState = {
    */
   ratings: RatingRecord[];
   /**
+   * Allows the removal of an admin
+   *
+   * @param id the user ID of the admin
+   */
+  removeAdmin: (id: number) => void;
+  /**
    * A message to be displayed above the main page
    *
    * @see ResponseMessage
@@ -234,6 +255,7 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   },
   isAdmin: false,
   interactions: {
+    admins: [],
     isAdmin: false,
     logins: [],
     outstanding: 0,
@@ -310,6 +332,38 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
       set(() => ({ students: result }));
     });
   },
+  addAdmin: (username: string) => {
+    if (
+      get().interactions.admins.find(
+        ({ username: adminUsername }) => adminUsername === username
+      )
+    ) {
+      get().setResponse({
+        class: 'danger',
+        content: 'This user is already an admin',
+      });
+    } else {
+      AddAdmin({ username }).then((response) => {
+        if (response === 0) get().getInteractions();
+      });
+    }
+  },
+  removeAdmin: (id: number) => {
+    if (get().interactions.admins.find(({ id: adminID }) => adminID === id)) {
+      get().setResponse({
+        class: 'danger',
+        content: 'This user is not an admin',
+      });
+    } else {
+      RemoveAdmin({ id }).then((response) => {
+        if (response === 0) get().getInteractions();
+      });
+    }
+  },
+  addStudents: (studentString: string) =>
+    AddStudents({ students: studentString })
+      .then((response) => response)
+      .catch(() => -1),
 }));
 
 export default useStore;

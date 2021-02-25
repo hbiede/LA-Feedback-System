@@ -4,7 +4,7 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { ChangeEvent, useCallback, useMemo, useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
@@ -12,6 +12,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Table from 'react-bootstrap/Table';
 
 import shallow from 'zustand/shallow';
+
+import Form from 'react-bootstrap/Form';
 
 import { SORT_CHARS, SortConfig } from 'statics/Types';
 
@@ -21,6 +23,8 @@ import PaginationButtons, {
 } from 'components/PaginationButtons';
 import { Student } from 'redux/modules/Types';
 
+const STUDENT_TEXT_FIELD_GROUP_ID = 'student_text_field_grouping';
+const STUDENT_TEXT_FIELD_ID = 'student_text_field';
 const STUDENT_USERNAME_ID = 'student_username_column';
 const STUDENT_NAME_ID = 'student_name_column';
 const INTERACTION_COUNT_ID = 'interaction_count_column';
@@ -28,9 +32,11 @@ const INTERACTION_COUNT_ID = 'interaction_count_column';
 const getUsername = (s: Student) => s.username ?? s.canvas_username;
 const getName = (s: Student) => s.name ?? getUsername(s);
 
-const LoginTable = () => {
-  const { students } = Redux(
+const StudentTable = () => {
+  const { addStudents, setResponse, students } = Redux(
     (state: AppReduxState) => ({
+      addStudents: state.addStudents,
+      setResponse: state.setResponse,
       students: state.students,
     }),
     shallow
@@ -42,6 +48,7 @@ const LoginTable = () => {
   });
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [activePage, setActivePage] = useState(1);
+  const [studentText, setStudentText] = useState('');
 
   const getData = useMemo(
     () =>
@@ -119,8 +126,38 @@ const LoginTable = () => {
     [sortConfig, setSortConfig]
   );
 
+  const handleStudentTextChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const newStudentText = event.currentTarget.value;
+      if (studentText !== newStudentText) {
+        setStudentText(newStudentText);
+      }
+    },
+    [studentText]
+  );
+
+  const handleStudentSubmit = useCallback(() => {
+    addStudents(studentText).then((response: number) => {
+      if (response === 0) {
+        setStudentText('');
+        window.scrollTo(0, 0);
+        setResponse({
+          class: 'success',
+          content: `Added ${studentText.split('\n').length} students`,
+        });
+      } else {
+        setResponse({
+          class: 'danger',
+          content: `Error adding student (Error code: ${response})`,
+        });
+      }
+    });
+  }, [addStudents, studentText, setResponse]);
+
   const { column, order } = sortConfig;
   const clearableSearch = searchTerm.length > 0;
+  const studentTextSubmitDisabled =
+    studentText.length === 0 || !studentText.includes(';');
   return (
     <>
       <InputGroup className="mt-3 mb-4 col-7" style={{ paddingLeft: 0 }}>
@@ -207,8 +244,33 @@ const LoginTable = () => {
         itemCount={getData.length}
         setActivePage={setActivePage}
       />
+      <Form.Group id={STUDENT_TEXT_FIELD_GROUP_ID}>
+        <Form.Label>Add students</Form.Label>
+        <Form.Control
+          as="textarea"
+          cols={70}
+          rows={10}
+          id={STUDENT_TEXT_FIELD_ID}
+          onChange={handleStudentTextChange}
+          value={studentText}
+          spellCheck={false}
+          placeholder="course;name;canvasID;email"
+        />
+      </Form.Group>
+      <Button
+        id="submitButton"
+        role="button"
+        type="submit"
+        variant="primary"
+        value="Submit"
+        onClick={handleStudentSubmit}
+        disabled={studentTextSubmitDisabled}
+        aria-disabled={studentTextSubmitDisabled}
+      >
+        Submit
+      </Button>
     </>
   );
 };
 
-export default LoginTable;
+export default StudentTable;

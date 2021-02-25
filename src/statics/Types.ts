@@ -54,10 +54,16 @@ export type InteractionRecord = {
   name?: string;
 };
 
+export type Admin = { id: number; username: string };
+
 /**
  * All data needed to display admin stats
  */
 export type InteractionSummary = {
+  /**
+   * All admins for the system
+   */
+  admins: Admin[];
   /**
    * If the currently logged in user is an admin
    */

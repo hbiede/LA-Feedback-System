@@ -1,5 +1,6 @@
 import React, { CSSProperties } from 'react';
 
+import AdminTable from 'components/AdminComponents/AdminTable';
 import LAFeedbackTable from 'components/AdminComponents/LAFeedbackTable';
 import LoginTable from 'components/AdminComponents/LoginTable';
 import StudentTable from 'components/AdminComponents/StudentTable';
@@ -26,12 +27,17 @@ const TABS: TabContents[] = [
     title: 'Students',
     children: <StudentTable />,
   },
+  {
+    eventKey: 'admin_tab',
+    title: 'Admins',
+    children: <AdminTable />,
+  },
 ];
 
-const AdminTable = ({ style }: Props) => (
+const AdminScreen = ({ style }: Props) => (
   <div style={style} className="col-md-10">
     <TabbedScreen tabs={TABS} />
   </div>
 );
 
-export default AdminTable;
+export default AdminScreen;

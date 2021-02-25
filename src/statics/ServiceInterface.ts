@@ -127,6 +127,11 @@ class ServiceInterface {
     const { username, isAdmin, selectedUsername } = api.getState();
     return isAdmin ? selectedUsername : username;
   };
+
+  static getAccountHost = () => {
+    const match = /~(<account>.+?)\//i.exec(ServiceInterface.getPath());
+    return match ? match[1] : null;
+  };
 }
 
 export default ServiceInterface;

@@ -4,6 +4,8 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
+export { default as AddAdmin } from './AddAdmin';
+export { default as AddStudents } from './AddStudents';
 export { default as ClearAnnouncements } from './ClearAnnouncements';
 export { default as CourseRest } from './CourseRest';
 export { default as GetAnnouncements } from './GetAnnouncements';
@@ -16,4 +18,5 @@ export { default as GetStudents } from './GetStudents';
 export { default as GetUsername } from './GetUsername';
 export { default as LogInteraction } from './LogInteraction';
 export { default as NameRest } from './NameRest';
+export { default as RemoveAdmin } from './RemoveAdmin';
 export { default as SetAnnouncements } from './SetAnnouncements';
