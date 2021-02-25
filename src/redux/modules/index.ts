@@ -350,13 +350,13 @@ export const [useStore, api] = create<AppReduxState>((set, get) => ({
   },
   removeAdmin: (id: number) => {
     if (get().interactions.admins.find(({ id: adminID }) => adminID === id)) {
+      RemoveAdmin({ id }).then((response) => {
+        if (response === 0) get().getInteractions();
+      });
+    } else {
       get().setResponse({
         class: 'danger',
         content: 'This user is not an admin',
-      });
-    } else {
-      RemoveAdmin({ id }).then((response) => {
-        if (response === 0) get().getInteractions();
       });
     }
   },
