@@ -8,8 +8,7 @@ collection of feedback from students interaction with our LAs.
 database's needs
 0. Run `yarn` and allow yarn to install all necessary packages (You can install
 [Yarn here](https://yarnpkg.com))
-0. Run `yarn eslint` to ensure the code complies with code standards
-0. Run `yarn start` or `yarn build`
+0. Run `yarn build`
 
 ## Coding Standards
 This repo utilizes [Prettier](https://prettier.io) through [ESLint](https://eslint.org) to ensure

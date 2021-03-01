@@ -26,6 +26,7 @@ CREATE TABLE cse_usernames
     name            varchar(70),
     course          varchar(10),
     email           varchar(100),
+    is_admin        tinyint(1) default 0 null,
     constraint cse_usernames_uindex
         unique (username, canvas_username, course)
 );
