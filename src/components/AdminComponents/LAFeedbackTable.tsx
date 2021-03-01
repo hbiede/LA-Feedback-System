@@ -76,6 +76,7 @@ const LAFeedbackTable = () => {
   const showLA = useCallback(
     (la: LA) => {
       if (
+        la &&
         (
           interactions.ratings.find(
             (rating) => rating.username === la.username

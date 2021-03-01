@@ -22,9 +22,9 @@ ini_set('error_log', './log/breakdown.log');
 
 function get_interaction_counts() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username, name, c.course, COUNT(i.interaction_key) AS count, ' .
+    $ps = $conn->prepare('SELECT canvas_username AS \'username\', name, c.course, COUNT(i.interaction_key) AS count, ' .
         'SUM(IF(i.time_of_interaction >= (CURRENT_DATE() - INTERVAL 7 DAY), 1, 0)) AS wcount FROM interactions i ' .
-        'LEFT JOIN cse_usernames c on c.username_key = i.la_username_key GROUP BY username');
+        'LEFT JOIN cse_usernames c on c.username_key = i.la_username_key GROUP BY username, canvas_username');
     $returnVal = [];
     if ($ps) {
         $ps->execute();

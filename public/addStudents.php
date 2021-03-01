@@ -2,7 +2,7 @@
 // To get list of interaction counts per LA:
 // Call with a POST call with a JSON body as follows:
 //{
-//  username: string (The new students with the text formatted as below),
+//  students: string (The new students with the text formatted as below),
 //}
 
 // This student list is expected to be formatted with every line conforming to the following spec:

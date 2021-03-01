@@ -4,6 +4,8 @@
  - File created by Hundter Biede for the UNL CSE Learning Assistant Program
  -----------------------------------------------------------------------------*/
 
+import { api } from 'redux/modules';
+
 import ServiceInterface from 'statics/ServiceInterface';
 
 /**
@@ -23,6 +25,12 @@ const getCourses = async (): Promise<string[]> => {
     .then((response: Response) => response.json())
     .then((json) => {
       result = json;
+      if (result.length === 0) {
+        api.getState().setResponse({
+          class: 'danger',
+          content: 'No courses in database',
+        });
+      }
     });
   return result;
 };

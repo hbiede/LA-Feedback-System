@@ -75,7 +75,7 @@ function get_course_averages($days) {
 function get_feedback($days = DAYS) {
     $conn = get_connection();
     $ps = $conn->prepare('SELECT DATE_FORMAT(time_of_interaction, \'%Y-%m-%dT%TZ\') AS time, ' .
-        'interaction_type, sentiment, IFNULL(name, username) AS LA, rating, ' .
+        'interaction_type, sentiment, IFNULL(name, IFNULL(canvas_username, username)) AS LA, rating, ' .
         'comment, cu.course AS "course" FROM feedback LEFT JOIN interactions i ' .
         'on feedback.interaction_key = i.interaction_key ' .
         'LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key ' .

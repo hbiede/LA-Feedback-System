@@ -19,7 +19,7 @@ function get_id() {
 }
 
 if (!can_give_feedback(get_id())) {
-    header('Location: https://cse.unl.edu/~learningassistants/LA-Feedback/thankyou.html');
+    header('Location: ' . str_replace('form.php', 'thankyou.html', get_url()));
 }
 ?>
 
@@ -38,7 +38,7 @@ if (!can_give_feedback(get_id())) {
         const START_TIME = new Date();
 
         const onSuccess = () => {
-            window.location.href = 'https://cse.unl.edu/~learningassistants/LA-Feedback/thankyou.html';
+            window.location.href = '<?php echo str_replace('form.php', 'thankyou.html', get_url()); ?>';
         };
 
         const onError = () => {
@@ -61,7 +61,7 @@ if (!can_give_feedback(get_id())) {
                 const time = new Date() - START_TIME;
                 if (id && id >= 0) {
                     $.ajax({
-                        url: `https://cse.unl.edu/~learningassistants/LA-Feedback/submitFeedback.php`,
+                        url: '<?php echo str_replace('form.php', 'submitFeedback.php', get_url()) ?>',
                         method: "POST",
                         data: {
                             id,

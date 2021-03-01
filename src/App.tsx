@@ -24,22 +24,28 @@ import FeedbackHeader from 'components/FeedbackHeader';
 import styles from './App.styles';
 
 function App() {
-  const { loading, isAdmin, response, setResponse } = Redux(
+  const {
+    loading,
+    isAdmin,
+    response,
+    setResponse,
+    setSelectedUsername,
+  } = Redux(
     (state) => ({
       loading: state.loading,
       isAdmin: state.isAdmin,
       response: state.response,
       setResponse: state.setResponse,
-      username: state.username,
+      setSelectedUsername: state.setSelectedUsername,
     }),
     shallow
   );
   const [adminAsLA, setAdminAsLA] = useState(false);
 
-  const toggleAdminAsLA = useCallback(() => setAdminAsLA(!adminAsLA), [
-    setAdminAsLA,
-    adminAsLA,
-  ]);
+  const toggleAdminAsLA = useCallback(() => {
+    setSelectedUsername({ username: '' });
+    setAdminAsLA(!adminAsLA);
+  }, [setAdminAsLA, adminAsLA]);
 
   const AdminScreen = React.lazy(() => import('screens/AdminScreen'));
   const loadingLabel = <h4 style={styles.loadingSpinner}>Loading</h4>;

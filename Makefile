@@ -18,7 +18,6 @@ upload_test:
 	scp -r ./build learningassistants@cse.unl.edu:~/public_html/LA-Feedback-Test
 	ssh learningassistants@cse.unl.edu "mkdir ~/public_html/LA-Feedback-Test/log; chmod 700 public_html/LA-Feedback-Test/data/ public_html/LA-Feedback-Test/log public_html/LA-Feedback-Test/programUpdate.php"
 
-
 clean:
 	rm -rf ./build
 

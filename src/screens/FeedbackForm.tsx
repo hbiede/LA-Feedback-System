@@ -31,7 +31,7 @@ const COURSE_ID = 'course';
 const STUDENT_ID = 'student_login';
 const INTERACTION_TYPE_ID = 'interaction_type';
 
-const LA_LABEL = 'LA CSE Username';
+const LA_LABEL = 'LA Canvas Username';
 const COURSE_LABEL = 'Course';
 const STUDENT_LABEL = 'Student';
 const INTERACTION_TYPE_LABEL = 'Interaction Type';

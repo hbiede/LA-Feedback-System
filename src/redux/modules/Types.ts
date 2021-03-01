@@ -34,8 +34,8 @@ export const ALERT_CLASSES = [
 export type ResponseClass = typeof ALERT_CLASSES[number];
 
 export type ResponseMessage = {
-  class: ResponseClass;
-  content: string | JSX.Element;
+  class?: ResponseClass;
+  content?: string | JSX.Element;
   /**
    * @default true
    */

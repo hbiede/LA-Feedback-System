@@ -29,7 +29,7 @@ ini_set('error_log', './log/course.log');
 function get_course($username) {
     $conn = get_connection();
     $response = '';
-    $ps = $conn->prepare('SELECT course FROM cse_usernames WHERE username=?;');
+    $ps = $conn->prepare('SELECT course FROM cse_usernames WHERE canvas_username=?;');
     if ($ps) {
         $ps->bind_param('s', $username);
         $ps->execute();
@@ -49,7 +49,7 @@ function get_course($username) {
 function set_course($username, $course) {
     get_username_id($username);
     $conn = get_connection();
-    $ps = $conn->prepare('UPDATE cse_usernames SET course=? WHERE username=?;');
+    $ps = $conn->prepare('UPDATE cse_usernames SET course=? WHERE canvas_username=?;');
     if ($ps) {
         $ps->bind_param('ss', $course, $username);
         $ps->execute();

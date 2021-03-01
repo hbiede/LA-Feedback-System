@@ -21,8 +21,9 @@ drop view if exists interaction_type_readable;
 CREATE TABLE cse_usernames
 (
     username_key    int auto_increment unique primary key,
+    canvas_username varchar(30) not null,
+    # used for CSE usernames
     username        varchar(20),
-    canvas_username varchar(20),
     name            varchar(70),
     course          varchar(10),
     email           varchar(100),

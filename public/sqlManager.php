@@ -5,6 +5,10 @@
  * File created by Hundter Biede for the UNL CSE Learning Assistant Program
  */
 
+function get_url() {
+    return 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+}
+
 function get_connection() {
     $sql_info = json_decode(file_get_contents("data/sql.json"));
     $conn = new mysqli($sql_info->{'url'}, $sql_info->{'username'}, $sql_info->{'password'});
@@ -23,7 +27,8 @@ function get_connection() {
 
 function get_name_from_interaction($interaction_id) {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username,name FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);');
+    $ps = $conn->prepare("SELECT IFNULL(canvas_username, username) AS 'username',name FROM cse_usernames WHERE " .
+        "username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);");
     if (!$ps) {
         error_log('Failed to build prepped statement');
         $conn->close();
@@ -82,14 +87,14 @@ function get_interaction_type_from_interaction($interaction_id) {
 
 function get_la_username_from_interaction($interaction_id) {
     return get_username_from_interaction(
-        'SELECT username FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);',
+        'SELECT canvas_username AS \'username\' FROM cse_usernames WHERE username_key=(SELECT la_username_key FROM interactions WHERE interaction_key = ?);',
         $interaction_id
     );
 }
 
 function get_student_username_from_interaction($interaction_id) {
     return get_username_from_interaction(
-        'SELECT username FROM cse_usernames WHERE username_key=(SELECT student_username_key FROM interactions WHERE interaction_key = ?);',
+        'SELECT canvas_username AS \'username\' FROM cse_usernames WHERE username_key=(SELECT student_username_key FROM interactions WHERE interaction_key = ?);',
         $interaction_id
     );
 }
@@ -135,13 +140,13 @@ function can_give_feedback($interaction_id) {
     return $can_give && !$given;
 }
 
-function add_cse($username) {
+function add_cse($username, $email = null) {
     $conn = get_connection();
     if ($conn !== null) {
         $conn->begin_transaction();
-        $ps = $conn->prepare("INSERT INTO cse_usernames (username) VALUE (?);");
+        $ps = $conn->prepare("INSERT INTO cse_usernames (canvas_username, email) VALUE (?, ?);");
         if ($ps) {
-            $ps->bind_param("s", $username);
+            $ps->bind_param("ss", $username, $email);
             $ps->execute();
             $return_val = $ps->insert_id;
             $conn->commit();
@@ -213,7 +218,7 @@ function has_been_a_week($username) {
     $conn = get_connection();
     if ($conn !== null) {
         $ps = $conn->prepare("SELECT COUNT(*) AS 'count' FROM interactions " .
-            "LEFT JOIN cse_usernames cu ON cu.username_key = interactions.la_username_key WHERE cu.username = ? " .
+            "LEFT JOIN cse_usernames cu ON cu.username_key = interactions.la_username_key WHERE cu.canvas_username = ? " .
             "AND time_of_interaction > (CURRENT_DATE() - INTERVAL 7 DAY)");
         if ($ps) {
             $ps->bind_param("s", $username);
@@ -271,12 +276,13 @@ function received_email_today($student_id) {
     return false;
 }
 
-function get_username_id($username) {
+function get_username_id($username, $email = null) {
     if ($username === null || strlen(trim($username)) === 0) return null;
 
     $conn = get_connection();
     if ($conn !== null) {
-        $ps = $conn->prepare("SELECT username_key FROM cse_usernames WHERE username = ?;");
+        $ps = $conn->prepare("SELECT username_key FROM cse_usernames WHERE canvas_username = ? " .
+            "ORDER BY username_key LIMIT 1;");
         if (!$ps) {
             error_log("Failed to build prepped statement for getting username ID for $username");
             $conn->close();
@@ -290,7 +296,7 @@ function get_username_id($username) {
         error_log('INFO: { la_username: ' . $username . ', la_id: ' . $id . ' }');
         $ps->fetch();
         if ($id === null) {
-            $id = add_cse($username);
+            $id = add_cse($username, $email);
         }
         $ps->close();
         $conn->close();
@@ -343,8 +349,11 @@ function run_accessor($query) {
 }
 
 function is_admin($user) {
+    if ($user == get_current_user()) {
+        return true;
+    }
     $conn = get_connection();
-    $ps = $conn->prepare("SELECT is_admin FROM cse_usernames WHERE username=?;");
+    $ps = $conn->prepare("SELECT is_admin FROM cse_usernames WHERE canvas_username=?;");
     $result = false;
     if ($ps) {
         $ps->bind_param("s", $user);
@@ -362,8 +371,9 @@ function is_admin($user) {
 }
 
 function get_admins() {
-    return run_accessor("SELECT username_key AS 'id', username FROM cse_usernames WHERE is_admin UNION " .
-        "SELECT -1, 'learningassistants';");
+    $super_admin = get_current_user();
+    return run_accessor("SELECT username_key AS 'id', canvas_username AS 'username' FROM cse_usernames WHERE is_admin UNION " .
+        "SELECT -1, '$super_admin';");
 }
 
 function update_admin($is_admin, $user_key) {

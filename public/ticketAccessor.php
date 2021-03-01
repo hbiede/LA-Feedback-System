@@ -16,17 +16,18 @@ ini_set('error_log', './log/ticket.log');
 
 // Returns a string of the username
 
-$casService = 'https://cse-apps.unl.edu/cas';
-$thisService = 'https://cse.unl.edu/~learningassistants/LA-Feedback';
+$casService = 'https://shib.unl.edu/idp/profile/cas';
+$thisService = get_url();
 
-function addLogin($username) {
+function add_login($username, $email) {
     error_log("Attempting to log $username");
+    $la_id = get_username_id($username, $email);
     $conn = get_connection();
     if ($conn !== null) {
         $conn->begin_transaction();
-        $ps = $conn->prepare("INSERT INTO logins (la_username_key) VALUE ((SELECT username_key FROM cse_usernames WHERE username=?));");
+        $ps = $conn->prepare("INSERT INTO logins (la_username_key) VALUE (?);");
         if ($ps) {
-            $ps->bind_param("s", $username);
+            $ps->bind_param("i", $la_id);
             $ps->execute();
             if ($ps->error) {
                 error_log("Failed to log $username");
@@ -78,7 +79,8 @@ if (isset($obj) && isset($obj->{'ticket'})) {
     if ($response = responseForTicket($obj->{'ticket'})) {
         $xml = simplexml_load_string($response);
         $user = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0];
-        addLogin($user);
+        $email = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0]->attributes->email[0];
+        add_login($user, $email);
         echo $user;
     } else {
         echo 'INVALID_TICKET_KEY';

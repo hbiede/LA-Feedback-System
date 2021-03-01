@@ -29,7 +29,7 @@ ini_set('error_log', './log/name.log');
 function get_name($username) {
     $conn = get_connection();
     $response = '';
-    $ps = $conn->prepare('SELECT name FROM cse_usernames WHERE username=?;');
+    $ps = $conn->prepare('SELECT name FROM cse_usernames WHERE canvas_username=?;');
     if ($ps) {
         $ps->bind_param('s', $username);
         $ps->execute();
@@ -49,7 +49,7 @@ function get_name($username) {
 function set_name($username, $name) {
     get_username_id($username);
     $conn = get_connection();
-    $ps = $conn->prepare('UPDATE cse_usernames SET name=? WHERE username=?;');
+    $ps = $conn->prepare('UPDATE cse_usernames SET name=? WHERE canvas_username=?;');
     if ($ps) {
         $ps->bind_param('ss', $name, $username);
         $ps->execute();

@@ -127,7 +127,7 @@ function get_outstanding_feedback() {
 
 function get_interactions() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT username, CONCAT(name, IF(is_admin, \' (Admin)\', \'\')) AS \'name\', ' .
+    $ps = $conn->prepare('SELECT IFNULL(canvas_username, username) AS \'username\', CONCAT(name, IF(is_admin, \' (Admin)\', \'\')) AS \'name\', ' .
         'cse_usernames.course, COUNT(i.interaction_key) AS count, COUNT(t.interaction_key) AS wCount, ' .
         'COUNT(f.feedback_key) AS fCount, ' .
         'AVG(rating) AS avg, AVG(sentiment) AS sentiment FROM cse_usernames ' .

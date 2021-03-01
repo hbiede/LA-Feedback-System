@@ -8,7 +8,7 @@ import { api } from 'redux/modules';
 
 import { RESTResponse } from 'statics/Types';
 
-const CSE_CAS_SERVICE = 'https://cse-apps.unl.edu/cas';
+const CSE_CAS_SERVICE = 'https://shib.unl.edu/idp/profile/cas';
 
 class ServiceInterface {
   /**
