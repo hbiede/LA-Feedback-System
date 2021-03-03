@@ -140,16 +140,24 @@ function can_give_feedback($interaction_id) {
     return $can_give && !$given;
 }
 
-function add_cse($username, $email = null) {
+function add_cse($username, $name = null, $email = null) {
     $conn = get_connection();
     if ($conn !== null) {
         $conn->begin_transaction();
-        $ps = $conn->prepare("INSERT INTO cse_usernames (canvas_username, email) VALUE (?, ?);");
+        $ps = $conn->prepare("INSERT INTO cse_usernames (canvas_username, email, name) VALUE (?, ?, ?);");
         if ($ps) {
-            $ps->bind_param("ss", $username, $email);
-            $ps->execute();
-            $return_val = $ps->insert_id;
-            $conn->commit();
+            $return_val = -1;
+            if ($ps->bind_param("sss", $username, $email, $name)) {
+                $ps->execute();
+                if ($ps->error) {
+                    error_log($ps->error);
+                } else {
+                    $return_val = $ps->insert_id;
+                    $conn->commit();
+                }
+            } else {
+                error_log("Failed to bind parameters for " . $username);
+            }
 
             $ps->close();
             $conn->close();
@@ -158,6 +166,8 @@ function add_cse($username, $email = null) {
             $conn->close();
             error_log("Failed to build prepped statement for adding CSE username $username");
         }
+    } else {
+        error_log("No connection to add " . $username);
     }
     return null;
 }
@@ -166,7 +176,7 @@ function add_interaction($la_cse, $student_id, $course, $interaction_type) {
     $la_id = get_username_id($la_cse);
     if ($la_id === $student_id) return null;
     $conn = get_connection();
-    if ($conn !== null && is_int($la_id) && is_int($student_id)) {
+    if ($conn !== null && is_int($la_id) && is_int($student_id) && $la_id >= 0) {
         $conn->begin_transaction();
         $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key, course, " .
             "interaction_type) VALUE (?, ?, ?, ?);");
@@ -276,7 +286,7 @@ function received_email_today($student_id) {
     return false;
 }
 
-function get_username_id($username, $email = null) {
+function get_username_id($username, $name = null, $email = null) {
     if ($username === null || strlen(trim($username)) === 0) return null;
 
     $conn = get_connection();
@@ -293,11 +303,11 @@ function get_username_id($username, $email = null) {
         $ps->bind_param("s", $username);
         $ps->execute();
         $ps->bind_result($id);
-        error_log('INFO: { la_username: ' . $username . ', la_id: ' . $id . ' }');
         $ps->fetch();
         if ($id === null) {
-            $id = add_cse($username, $email);
+            $id = add_cse($username, $name, $email);
         }
+        error_log('INFO: { la_username: ' . $username . ', la_id: ' . $id . ' }');
         $ps->close();
         $conn->close();
         return $id;

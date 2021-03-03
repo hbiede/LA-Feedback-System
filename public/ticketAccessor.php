@@ -19,9 +19,9 @@ ini_set('error_log', './log/ticket.log');
 $casService = 'https://shib.unl.edu/idp/profile/cas';
 $thisService = get_url();
 
-function add_login($username, $email) {
+function add_login($username, $name, $email) {
     error_log("Attempting to log $username");
-    $la_id = get_username_id($username, $email);
+    $la_id = get_username_id($username, $name, $email);
     $conn = get_connection();
     if ($conn !== null) {
         $conn->begin_transaction();
@@ -79,8 +79,9 @@ if (isset($obj) && isset($obj->{'ticket'})) {
     if ($response = responseForTicket($obj->{'ticket'})) {
         $xml = simplexml_load_string($response);
         $user = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0];
-        $email = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->user[0]->attributes->email[0];
-        add_login($user, $email);
+        $name = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->attributes->displayName;
+        $email = $xml->children('http://www.yale.edu/tp/cas')->authenticationSuccess->attributes->email[0];
+        add_login($user, $name, $email);
         echo $user;
     } else {
         echo 'INVALID_TICKET_KEY';
