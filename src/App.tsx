@@ -45,7 +45,7 @@ function App() {
   const toggleAdminAsLA = useCallback(() => {
     setSelectedUsername({ username: '' });
     setAdminAsLA(!adminAsLA);
-  }, [setAdminAsLA, adminAsLA]);
+  }, [setSelectedUsername, adminAsLA]);
 
   const AdminScreen = React.lazy(() => import('screens/AdminScreen'));
   const loadingLabel = <h4 style={styles.loadingSpinner}>Loading</h4>;

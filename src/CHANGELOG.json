@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 3.0.1\n- Prevent removing the super user as an admin\n- Allow sorting by course on Admin's Students tab",
     "## 3.0.0\n- Convert to UNL's authentication system",
     "## 2.2.1\n- Fix error with removing admins",
     "## 2.2.0\n- Display students on the admin page\n- Add the ability to add new students to the database from the frontend\n- Add directions for admins to be able to reset the entire system\n- Allow admins to add/remove other admins from the page\n- Allow full reset of page by an admin",

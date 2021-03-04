@@ -154,9 +154,9 @@ const NavBar = ({ adminAsLA, toggleAdminAsLA }: Props) => {
         role="navigation"
       >
         <Navbar.Brand style={{ marginBottom: 0 }}>
-          {`LA Feedback${isAdmin ? ' Admin' : ''}${
+          {`LA Feedback${isAdmin ? ' (Admin)' : ''}${
             ServiceInterface.getPath().toLowerCase().includes('test')
-              ? ' (Test)'
+              ? ' - Test Server'
               : ''
           }`}
         </Navbar.Brand>

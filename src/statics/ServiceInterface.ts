@@ -128,10 +128,8 @@ class ServiceInterface {
     return isAdmin ? selectedUsername : username;
   };
 
-  static getAccountHost = () => {
-    const match = /~(<account>.+?)\//i.exec(ServiceInterface.getPath());
-    return match ? match[1] : null;
-  };
+  static getAccountHost = () =>
+    (/~(.+?)\//i.exec(ServiceInterface.getPath()) ?? [null, null])[1];
 }
 
 export default ServiceInterface;

@@ -28,6 +28,7 @@ const STUDENT_TEXT_FIELD_ID = 'student_text_field';
 const STUDENT_USERNAME_ID = 'student_username_column';
 const STUDENT_NAME_ID = 'student_name_column';
 const INTERACTION_COUNT_ID = 'interaction_count_column';
+const COURSE_ID = 'course_column';
 
 const getUsername = (s: Student) => s.username ?? s.canvas_username;
 const getName = (s: Student) => s.name ?? getUsername(s);
@@ -82,6 +83,11 @@ const StudentTable = () => {
             case STUDENT_USERNAME_ID:
               return (
                 sortConfig.order * getUsername(a).localeCompare(getUsername(b))
+              );
+            case COURSE_ID:
+              return (
+                sortConfig.order *
+                (a.course ?? '---').localeCompare(b.course ?? '---')
               );
             default:
               return sortConfig.order * getName(a).localeCompare(getName(b));
@@ -210,6 +216,14 @@ const StudentTable = () => {
             </th>
             <th
               role="columnheader"
+              id={COURSE_ID}
+              onClick={handleSortClick}
+              style={{ cursor: 'pointer' }}
+            >
+              {`Course ${column === COURSE_ID ? SORT_CHARS.get(order) : ' '}`}
+            </th>
+            <th
+              role="columnheader"
               id={INTERACTION_COUNT_ID}
               onClick={handleSortClick}
               style={{ cursor: 'pointer' }}
@@ -233,6 +247,7 @@ const StudentTable = () => {
                   <tr>
                     <td>{getUsername(s)}</td>
                     <td>{getName(s)}</td>
+                    <td>{s.course ?? '---'}</td>
                     <td>{s.interaction_count}</td>
                   </tr>
                 )
