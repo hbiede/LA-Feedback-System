@@ -109,8 +109,7 @@ SELECT IFNULL(name, username)               AS 'la',
        time_of_interaction
 FROM feedback
          LEFT JOIN interactions i on feedback.interaction_key = i.interaction_key
-         LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key
-ORDER BY username, time_of_interaction;
+         LEFT JOIN cse_usernames cu on i.la_username_key = cu.username_key;
 
 CREATE VIEW outstanding_feedback_req AS
 SELECT 'outstanding feedback requests'                            AS 'category',
