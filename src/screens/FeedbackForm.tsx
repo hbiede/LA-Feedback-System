@@ -26,6 +26,8 @@ import Redux, { api, AppReduxState } from 'redux/modules';
 import { Student } from '../redux/modules/Types';
 import StudentSelectionTypeahead from '../components/StudentSelectionTypeahead';
 
+import interaction_types from '../interaction_types.json';
+
 const LA_USERNAME_ID = 'la_username';
 const COURSE_ID = 'course';
 const STUDENT_ID = 'student_login';
@@ -315,10 +317,11 @@ const FeedbackForm = ({ style }: Props) => {
               <option value="choose" hidden aria-hidden>
                 (choose)
               </option>
-              <option value="cohort meeting">Cohort</option>
-              <option value="hack">Hack</option>
-              <option value="lab">Lab</option>
-              <option value="office hour">Office Hour</option>
+              {interaction_types.map((type) => (
+                <option value={type} style={{ textTransform: 'capitalize' }}>
+                  {type}
+                </option>
+              ))}
             </Form.Control>
           </div>
         </FormGroup>

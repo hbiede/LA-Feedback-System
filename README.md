@@ -10,6 +10,10 @@ database's needs
 [Yarn here](https://yarnpkg.com))
 0. Run `yarn build`
 
+## Adding Courses or Interaction Types
+* Courses are taken from the set of all courses in the student database
+* Interaction Types are to be added to `src/interaction_types.json`
+
 ## Coding Standards
 This repo utilizes [Prettier](https://prettier.io) through [ESLint](https://eslint.org) to ensure
 code style consistency. All pull requests are expected to comply with this requirement.
