@@ -319,7 +319,10 @@ const FeedbackForm = ({ style }: Props) => {
               </option>
               {interaction_types.map((type) => (
                 <option value={type} style={{ textTransform: 'capitalize' }}>
-                  {type}
+                  {type.replace(
+                    /\b\w/g,
+                    (txt) => txt.charAt(0).toUpperCase() + txt.substr(1)
+                  )}
                 </option>
               ))}
             </Form.Control>
