@@ -6,7 +6,7 @@
  */
 
 function get_url() {
-    return 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+    return (isset($_SERVER['https']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 }
 
 function get_connection() {
@@ -352,7 +352,7 @@ function run_accessor($query) {
         }
         $ps->close();
     } else {
-        error_log($ps->error);
+        error_log($conn->error);
     }
     $conn->close();
     return $returnVal;
