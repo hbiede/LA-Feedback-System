@@ -286,7 +286,7 @@ function received_email_today($student_id) {
     return false;
 }
 
-function get_username_id($username, $name = null, $email = null) {
+function get_username_id($username, $name = null, $email = null, $should_add = true) {
     if ($username === null || strlen(trim($username)) === 0) return null;
 
     $conn = get_connection();
@@ -304,7 +304,7 @@ function get_username_id($username, $name = null, $email = null) {
         $ps->execute();
         $ps->bind_result($id);
         $ps->fetch();
-        if ($id === null) {
+        if ($should_add && $id === null) {
             $id = add_cse($username, $name, $email);
         }
         error_log('INFO: { la_username: ' . $username . ', la_id: ' . $id . ' }');
