@@ -56,7 +56,7 @@ CREATE TABLE logins
 (
     login_key           int auto_increment unique primary key,
     la_username_key     int                                   not null,
-    time_of_interaction timestamp default current_timestamp() not null,
+    time_of_login       timestamp default current_timestamp() not null,
     constraint interactions_la_login_fk
         foreign key (la_username_key) references cse_usernames (username_key)
             on delete cascade
@@ -141,11 +141,11 @@ FROM interactions
 WHERE seeking_feedback = 1;
 
 CREATE VIEW logins_readable AS
-SELECT time_of_interaction,
+SELECT time_of_login,
        IFNULL(cul.name, cul.username) AS 'la'
 FROM logins l
          LEFT JOIN cse_usernames cul on l.la_username_key = cul.username_key
-ORDER BY time_of_interaction;
+ORDER BY time_of_login;
 
 CREATE VIEW course_interactions AS
 SELECT course, COUNT(*) AS 'count'

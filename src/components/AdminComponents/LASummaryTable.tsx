@@ -274,6 +274,14 @@ const LASummaryTable = ({ showLA }: Props) => {
       >
         Download Feedback as CSV
       </Button>
+      <Button
+        href={`${ServiceInterface.getPath()}/interactionDownload.php`}
+        type="button"
+        variant="primary"
+        style={{ marginBottom: 20 }}
+      >
+        Download Interactions as CSV
+      </Button>
     </>
   );
 };

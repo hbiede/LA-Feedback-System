@@ -78,11 +78,11 @@ include_once 'sqlManager.php';
 ini_set('error_log', './log/admin.log');
 
 function get_logins() {
-    return run_accessor("SELECT UNIX_TIMESTAMP(time_of_interaction) AS 'time_of_interaction', " .
+    return run_accessor("SELECT UNIX_TIMESTAMP(l.time_of_login) AS 'l.time_of_login', " .
         "CONCAT(IFNULL(cul.name, cul.username), IF(is_admin, ' (Admin)', '')) AS 'la' " .
         "FROM logins l " .
         "LEFT JOIN cse_usernames cul on l.la_username_key = cul.username_key " .
-        "ORDER BY time_of_interaction");
+        "ORDER BY l.time_of_login");
 }
 
 function get_sentiment() {
