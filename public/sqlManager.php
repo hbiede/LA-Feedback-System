@@ -6,7 +6,7 @@
  */
 
 function get_url() {
-    return (isset($_SERVER['https']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+    return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
 }
 
 function get_connection() {
