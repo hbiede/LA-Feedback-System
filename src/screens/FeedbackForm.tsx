@@ -32,11 +32,14 @@ const LA_USERNAME_ID = 'la_username';
 const COURSE_ID = 'course';
 const STUDENT_ID = 'student_login';
 const INTERACTION_TYPE_ID = 'interaction_type';
+const RECOMMENDED_ID = 'recommended_checkbox';
 
 const LA_LABEL = 'LA Canvas Username';
 const COURSE_LABEL = 'Course';
 const STUDENT_LABEL = 'Student';
 const INTERACTION_TYPE_LABEL = 'Interaction Type';
+const RECOMMENDED_LABEL =
+  'Would you recommend this student as a potential LA? (The PC will reach out to them)';
 
 type Props = {
   style?: CSSProperties;
@@ -92,6 +95,7 @@ const FeedbackForm = ({ style }: Props) => {
   const [interactionTypeRecord, setInteractionTypeRecord] = useState<
     string | null
   >(course);
+  const [recommended, setRecommended] = useState(false);
 
   useEffect(() => {
     api.subscribe(
@@ -120,6 +124,11 @@ const FeedbackForm = ({ style }: Props) => {
           break;
         case INTERACTION_TYPE_ID:
           setInteractionTypeRecord(value);
+          break;
+        case RECOMMENDED_ID:
+          setRecommended(
+            (event as ChangeEvent<HTMLInputElement>).currentTarget.checked
+          );
           break;
         default:
           setResponse({ content: `${id} is an invalid ID`, class: 'danger' });
@@ -159,7 +168,8 @@ const FeedbackForm = ({ style }: Props) => {
             student.id,
             student.course,
             students.length > 1,
-            interactionTypeRecord
+            interactionTypeRecord,
+            recommended
           );
         });
         setStudents([]);
@@ -182,6 +192,7 @@ const FeedbackForm = ({ style }: Props) => {
 
       // Prevent reload
       event.preventDefault();
+      setRecommended(false);
       return false;
     },
     [
@@ -191,9 +202,10 @@ const FeedbackForm = ({ style }: Props) => {
       interactionTypeRecord,
       usernameRecord,
       isAdmin,
-      incrementSessionInteractions,
       setSelectedUsername,
+      incrementSessionInteractions,
       logInteraction,
+      recommended,
     ]
   );
 
@@ -326,6 +338,19 @@ const FeedbackForm = ({ style }: Props) => {
                 </option>
               ))}
             </Form.Control>
+          </div>
+        </FormGroup>
+
+        <FormGroup as={Row} controlId={RECOMMENDED_ID}>
+          <div className="col-sm-9">
+            <Form.Check
+              type="checkbox"
+              label={RECOMMENDED_LABEL}
+              checked={recommended}
+              aria-label={RECOMMENDED_LABEL}
+              aria-checked={recommended}
+              onChange={handleChange}
+            />
           </div>
         </FormGroup>
 

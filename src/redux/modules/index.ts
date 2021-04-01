@@ -131,12 +131,14 @@ export type AppReduxState = {
    * @param course The course for which the student had an interaction
    * @param multiples If the LA logged multiple students at onces
    * @param interactionType The type of interaction (i.e., 'office hour', 'lab')
+   * @param recommended If the student was recommended by the LA
    */
   logInteraction: (
     studentID: number,
     course?: string | null,
     multiples?: boolean,
-    interactionType?: string | null
+    interactionType?: string | null,
+    recommended?: boolean
   ) => void;
   /**
    * Logs the current user out

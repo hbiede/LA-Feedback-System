@@ -172,16 +172,17 @@ function add_cse($username, $name = null, $email = null) {
     return null;
 }
 
-function add_interaction($la_cse, $student_id, $course, $interaction_type) {
+function add_interaction($la_cse, $student_id, $course, $interaction_type, $recommended = false) {
     $la_id = get_username_id($la_cse);
     if ($la_id === $student_id) return null;
     $conn = get_connection();
     if ($conn !== null && is_int($la_id) && is_int($student_id) && $la_id >= 0) {
         $conn->begin_transaction();
         $ps = $conn->prepare("INSERT INTO interactions (la_username_key, student_username_key, course, " .
-            "interaction_type) VALUE (?, ?, ?, ?);");
+            "interaction_type, was_recommended) VALUE (?, ?, ?, ?, ?);");
         if ($ps) {
-            $ps->bind_param("siss", $la_id, $student_id, $course, $interaction_type);
+            $recommended_int = $recommended ? 1 : 0;
+            $ps->bind_param("sissi", $la_id, $student_id, $course, $interaction_type, $recommended_int);
             $ps->execute();
             if ($ps->error) {
                 error_log($ps->error);

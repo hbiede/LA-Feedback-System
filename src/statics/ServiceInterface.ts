@@ -17,11 +17,13 @@ class ServiceInterface {
    * @param studentID The database ID of the student being logged
    * @param course The course for which the student had an interaction
    * @param interactionType The type of interaction (i.e., 'office hour', 'lab')
+   * @param recommended If the student was recommended by the LA
    */
   static logInteraction = async (
     studentID: number,
     course: string | null = null,
-    interactionType: string | null = null
+    interactionType: string | null = null,
+    recommended = false
   ): Promise<string | number | null> => {
     const { course: defaultCourse, setResponse } = api.getState();
     const laCSE = ServiceInterface.getActiveUser();
@@ -39,6 +41,7 @@ class ServiceInterface {
               ? defaultCourse
               : course,
           interactionType,
+          recommended,
         }),
       };
       let status = null;

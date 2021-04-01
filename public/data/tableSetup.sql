@@ -39,6 +39,7 @@ CREATE TABLE interactions
     student_username_key  int                                    not null,
     course                varchar(10),
     interaction_type      varchar(30)                            null,
+    was_recommended       tinyint(1) default 0                   not null,
     seeking_feedback      tinyint(1) default 0                   not null,
     has_received_feedback tinyint(1) default 0                   null,
     time_of_interaction   timestamp  default current_timestamp() not null,
@@ -92,6 +93,7 @@ SELECT time_of_interaction,
        IFNULL(cus.name, cus.username) AS 'student',
        i.course,
        interaction_type,
+       IF(was_recommended, 'Recommended', 'Not Recommended') AS 'recommendation_status',
        seeking_feedback,
        has_received_feedback
 FROM interactions i

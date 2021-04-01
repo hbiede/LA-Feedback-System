@@ -127,14 +127,15 @@ function get_outstanding_feedback() {
 
 function get_interactions() {
     $conn = get_connection();
-    $ps = $conn->prepare('SELECT IFNULL(canvas_username, username) AS \'username\', CONCAT(name, IF(is_admin, \' (Admin)\', \'\')) AS \'name\', ' .
-        'cse_usernames.course, COUNT(i.interaction_key) AS count, COUNT(t.interaction_key) AS wCount, ' .
-        'COUNT(f.feedback_key) AS fCount, ' .
-        'AVG(rating) AS avg, AVG(sentiment) AS sentiment FROM cse_usernames ' .
-        'LEFT JOIN interactions i on cse_usernames.username_key = i.la_username_key ' .
-        'LEFT JOIN feedback f on i.interaction_key = f.interaction_key ' .
-        'LEFT JOIN (SELECT interaction_key FROM interactions WHERE interactions.time_of_interaction >= CURDATE() - INTERVAL 7 DAY) t on t.interaction_key = i.interaction_key ' .
-        'GROUP BY username ORDER BY username;');
+    $ps = $conn->prepare("SELECT IFNULL(canvas_username, username) AS 'username', CONCAT(name, IF(is_admin, ' (Admin)', '')) AS 'name', " .
+        "cse_usernames.course, COUNT(i.interaction_key) AS count, COUNT(t.interaction_key) AS wCount, " .
+        "COUNT(f.feedback_key) AS fCount, " .
+        "AVG(rating) AS avg, AVG(sentiment) AS sentiment " .
+        "FROM cse_usernames " .
+        "LEFT JOIN interactions i on cse_usernames.username_key = i.la_username_key " .
+        "LEFT JOIN feedback f on i.interaction_key = f.interaction_key " .
+        "LEFT JOIN (SELECT interaction_key FROM interactions WHERE interactions.time_of_interaction >= CURDATE() - INTERVAL 7 DAY) t on t.interaction_key = i.interaction_key " .
+        "GROUP BY canvas_username HAVING COUNT(i.interaction_key) > 0 ORDER BY canvas_username;");
     $returnVal = [];
     if ($ps) {
         $ps->execute();

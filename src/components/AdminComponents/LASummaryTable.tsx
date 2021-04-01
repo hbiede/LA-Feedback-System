@@ -278,7 +278,7 @@ const LASummaryTable = ({ showLA }: Props) => {
         href={`${ServiceInterface.getPath()}/interactionDownload.php`}
         type="button"
         variant="primary"
-        style={{ marginBottom: 20 }}
+        style={{ marginBottom: 20, marginLeft: 10 }}
       >
         Download Interactions as CSV
       </Button>

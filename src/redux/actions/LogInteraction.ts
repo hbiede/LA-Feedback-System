@@ -14,12 +14,14 @@ import ServiceInterface from 'statics/ServiceInterface';
  * @param course The course for which the student had an interaction
  * @param multiples If the LA logged multiple students at once
  * @param interactionType The type of interaction (i.e., 'office hour', 'lab')
+ * @param recommended If the student was recommended by the LA
  */
 const LogInteraction = (
   studentID: number,
   course: string | null = null,
   multiples = false,
-  interactionType: string | null = null
+  interactionType: string | null = null,
+  recommended = false
 ) => {
   const { setResponse, username } = api.getState();
   if (studentID === null) {
@@ -37,7 +39,12 @@ const LogInteraction = (
     return;
   }
 
-  ServiceInterface.logInteraction(studentID, course, interactionType)
+  ServiceInterface.logInteraction(
+    studentID,
+    course,
+    interactionType,
+    recommended
+  )
     .then((response) => {
       if (response === '0' || response === 0) {
         setResponse({

@@ -11,7 +11,8 @@ function send_interactions_csv() {
         "i.course, " .
         "interaction_type, " .
         "seeking_feedback, " .
-        "has_received_feedback " .
+        "has_received_feedback, " .
+        "IF(was_recommended, 'Recommended', 'Not Recommended') AS 'recommendation_status' " .
         "FROM interactions i " .
         "LEFT JOIN cse_usernames cul on i.la_username_key = cul.username_key " .
         "LEFT JOIN cse_usernames cus on i.student_username_key = cus.username_key " .

@@ -1,5 +1,6 @@
 {
   "changes": [
+    "## 3.1.0\n- Allow LAs to submit a student as a potential LA for the PC to reach out to in the future\n- Fix error of students being attributed interactions in the admin table",
     "## 3.0.1\n- Prevent removing the super user as an admin\n- Allow sorting by course on Admin's Students tab",
     "## 3.0.0\n- Convert to UNL's authentication system",
     "## 2.2.1\n- Fix error with removing admins",

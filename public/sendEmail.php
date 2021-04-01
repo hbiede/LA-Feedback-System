@@ -19,7 +19,8 @@ const FEEDBACK_RATE = 0.6;
 //  studentID: string,
 //  laCSE: string,
 //  course: string,
-//  interactionType: string | null
+//  interactionType: string | null,
+//  recommended?: boolean,
 //}
 
 // Returns a JSON encoded message as follows:
@@ -67,7 +68,7 @@ function send_email($obj, $interaction_id) {
 
 $obj = json_decode(file_get_contents('php://input'));
 if (isset($obj) && isset($obj->{'laCSE'}) && isset($obj->{'studentID'}) && isset($obj->{'course'})) {
-    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentID'}, $obj->{'course'}, $obj->{'interactionType'});
+    $interaction_id = add_interaction($obj->{'laCSE'}, $obj->{'studentID'}, $obj->{'course'}, $obj->{'interactionType'}, isset($obj->{'recommended'}) && ($obj->{'recommended'} === true || $obj->{'recommended'} === 'true'));
 
     if ($interaction_id !== null && $interaction_id > 0 &&
         (has_been_a_week($obj->{'laCSE'}) || mt_rand() / mt_getrandmax() < FEEDBACK_RATE) &&
