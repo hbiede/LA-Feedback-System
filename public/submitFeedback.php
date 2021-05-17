@@ -27,6 +27,10 @@ ini_set('error_log', './log/feedback.log');
  * LAs will receive a summary of their last X pieces of feedback
  */
 const FEEDBACK_RATE = 5;
+/**
+ * The program's email. Used to send LA feedback and to receive updates
+ */
+const PROGRAM_EMAIL = "cselearningassistant@gmail.com";
 
 /**
  * @param $comment string The comment to be parsed
@@ -100,7 +104,7 @@ function send_feedback_to_la($la_username) {
 
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
+        $headers .= 'From: Learning Assistant Program <' . PROGRAM_EMAIL . '>' . "\r\n";
 
         $subject = 'LA Feedback Summary for ' . $la_username;
         $ratings = '';
@@ -114,8 +118,12 @@ function send_feedback_to_la($la_username) {
         }
         $body = str_replace('RATINGS_LISTING', $ratings, shell_exec('cat ./data/feedbackSummary.html'));
         $body = str_replace('LATEST_FEEDBACK_COUNT', FEEDBACK_RATE, $body);
-        mail("$la_username@cse.unl.edu", $subject, $body, $headers);
-        mail("hbiede@cse.unl.edu", $subject, $body, $headers);
+        $id = get_username_id($la_username, null, false);
+        if ($id === null) {
+            error_log("Failed to get username ID for LA: " . $la_username);
+        } else {
+            mail(get_email($id), $subject, $body, $headers);
+        }
     }
 }
 
@@ -181,7 +189,7 @@ if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POS
             } else {
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: Learning Assistant Program <learningassistants@cse.unl.edu>' . "\r\n";
+                $headers .= 'From: Learning Assistant Program <' . PROGRAM_EMAIL . '>' . "\r\n";
 
                 $subject = 'Low Feedback';
 
@@ -193,12 +201,11 @@ if (isset($_POST) && isset($_POST['id']) && !is_nan($_POST['id']) && isset($_POS
 
                 if ($desires_feedback) {
                     $student_username = get_student_username_from_interaction($_POST['id']);
-                    $body .= "<br><br>---<br><br>The student requested feedback. Their email is $student_username@cse.unl.edu";
+                    $body .= "<br><br>---<br><br>The student requested feedback. Their email is " .
+                        get_email(get_username_id($student_username));
                 }
 
-                $email = $la_username === 'hbiede' ? 'hbiede@cse.unl.edu' : 'learningassistants@cse.unl.edu';
-
-                mail($email, $subject, $body, $headers);
+                mail(PROGRAM_EMAIL, $subject, $body, $headers);
             }
         }
         header('Status: 200 OK');

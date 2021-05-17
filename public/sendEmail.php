@@ -13,6 +13,7 @@ date_default_timezone_set("America/Chicago");
  * The percent of students that should receive a feedback email [0,1]
  */
 const FEEDBACK_RATE = 0.6;
+const EMAIL = 'cselearningassistant+noreply@gmail.com';
 
 // Call with a POST call with a JSON body as follows:
 //{
@@ -41,7 +42,7 @@ const FEEDBACK_RATE = 0.6;
 function send_email($obj, $interaction_id) {
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "Content-type:text/html;charset=UTF-8\r\n";
-    $headers .= "From: Learning Assistant Program <cselearningassistant+noreply@gmail.com>\r\n";
+    $headers .= "From: Learning Assistant Program <" . EMAIL . ">\r\n";
     $name = get_name_from_interaction($interaction_id);
 
     $subject = shell_exec('grep "<title>" form.php | sed "s/\s*<\/*title>//gi"');

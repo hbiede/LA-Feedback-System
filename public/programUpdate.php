@@ -6,6 +6,11 @@ include_once 'sqlManager.php';
 
 ini_set('error_log', './log/programUpdate.log');
 
+/**
+ * The program's email. Used to send LA feedback and to receive updates
+ */
+const PROGRAM_EMAIL = "cselearningassistant@gmail.com";
+
 function should_update($days = DAYS) {
     $conn = get_connection();
     $ps = $conn->prepare("SELECT COUNT(*) AS 'count' FROM interactions WHERE time_of_interaction >= " .
@@ -121,14 +126,13 @@ function get_update_string($days = DAYS) {
 }
 
 function send_email($report) {
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: LA Evals Update <learningassistants@cse.unl.edu>' . "\r\n";
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8\r\n";
+    $headers .= 'From: LA Evals Update <' . PROGRAM_EMAIL . ">\r\n";
 
     $subject = 'LA Feedback Update';
     $body = shell_exec('cat ./data/programUpdate.txt') . $report;
-    if (!$body || !mail('learningassistants@cse.unl.edu', $subject, $body, $headers) ||
-        !mail('hbiede@cse.unl.edu', $subject, $body, $headers)) {
+    if (!$body || !mail(PROGRAM_EMAIL, $subject, $body, $headers)) {
         error_log('Failed to send email');
     }
 }
