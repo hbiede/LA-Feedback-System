@@ -21,7 +21,7 @@ ini_set('error_log', './log/announcements.log');
 //{
 //  course: string,
 //  body: string,
-//  class?: string
+//  course?: string, // include if announcement is course specific
 //}
 
 // To clear all announcements:
