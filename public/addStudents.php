@@ -1,5 +1,5 @@
 <?php
-// To get list of interaction counts per LA:
+// To add students to the database
 // Call with a POST call with a JSON body as follows:
 //{
 //  students: string (The new students with the text formatted as below),
